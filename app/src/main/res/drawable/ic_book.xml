@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/ic_book.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Book Cover (Left Side) -->
+    <path
+        android:name="cover_left"
+        android:fillColor="#8B135F"
+        android:pathData="M4,3 L8,3 L8,21 L4,21 Z" />
+
+    <!-- Book Pages (Middle) -->
+    <path
+        android:name="pages"
+        android:fillColor="#FFFFFF"
+        android:pathData="M8,3 L16,3 L16,21 L8,21 Z" />
+
+    <!-- Book Cover (Right Side) -->
+    <path
+        android:name="cover_right"
+        android:fillColor="#8B135F"
+        android:pathData="M16,3 L20,3 L20,21 L16,21 Z" />
+</vector>

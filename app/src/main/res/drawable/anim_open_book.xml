@@ -1,0 +1,14 @@
+<!-- res/drawable/avd_book_open.xml -->
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_book">
+
+    <!-- Animation for Left Cover -->
+    <target
+        android:name="cover_left"
+        android:animation="@animator/anim_left_cover" />
+
+    <!-- Animation for Right Cover -->
+    <target
+        android:name="cover_right"
+        android:animation="@animator/anim_right_cover" />
+</animated-vector>

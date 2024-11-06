@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.pinu.jetpackcomposemodularprojectdemo"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.pinu.jetpackcomposemodularprojectdemo"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         multiDexEnabled = true
@@ -76,8 +76,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Navigation
-    implementation(libs.navigation.fragment.ktx)
-    implementation(libs.navigation.ui.ktx)
+    implementation(libs.compose.navigation)
+
+    // Image loading
+    implementation(libs.coil)
 
     // Hilt for DI
     implementation(libs.hilt)
