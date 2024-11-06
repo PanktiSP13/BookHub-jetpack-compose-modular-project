@@ -2,6 +2,7 @@ package com.pinu.jetpackcomposemodularprojectdemo.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -43,7 +44,8 @@ fun BookItem(
     imageUrl: String = "",
     title: String = "",
     author: String = "",
-    description: String = ""
+    description: String = "",
+    onItemClick : () -> Unit = {}
 ) {
 
     Card(
@@ -59,6 +61,7 @@ fun BookItem(
             .height(170.dp)
             .defaultMinSize(minHeight = 100.dp) // if you don't give fixed height then set default height
             .padding(horizontal = 12.dp, vertical = 4.dp)
+            .clickable { onItemClick()  }
     ) {
         Row(
             modifier = Modifier
