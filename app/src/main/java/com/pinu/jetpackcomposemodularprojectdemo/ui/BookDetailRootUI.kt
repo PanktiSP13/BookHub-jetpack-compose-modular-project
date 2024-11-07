@@ -35,8 +35,9 @@ import androidx.navigation.compose.rememberNavController
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.ui.components.CommonAppBar
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink80
-import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyString
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyDescription
 
 @Preview(showBackground = true)
 @Composable
@@ -58,12 +59,7 @@ fun BookDetailRootUI(navController: NavController = rememberNavController()) {
                     .fillMaxWidth()
                     .padding(12.dp),
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonColors(
-                    containerColor = Pink80,
-                    contentColor = Pink80,
-                    disabledContentColor = Color.Gray,
-                    disabledContainerColor = Color.Gray
-                )
+                colors = ButtonDefaults.buttonColors(containerColor = Pink)
             ) {
                 Text(
                     text = "Buy Now", color = Color.White,
@@ -120,7 +116,17 @@ fun BookDetailRootUI(navController: NavController = rememberNavController()) {
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = "$dummyString \n\n $dummyString \n\n $dummyString \n\n $dummyString \n\n $dummyString ",
+                    text = "$500", style = TextStyle(
+                        fontFamily = FontFamily.SansSerif,
+                        fontSize = 24.sp,
+                        color = Pink, fontWeight = FontWeight.Bold,
+                    ), overflow = TextOverflow.Ellipsis,
+                    maxLines = 2, lineHeight = 16.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.padding(top = 12.dp))
+                Text(
+                    text = "$dummyDescription \n\n $dummyDescription \n\n $dummyDescription \n\n $dummyDescription \n\n $dummyDescription ",
                     style = TextStyle(
                         fontFamily = FontFamily.SansSerif,
                         fontSize = 14.sp,

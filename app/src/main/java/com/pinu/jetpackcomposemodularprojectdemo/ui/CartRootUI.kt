@@ -21,7 +21,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.ui.components.BookItem
+import com.pinu.jetpackcomposemodularprojectdemo.ui.components.CartItem
 import com.pinu.jetpackcomposemodularprojectdemo.ui.components.CommonAppBar
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink80
 
 @Preview(showBackground = true)
@@ -42,12 +44,7 @@ fun CartRootUI(navController: NavController= rememberNavController()){
                     .fillMaxWidth()
                     .padding(12.dp),
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonColors(
-                    containerColor = Pink80,
-                    contentColor = Pink80,
-                    disabledContentColor = Color.Gray,
-                    disabledContainerColor = Color.Gray
-                )
+                colors = ButtonDefaults.buttonColors(containerColor = Pink)
             ) {
                 Text(
                     text = "Proceed to Checkout", color = Color.White,
@@ -62,7 +59,7 @@ fun CartRootUI(navController: NavController= rememberNavController()){
 
             LazyColumn {
                 items(20){
-                    Text("Pinu")
+                    CartItem()
                 }
             }
         }

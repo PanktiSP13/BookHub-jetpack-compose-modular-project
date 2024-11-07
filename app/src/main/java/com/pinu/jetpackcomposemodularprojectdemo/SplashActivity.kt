@@ -69,7 +69,7 @@ class SplashActivity : ComponentActivity() {
                     .alpha(alpha.value)
                     .clip(CircleShape)
                     .border(
-                        4.dp, color = Pink40, shape = CircleShape
+                        4.dp, color = Pink, shape = CircleShape
                     ),
             )
         }
