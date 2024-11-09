@@ -1,4 +1,4 @@
-package com.pinu.jetpackcomposemodularprojectdemo.ui
+package com.pinu.jetpackcomposemodularprojectdemo.ui.screens
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,10 +37,8 @@ fun CartRootUI(navController: NavController= rememberNavController()){
 
     Scaffold(
         topBar = {
-            CommonAppBar(title = "Cart", canGoBack = true ,
-                isCartVisible = false, onBackPressed = {
-                    navController.popBackStack()
-            })
+            CommonAppBar(title = "Cart", canGoBack = true ,navController = navController,
+                isCartVisible = false, isFavouritesVisible = false)
         },
         bottomBar = {
             Button(

@@ -1,4 +1,4 @@
-package com.pinu.jetpackcomposemodularprojectdemo.ui
+package com.pinu.jetpackcomposemodularprojectdemo.ui.screens
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -60,9 +60,7 @@ fun DashboardRootUI(navController: NavController = rememberNavController()) {
 
     Scaffold(
         topBar = {
-            CommonAppBar(title = "Dashboard", onCartClick = {
-                navController.navigate(NavigationRoutes.CartScreen.route)
-            })
+            CommonAppBar(title = "Dashboard",navController = navController)
         },
     ) { contentPadding ->
         Surface(

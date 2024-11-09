@@ -8,3 +8,5 @@ const val dummyDescription =
 const val dummyString = "To apply the custom font across your app, you can set it as part of your app’s theme."
 //const val dummyUrl = "https://img.etimg.com/photo/msid-98117645,imgsize-73706/TheAlchemistbyPauloCoelho.jpg"
 const val dummyUrl = "https://m.media-amazon.com/images/I/81gRz9A4F6L._UF1000,1000_QL80_.jpg"
+const val dummyBookTitle = "To apply the custom font across your app, you can set it as part of your app’s theme."
+const val dummyBookDate ="12/05/2323"

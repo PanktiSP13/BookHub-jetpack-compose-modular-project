@@ -1,4 +1,4 @@
-package com.pinu.jetpackcomposemodularprojectdemo.ui
+package com.pinu.jetpackcomposemodularprojectdemo.ui.screens
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,11 +19,7 @@ import com.pinu.jetpackcomposemodularprojectdemo.ui.components.CommonAppBar
 fun BookListRootUI(navController: NavController = rememberNavController()){
     Scaffold(
         topBar = {
-            CommonAppBar(title = "Book List", canGoBack = true ,onCartClick = {
-                navController.navigate(NavigationRoutes.CartScreen.route)
-            }, onBackPressed = {
-                navController.popBackStack()
-            })
+            CommonAppBar(title = "Book List", canGoBack = true ,navController = navController)
         },
     ) { contentPadding ->
         Surface(modifier = Modifier.padding(contentPadding)) {

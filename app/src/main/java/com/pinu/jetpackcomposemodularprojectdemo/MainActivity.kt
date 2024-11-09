@@ -8,10 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
-import com.pinu.jetpackcomposemodularprojectdemo.ui.BookDetailRootUI
-import com.pinu.jetpackcomposemodularprojectdemo.ui.BookListRootUI
-import com.pinu.jetpackcomposemodularprojectdemo.ui.CartRootUI
-import com.pinu.jetpackcomposemodularprojectdemo.ui.DashboardRootUI
+import com.pinu.jetpackcomposemodularprojectdemo.ui.screens.BookDetailRootUI
+import com.pinu.jetpackcomposemodularprojectdemo.ui.screens.BookListRootUI
+import com.pinu.jetpackcomposemodularprojectdemo.ui.screens.CartRootUI
+import com.pinu.jetpackcomposemodularprojectdemo.ui.screens.DashboardRootUI
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.JetpackComposeModularProjectDemoTheme
 
 class MainActivity : ComponentActivity() {

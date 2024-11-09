@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -15,9 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -43,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
-import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink80
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyString
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyUrl
 import com.pinu.jetpackcomposemodularprojectdemo.ui.util.CommonAlertDialog
@@ -145,19 +141,13 @@ fun CartItem() {
                         }
                     }
                     Spacer(modifier = Modifier.padding(start = 12.dp))
-                    Button(
-                        onClick = {
-                            showAlert.value = true
-                        },
-                        shape = RoundedCornerShape(8.dp),
-                        contentPadding = PaddingValues(0.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Pink80)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(imageVector = Icons.Default.Clear, contentDescription = "remove")
-                        }
+                    IconButton(onClick = { showAlert.value = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "remove",
+                            tint = Pink
+                        )
                     }
-
                 }
             }
         }
