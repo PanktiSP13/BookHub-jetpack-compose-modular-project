@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.pinu.domain"
-    compileSdk = 34
+    compileSdk = 35
 
 }
 

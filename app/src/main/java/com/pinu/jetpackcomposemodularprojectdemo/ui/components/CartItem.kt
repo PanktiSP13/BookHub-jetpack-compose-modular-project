@@ -46,6 +46,7 @@ import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink80
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyString
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyUrl
+import com.pinu.jetpackcomposemodularprojectdemo.ui.util.CommonAlertDialog
 
 @Preview(showBackground = false)
 @Composable

@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.pinu.di"
-    compileSdk = 34
+    compileSdk = 35
 
 
 }

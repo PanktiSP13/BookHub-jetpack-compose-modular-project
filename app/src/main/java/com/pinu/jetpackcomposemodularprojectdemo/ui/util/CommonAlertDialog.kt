@@ -1,4 +1,4 @@
-package com.pinu.jetpackcomposemodularprojectdemo.ui.components
+package com.pinu.jetpackcomposemodularprojectdemo.ui.util
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,7 +19,6 @@ import androidx.compose.ui.window.DialogProperties
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink80
-import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyString
 
 @Preview
 @Composable
@@ -38,7 +37,9 @@ fun CommonAlertDialog(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
         title = {
-            Text(text = title, style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.W600))
+            Text(text = title,
+                modifier = Modifier.fillMaxWidth(),
+                style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.W600))
         },
         text = { Text(text = text) },
         properties = DialogProperties(

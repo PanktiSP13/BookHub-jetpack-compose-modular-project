@@ -12,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -36,7 +35,6 @@ import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.ui.components.CommonAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
-import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink80
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyDescription
 
 @Preview(showBackground = true)

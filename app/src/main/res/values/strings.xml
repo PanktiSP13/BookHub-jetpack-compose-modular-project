@@ -4,4 +4,8 @@
     <string name="alert">Alert!!</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="payment_successful">Payment Successful!</string>
+    <string name="payment_success_desc">Thank you for your payment.Your transaction \n has been completed successfully.</string>
+    <string name="proceed_to_checkout">Proceed to Checkout</string>
+    <string name="continue_shopping">Continue Shopping</string>
 </resources>

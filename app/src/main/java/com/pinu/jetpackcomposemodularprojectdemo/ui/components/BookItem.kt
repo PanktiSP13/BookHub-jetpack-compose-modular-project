@@ -31,7 +31,7 @@ import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyDescription
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyUrl
 
-@Preview()
+@Preview
 @Composable
 fun BookItem(
     imageUrl: String = "",

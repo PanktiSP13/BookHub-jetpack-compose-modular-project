@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.pinu.data"
-    compileSdk = 34
+    compileSdk = 35
 }
 
 dependencies {

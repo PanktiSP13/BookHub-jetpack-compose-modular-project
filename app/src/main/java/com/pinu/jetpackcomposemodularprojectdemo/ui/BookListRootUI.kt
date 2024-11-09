@@ -28,7 +28,7 @@ fun BookListRootUI(navController: NavController = rememberNavController()){
     ) { contentPadding ->
         Surface(modifier = Modifier.padding(contentPadding)) {
             LazyColumn(modifier = Modifier.padding(top = 12.dp)) {
-                items(15) { it ->
+                items(15) {
                     BookItem {
                         navController.navigate(NavigationRoutes.BookDetailScreen.route)
                     }
