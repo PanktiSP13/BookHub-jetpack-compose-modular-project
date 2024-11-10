@@ -6,6 +6,7 @@ object NavRoutes {
     const val BOOK_LIST_SCREEN = "book-list-page"
     const val BOOK_DETAIL_SCREEN = "book-detail-screen"
     const val CART_SCREEN = "book-cart-screen"
+    const val PROFILE_SCREEN = "profile-screen"
 }
 
 object NavArguments {
@@ -25,6 +26,8 @@ sealed class NavigationRoutes(val route: String) {
     }
 
     data object CartScreen : NavigationRoutes(NavRoutes.CART_SCREEN)
+
+    data object ProfileScreen : NavigationRoutes(NavRoutes.PROFILE_SCREEN)
 
 
 }

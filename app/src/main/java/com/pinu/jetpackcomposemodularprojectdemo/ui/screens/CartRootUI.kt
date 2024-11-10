@@ -86,8 +86,7 @@ fun CartRootUI(navController: NavController= rememberNavController()){
             showPaymentSuccessDialog.value = false
 
             // redirect back to dashboard with removing all stack entries
-            navController.navigate(NavigationRoutes.DashboardScreen.route)
-            {
+            navController.navigate(NavigationRoutes.DashboardScreen.route) {
                 // Clear the stack up to the root
                 popUpTo(0) { inclusive = true }
                 launchSingleTop = true

@@ -7,7 +7,11 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,6 +40,7 @@ fun CommonAppBar(
     canGoBack: Boolean = false,
     isCartVisible:Boolean = true,
     isFavouritesVisible : Boolean = true,
+    isProfileOptionAvailable :Boolean= true,
     navController: NavController = rememberNavController(),
     onCartClick: () -> Unit = {},
     onBackPressed: () -> Unit = {},
@@ -64,6 +69,16 @@ fun CommonAppBar(
                                 onBackPressed()
                             }
                     )
+                } else {
+
+                    if (isProfileOptionAvailable){
+                        IconButton(onClick = {
+                            navController.navigate(NavigationRoutes.ProfileScreen.route)
+                        }) {
+                            Icon(imageVector = Icons.Default.Person,
+                                contentDescription ="profile" )
+                        }
+                    }
                 }
             },
             actions = {

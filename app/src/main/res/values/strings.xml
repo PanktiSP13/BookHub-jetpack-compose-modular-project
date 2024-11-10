@@ -11,4 +11,8 @@
     <string name="add_to_cart">Add to Cart</string>
     <string name="book_added_to_your_favourites">Book added to your favourites</string>
     <string name="book_removed_from_your_favourites">Book removed from your favourites</string>
+    <string name="exit_app">Exit App</string>
+    <string name="are_you_sure_you_want_to_exit">Are you sure you want to exit?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
 </resources>

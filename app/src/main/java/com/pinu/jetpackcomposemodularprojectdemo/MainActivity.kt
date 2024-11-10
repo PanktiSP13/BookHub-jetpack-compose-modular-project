@@ -12,6 +12,7 @@ import com.pinu.jetpackcomposemodularprojectdemo.ui.screens.BookDetailRootUI
 import com.pinu.jetpackcomposemodularprojectdemo.ui.screens.BookListRootUI
 import com.pinu.jetpackcomposemodularprojectdemo.ui.screens.CartRootUI
 import com.pinu.jetpackcomposemodularprojectdemo.ui.screens.DashboardRootUI
+import com.pinu.jetpackcomposemodularprojectdemo.ui.screens.ProfileRootUI
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.JetpackComposeModularProjectDemoTheme
 
 class MainActivity : ComponentActivity() {
@@ -41,6 +42,10 @@ class MainActivity : ComponentActivity() {
 
                     composable(route = NavigationRoutes.CartScreen.route) {
                         CartRootUI(navController)
+                    }
+
+                    composable(route = NavigationRoutes.ProfileScreen.route) {
+                        ProfileRootUI(navController)
                     }
 
 
