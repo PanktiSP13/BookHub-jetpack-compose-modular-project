@@ -44,7 +44,7 @@ fun CommonFormTextField(
             .focusRequester(focusRequester)
     ) {
         OutlinedTextField(
-            value = txtValue ?: "",
+            value = txtValue,
             readOnly = isReadOnly,
             onValueChange = { value ->
                 onValueChange(value)
