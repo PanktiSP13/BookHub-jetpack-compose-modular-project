@@ -2,35 +2,57 @@ package com.pinu.jetpackcomposemodularprojectdemo.ui.screens
 
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.util.Patterns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -40,10 +62,29 @@ import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.ui.components.CommonAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink80
+import com.pinu.jetpackcomposemodularprojectdemo.ui.util.CommonFormTextField
+import kotlinx.coroutines.launch
 
 @Preview
 @Composable
-fun ProfileRootUI(navController: NavHostController = rememberNavController()) {
+fun ProfileRootUI(
+    navController: NavHostController = rememberNavController()
+) {
+
+    val scrollState = rememberScrollState()
+    val snackBarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    /* ------form values-----------*/
+    val userName = remember { mutableStateOf("") }
+    val userMobileNumber = remember { mutableStateOf("") }
+    val userEmail = remember { mutableStateOf("") }
+    val userGender = remember { mutableStateOf("") }
+    val selectedGender = remember { mutableStateOf("") }
+
+    val focusManager = LocalFocusManager.current
+
+
 
     val context = LocalContext.current
     val openCamera = remember { mutableStateOf(false) }
@@ -69,23 +110,68 @@ fun ProfileRootUI(navController: NavHostController = rememberNavController()) {
         }
     }
 
+
+    fun isValidData(error: (String) -> Unit = {}, onValidData: () -> Unit = {}) {
+        if (userName.value.isEmpty()) {
+            error(context.getString(R.string.validation_empty_name))
+        } else if (userEmail.value.isEmpty()) {
+            error(context.getString(R.string.validation_email))
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(userEmail.value).matches()) {
+            error(context.getString(R.string.validation_empty_email))
+        } else if (userMobileNumber.value.isEmpty()) {
+            error(context.getString(R.string.validation_mobile_number))
+        } else if (userGender.value.isEmpty()) {
+            error(context.getString(R.string.validation_gender))
+        } else if (selectedGender.value.isEmpty()) {
+            error(context.getString(R.string.validation_gender_selection))
+        } else {
+            onValidData()
+        }
+    }
+
+
     Scaffold(
         topBar = {
             CommonAppBar(isProfileOptionAvailable = false,
                 isFavouritesVisible = false,
                 isCartVisible = false, canGoBack = true,
                 title = "Profile", navController = navController)
+        }, bottomBar = {
+            Button(
+                onClick = {
+                    isValidData(error = { errorMsg ->
+                        coroutineScope.launch {
+                            snackBarHostState.showSnackbar(errorMsg)
+                        }
+                    }) {
+                        focusManager.clearFocus()
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                colors = ButtonDefaults.buttonColors(Pink)
+            ) {
+                Text(text = stringResource(R.string.add))
+            }
+        }, snackbarHost = {
+            // latest way of material3 to show snackBar
+            SnackbarHost(
+                hostState = snackBarHostState, modifier = Modifier.padding(top = 16.dp)
+            )
         }
     ) { paddingValues ->
-        LazyColumn(
+
+        Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
+                .verticalScroll(scrollState)
                 .background(Color.White),
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = paddingValues
         ) {
-            item {
-                Box {
+            //profile pic
+            Box {
                     if (imageBitmap.value != null) {
                         imageBitmap.value?.asImageBitmap()?.let {
                             Image(
@@ -134,10 +220,101 @@ fun ProfileRootUI(navController: NavHostController = rememberNavController()) {
                         )
                     }
                 }
+            Spacer(modifier = Modifier.height(20.dp))
+            CommonFormTextField(
+                labelTxt = stringResource(R.string.name),
+                txtValue = userName.value,
+                isSingleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Text,
+                ),
+                keyboardActions = KeyboardActions(onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }),
+                onValueChange = {
+                    userName.value = it
+                },
+            )
+            CommonFormTextField(
+                labelTxt = stringResource(R.string.email),
+                txtValue = userEmail.value,
+                isSingleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Email,
+                ),
+                keyboardActions = KeyboardActions(onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }),
+                onValueChange = {
+                    userEmail.value = it
+                },
+            )
+
+            CommonFormTextField(
+                labelTxt = stringResource(R.string.mobile_number),
+                txtValue = userMobileNumber.value,
+                isSingleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Number,
+                ),
+                keyboardActions = KeyboardActions(onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
+                }),
+                onValueChange = {
+                    if (it.length <= 10) {
+                        userMobileNumber.value = it
+                    }
+                },
+            )
+            CommonFormTextField(
+                labelTxt = stringResource(R.string.gender),
+                txtValue = userGender.value,
+                isSingleLine = true,
+                onValueChange = {
+                    userGender.value = it
+                },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Text,
+                ),
+                keyboardActions = KeyboardActions(onNext = {
+                    focusManager.clearFocus()
+                }),
+
+                )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                listOf(
+                    stringResource(R.string.male),
+                    stringResource(R.string.female),
+                    stringResource(R.string.other)
+                ).onEach { option ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start,
+                    ) {
+                        RadioButton(
+                            selected = option == selectedGender.value,
+                            onClick = {
+                                selectedGender.value = option
+                            },
+                        )
+                        Text(text = option)
+                    }
+
+                }
             }
+
         }
 
+
     }
-
-
 }

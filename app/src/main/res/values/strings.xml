@@ -15,4 +15,18 @@
     <string name="are_you_sure_you_want_to_exit">Are you sure you want to exit?</string>
     <string name="no">No</string>
     <string name="yes">Yes</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="gender">Gender</string>
+    <string name="validation_empty_name">Please enter name</string>
+    <string name="validation_empty_email">Please enter email</string>
+    <string name="validation_email">Please enter valid email</string>
+    <string name="validation_mobile_number">Please enter mobile number</string>
+    <string name="validation_gender">Please enter gender</string>
+    <string name="validation_gender_selection">Please select gender</string>
+    <string name="add">Add</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="other">Other</string>
 </resources>
