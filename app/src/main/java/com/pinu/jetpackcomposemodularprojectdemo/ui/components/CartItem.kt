@@ -30,8 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,7 +38,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.pinu.jetpackcomposemodularprojectdemo.R
-import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BackgroundColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BookHubTypography
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.OnSecondaryColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyString
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyUrl
 import com.pinu.jetpackcomposemodularprojectdemo.ui.util.CommonAlertDialog
@@ -57,50 +60,44 @@ fun CartItem() {
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = SurfaceColor),
         modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 painter = painterResource(id = R.drawable.book) ?: rememberAsyncImagePainter(
                     dummyUrl
                 ),
-                contentDescription = "book",
+                contentDescription = stringResource(id = R.string.book),
                 modifier = Modifier
-                    .size(width = 100.dp, height = 170.dp)
+                    .size(width = 70.dp, height = 120.dp)
                     .clip(RoundedCornerShape(6.dp)),
-                contentScale = ContentScale.FillHeight
+                contentScale = ContentScale.Crop
             )
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-            ) {
+            Column(modifier = Modifier
+                .fillMaxWidth().padding(horizontal = 12.dp)) {
                 Text(
-                    text = dummyString, style = TextStyle(
-                        fontFamily = FontFamily.SansSerif,
-                        fontSize = 16.sp,
-                        color = Color.Black, fontWeight = FontWeight.W400,
-                    ), overflow = TextOverflow.Ellipsis, maxLines = 2, lineHeight = 16.sp
+                    text = dummyString,
+                    style = BookHubTypography.titleSmall.copy(fontWeight = FontWeight.Medium),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 2,
+                    lineHeight = 16.sp
                 )
-                Spacer(modifier = Modifier.padding(top = 35.dp))
+                Spacer(modifier = Modifier.padding(top = 14.dp))
                 Text(
-                    text = "$500", style = TextStyle(
-                        fontFamily = FontFamily.SansSerif,
-                        fontSize = 20.sp,
-                        color = Color.Black, fontWeight = FontWeight.Bold,
-                    ), overflow = TextOverflow.Ellipsis, maxLines = 2, lineHeight = 16.sp
+                    text = "$500",
+                    style = BookHubTypography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 2,
+                    lineHeight = 16.sp
                 )
-                Spacer(modifier = Modifier.padding(top = 12.dp))
+                Spacer(modifier = Modifier.padding(top = 6.dp))
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Qty : ", style = TextStyle(fontSize = 16.sp))
-                    Spacer(modifier = Modifier.padding(start = 4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                    Text(text = stringResource(R.string.qty), style = BookHubTypography.bodySmall)
                     Box(contentAlignment = Alignment.Center) {
                         IconButton(onClick = {
                             if (qty.intValue > 1) {
@@ -108,44 +105,46 @@ fun CartItem() {
                             } else {
                                 showAlert.value = true
                             }
-                        }) {
+                        },
+                            modifier = Modifier.padding(start = 6.dp).size(25.dp)
+                        ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.remove),
                                 contentDescription = "Add",
-                                tint = if (qty.intValue > 1) Color.Black else Color.LightGray
+                                tint = if (qty.intValue > 1) Color.Black else Color.LightGray,
                             )
                         }
                     }
 
                     Spacer(modifier = Modifier.padding(start = 4.dp))
                     Box(
-                        modifier = Modifier
-                            .defaultMinSize(minWidth = 30.dp, minHeight = 30.dp)
+                        modifier = Modifier.padding(start = 6.dp)
+                            .defaultMinSize(minWidth = 25.dp, minHeight = 25.dp)
                             .border(
-                                border = BorderStroke(width = 1.dp, color = Pink),
+                                border = BorderStroke(width = 1.dp, color = PrimaryColor),
                                 shape = RoundedCornerShape(4.dp)
                             ), contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "${qty.intValue}",
-                            color = Color.Black,
-                            style = TextStyle(fontSize = 14.sp)
+                            style = BookHubTypography.bodyMedium
                         )
                     }
                     Spacer(modifier = Modifier.padding(start = 4.dp))
                     Box(contentAlignment = Alignment.Center) {
-                        IconButton(onClick = {
-                            qty.intValue += 1
-                        }) {
-                            Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
+                        IconButton(onClick = { qty.intValue += 1 },modifier = Modifier.padding(start = 6.dp).size(25.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = stringResource(id = R.string.add)
+                            )
                         }
                     }
-                    Spacer(modifier = Modifier.padding(start = 12.dp))
+                    Spacer(modifier = Modifier.weight(1f))
                     IconButton(onClick = { showAlert.value = true }) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "remove",
-                            tint = Pink
+                            contentDescription = stringResource(R.string.remove),
+                            tint = OnSecondaryColor
                         )
                     }
                 }
@@ -155,12 +154,8 @@ fun CartItem() {
 
     if (showAlert.value) {
         CommonAlertDialog(
-            onNegativeButtonClicked = {
-                showAlert.value = false
-            },
-            onPositiveButtonClicked = {
-                showAlert.value = false
-            })
+            onNegativeButtonClicked = { showAlert.value = false },
+            onPositiveButtonClicked = { showAlert.value = false })
     }
 
 }

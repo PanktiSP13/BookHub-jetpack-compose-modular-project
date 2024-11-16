@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -17,7 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
@@ -26,6 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.pinu.jetpackcomposemodularprojectdemo.R
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BookHubTypography
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.SurfaceColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.TextSecondary
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyBookDate
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyBookTitle
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyUrl
@@ -42,10 +48,9 @@ fun FavouriteItem(
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = SurfaceColor),
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
             .padding(horizontal = 12.dp, vertical = 4.dp)
             .clickable { onItemClick() }
     ) {
@@ -58,9 +63,11 @@ fun FavouriteItem(
                 painter = painterResource(id = R.drawable.book) ?: rememberAsyncImagePainter(
                     dummyUrl
                 ),
-                contentDescription = "book",
-                modifier = Modifier.size(width = 50.dp, height = 100.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                contentDescription = stringResource(id = R.string.book),
+                modifier = Modifier
+                    .size(width = 50.dp, height = 70.dp)
+                    .clip(RoundedCornerShape(6.dp)),
+                contentScale = ContentScale.Crop
             )
             Column(
                 modifier = Modifier
@@ -69,20 +76,13 @@ fun FavouriteItem(
             ) {
                 Text(
                     text = dummyBookTitle,
-                    style = TextStyle(
-                        fontFamily = FontFamily.SansSerif,
-                        fontSize = 14.sp,
-                        color = Color.Black,
-                    ), overflow = TextOverflow.Ellipsis, maxLines = 2,
+                    style = BookHubTypography.bodySmall,
+                    overflow = TextOverflow.Ellipsis, maxLines = 2,
                 )
                 Spacer(modifier = Modifier.padding(top = 6.dp))
                 Text(
                     text = dummyBookDate,
-                    style = TextStyle(
-                        fontFamily = FontFamily.SansSerif,
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                    ),
+                    style = BookHubTypography.labelMedium.copy(color = TextSecondary),
                     overflow = TextOverflow.Ellipsis, maxLines = 1,
                 )
             }

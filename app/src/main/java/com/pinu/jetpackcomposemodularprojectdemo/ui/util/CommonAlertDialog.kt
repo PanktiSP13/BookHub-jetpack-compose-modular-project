@@ -17,8 +17,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import com.pinu.jetpackcomposemodularprojectdemo.R
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.OnPrimaryColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.OnSecondaryColor
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink80
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.SecondaryColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.SurfaceColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.TextPrimary
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.TextSecondary
 
 @Preview
 @Composable
@@ -33,15 +40,16 @@ fun CommonAlertDialog(
     onNegativeButtonClicked: () -> Unit={},
 ) {
     AlertDialog(
-        containerColor = Color.White,
+        containerColor = SurfaceColor,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
         title = {
             Text(text = title,
                 modifier = Modifier.fillMaxWidth(),
-                style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.W600))
+                style = TextStyle(fontSize = 22.sp,
+                    fontWeight = FontWeight.W600, color = TextPrimary))
         },
-        text = { Text(text = text) },
+        text = { Text(text = text, style = TextStyle(color = TextSecondary)) },
         properties = DialogProperties(
             dismissOnClickOutside = isDismissible
         ),
@@ -51,22 +59,22 @@ fun CommonAlertDialog(
             Button(
                 onClick = { onNegativeButtonClicked() },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Pink80,
-                    contentColor = Pink
+                    containerColor = SecondaryColor,
+                    contentColor = OnSecondaryColor
                 )
             ) {
-                Text(negativeButtonText)
+                Text(negativeButtonText, style = TextStyle(color = OnSecondaryColor))
             }
         },
         confirmButton = {
             Button(
                 onClick = { onPositiveButtonClicked() },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Pink,
-                    contentColor = Color.White
+                    containerColor = PrimaryColor,
+                    contentColor = OnPrimaryColor
                 )
             ) {
-                Text(positiveButtonText)
+                Text(positiveButtonText, style = TextStyle(color = OnPrimaryColor))
             }
         },
     )

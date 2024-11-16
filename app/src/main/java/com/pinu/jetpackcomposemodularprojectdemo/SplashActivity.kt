@@ -23,11 +23,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BackgroundColor
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.JetpackComposeModularProjectDemoTheme
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink80
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryVariant
 import kotlinx.coroutines.delay
 
 @SuppressLint("CustomSplashScreen")
@@ -58,17 +62,17 @@ class SplashActivity : ComponentActivity() {
         }
 
         Box(contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize().background(color = Pink80)) {
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = PrimaryColor)) {
             Image(
                 painter = painterResource(id = R.drawable.books),
-                contentDescription = "Books",
+                contentDescription = stringResource(id = R.string.book),
                 modifier = Modifier
                     .size(150.dp)
                     .alpha(alpha.value)
                     .clip(CircleShape)
-                    .border(
-                        4.dp, color = Pink, shape = CircleShape
-                    ),
+                    .border(4.dp, color = PrimaryVariant, shape = CircleShape),
             )
         }
 

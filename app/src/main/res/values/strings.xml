@@ -29,4 +29,16 @@
     <string name="male">Male</string>
     <string name="female">Female</string>
     <string name="other">Other</string>
+    <string name="press_me">Press me !!</string>
+    <string name="back">back</string>
+    <string name="book_list">Book List</string>
+    <string name="search_book_here">search book here…</string>
+    <string name="book">book</string>
+    <string name="clear">clear</string>
+    <string name="profile">Profile</string>
+    <string name="book_detail">Book Detail</string>
+    <string name="cart">Cart</string>
+    <string name="qty">"Qty : "</string>
+    <string name="remove">remove</string>
+    <string name="payment_success">payment success</string>
 </resources>

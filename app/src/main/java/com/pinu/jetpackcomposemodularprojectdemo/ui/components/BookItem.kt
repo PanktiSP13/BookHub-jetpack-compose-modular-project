@@ -18,7 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -28,7 +30,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.pinu.jetpackcomposemodularprojectdemo.R
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BackgroundColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BookHubTypography
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.SurfaceColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.TextSecondary
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyBookDate
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyDescription
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyString
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyUrl
 
 @Preview
@@ -44,7 +52,7 @@ fun BookItem(
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = SurfaceColor),
         modifier = Modifier
             .fillMaxWidth()
             .height(170.dp)
@@ -52,49 +60,36 @@ fun BookItem(
             .padding(horizontal = 12.dp, vertical = 4.dp)
             .clickable { onItemClick() }
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)) {
             Image(
                 painter = painterResource(id = R.drawable.book) ?:rememberAsyncImagePainter(dummyUrl),
-                contentDescription = "book",
-                modifier = Modifier.size(width = 100.dp, height = 150.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
-            Column(
+                contentDescription = stringResource(R.string.book),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-            ) {
+                    .size(width = 100.dp, height = 150.dp)
+                    .clip(RoundedCornerShape(6.dp)),
+                contentScale = ContentScale.FillBounds
+            )
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)) {
                 Text(
-                    text = "To apply the custom font across your app, you can set it as part of your app’s theme.",
-                    style = TextStyle(
-                        fontFamily = FontFamily.SansSerif,
-                        fontSize = 16.sp,
-                        color = Color.Black, fontWeight = FontWeight.Bold,
-                    ), overflow = TextOverflow.Ellipsis, maxLines = 2,
+                    text = dummyString,
+                    style = BookHubTypography.titleMedium,
+                    overflow = TextOverflow.Ellipsis, maxLines = 2,
                     lineHeight = 18.sp
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = "12/05/2323",
-                    style = TextStyle(
-                        fontFamily = FontFamily.SansSerif,
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                    ),
+                    text = dummyBookDate,
+                    style = BookHubTypography.bodySmall.copy(color = TextSecondary),
                     overflow = TextOverflow.Ellipsis, maxLines = 1,
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
                     text = dummyDescription,
-                    style = TextStyle(
-                        fontFamily = FontFamily.SansSerif,
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                    ),
+                    style = BookHubTypography.bodySmall.copy(color = TextSecondary),
                     overflow = TextOverflow.Ellipsis,
                 )
             }

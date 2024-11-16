@@ -25,11 +25,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.pinu.jetpackcomposemodularprojectdemo.R
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BookHubTypography
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.GreenSuccess
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.SurfaceColor
 
 @Preview
 @Composable
@@ -47,7 +48,7 @@ fun PaymentSuccessfulDialog(
     ) {
 
         Card(
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = SurfaceColor),
             elevation = CardDefaults.cardElevation(4.dp),
             modifier = Modifier
                 .fillMaxWidth()
@@ -64,26 +65,19 @@ fun PaymentSuccessfulDialog(
 
                 Image(
                     painter = painterResource(id = R.drawable.payment_success),
-                    contentDescription = "payment success",
-                    modifier = Modifier
-                        .size(70.dp),
+                    contentDescription = stringResource(R.string.payment_success),
+                    modifier = Modifier.size(70.dp),
                     contentScale = ContentScale.Crop
                 )
                 Spacer(modifier = Modifier.padding(top = 16.dp))
                 Text(
                     text = stringResource(R.string.payment_successful),
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        color = Color.Black, fontWeight = FontWeight.W500,
-                    ),
+                    style = BookHubTypography.headlineSmall.copy(fontWeight = FontWeight.Medium),
                 )
                 Spacer(modifier = Modifier.padding(top = 16.dp))
                 Text(
                     text = stringResource(R.string.payment_success_desc),
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        color = Color.Black, fontWeight = FontWeight.W300,
-                    ),
+                    style = BookHubTypography.titleSmall,
                     textAlign = TextAlign.Center,
                 )
                 Spacer(modifier = Modifier.padding(top = 16.dp))
@@ -92,7 +86,10 @@ fun PaymentSuccessfulDialog(
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = GreenSuccess)
                 ) {
-                    Text(text = stringResource(R.string.continue_shopping))
+                    Text(
+                        text = stringResource(R.string.continue_shopping),
+                        style = TextStyle(color = Color.White)
+                    )
                 }
 
             }

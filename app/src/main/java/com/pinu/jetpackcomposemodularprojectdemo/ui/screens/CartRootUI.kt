@@ -1,5 +1,6 @@
 package com.pinu.jetpackcomposemodularprojectdemo.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,8 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -26,7 +25,9 @@ import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.ui.components.CartItem
 import com.pinu.jetpackcomposemodularprojectdemo.ui.components.CommonAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.ui.dialog.PaymentSuccessfulDialog
-import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.OnPrimaryColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryVariant
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.ui.util.CommonAlertDialog
 
 @Preview(showBackground = true)
@@ -36,8 +37,11 @@ fun CartRootUI(navController: NavController= rememberNavController()){
     val showPaymentSuccessDialog = remember { mutableStateOf(false) }
 
     Scaffold(
+        containerColor = SurfaceColor,
         topBar = {
-            CommonAppBar(title = "Cart", canGoBack = true ,navController = navController,
+            CommonAppBar(
+                title = stringResource(R.string.cart),
+                canGoBack = true, navController = navController,
                 isCartVisible = false, isFavouritesVisible = false)
         },
         bottomBar = {
@@ -50,17 +54,21 @@ fun CartRootUI(navController: NavController= rememberNavController()){
                     .fillMaxWidth()
                     .padding(12.dp),
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Pink)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = PrimaryVariant
+                )
             ) {
                 Text(
                     text = stringResource(R.string.proceed_to_checkout),
-                    color = Color.White,
-                    style = TextStyle(fontWeight = FontWeight.W600)
+                    color = OnPrimaryColor
                 )
             }
         }
     ) { contentPadding ->
-        Surface(modifier = Modifier.padding(contentPadding)) {
+        Surface(
+            modifier = Modifier.padding(contentPadding),
+            color = Color.White
+        ) {
 
             LazyColumn {
                 items(20){

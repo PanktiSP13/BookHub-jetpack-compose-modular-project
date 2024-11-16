@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -21,15 +22,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BookHubTypography
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.OnPrimaryColor
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
-import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink80
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
@@ -49,13 +56,20 @@ fun CommonAppBar(
 
     Surface(color = Pink) {
         TopAppBar(
-            title = { Text(text = title, modifier = Modifier.fillMaxWidth()) },
-            colors = TopAppBarDefaults.topAppBarColors(containerColor = Pink80),
+            title = {
+                Text(
+                    text = title,
+                    style = BookHubTypography.titleLarge.copy(
+                        fontWeight = FontWeight.Normal, color = OnPrimaryColor),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            colors = TopAppBarDefaults.topAppBarColors(containerColor = PrimaryColor ),
             navigationIcon = {
                 if (canGoBack) {
                     Image(
                         painter = painterResource(id = R.drawable.back_arrow),
-                        contentDescription = "back",
+                        contentDescription = stringResource(R.string.back),
                         modifier = Modifier
                             .padding(start = 12.dp)
                             .size(25.dp)
@@ -66,7 +80,8 @@ fun CommonAppBar(
                             .clickable {
                                 navController.popBackStack()
                                 onBackPressed()
-                            }
+                            },
+                        colorFilter = ColorFilter.tint(color = OnPrimaryColor)
                     )
                 } else {
 
@@ -75,7 +90,7 @@ fun CommonAppBar(
                             navController.navigate(NavigationRoutes.ProfileScreen.route)
                         }) {
                             Icon(imageVector = Icons.Default.Person,
-                                contentDescription ="profile" )
+                                contentDescription ="profile", tint = OnPrimaryColor )
                         }
                     }
                 }
@@ -100,11 +115,12 @@ fun CommonAppBar(
                         Image(
                             painter = painterResource(id = R.drawable.cart),
                             modifier = Modifier.size(25.dp),
-                            contentDescription = "cart"
+                            contentDescription = "cart",
+                            colorFilter = ColorFilter.tint(color = Color.White)
                         )
                     }
                 }
-            }
+            },
         )
     }
 

@@ -6,13 +6,14 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.SurfaceColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun FavouritesBottomSheet(onDismiss: () -> Unit = {}) {
     ModalBottomSheet(onDismissRequest = { onDismiss()},
-       containerColor = Color.White) {
+       containerColor = SurfaceColor) {
         LazyColumn {
             items(10){
                 FavouriteItem()

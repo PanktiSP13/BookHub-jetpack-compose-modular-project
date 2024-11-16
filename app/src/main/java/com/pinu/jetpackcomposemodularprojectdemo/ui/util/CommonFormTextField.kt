@@ -11,16 +11,13 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BookHubTypography
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.TextPrimary
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.TextSecondary
 
 @Preview(showBackground = true)
 @Composable
@@ -32,17 +29,12 @@ fun CommonFormTextField(
     isReadOnly: Boolean = false,
     isSingleLine: Boolean = false,
     onValueChange: (String) -> Unit = {},
-    focusRequester: FocusRequester = FocusRequester(),
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
 ) {
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 4.dp)
-            .focusRequester(focusRequester)
-    ) {
+        modifier = modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
         OutlinedTextField(
             value = txtValue,
             readOnly = isReadOnly,
@@ -54,12 +46,8 @@ fun CommonFormTextField(
                 .padding(vertical = 4.dp),
             label = {
                 Text(
-                    text = labelTxt, style = TextStyle(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W400,
-                        fontFamily = FontFamily.SansSerif,
-                        color = Color.Gray
-                    )
+                    text = labelTxt,
+                    style = BookHubTypography.labelSmall.copy(color = TextSecondary)
                 )
             },
             singleLine = isSingleLine,
@@ -67,12 +55,12 @@ fun CommonFormTextField(
             keyboardOptions = keyboardOptions,
             shape = RoundedCornerShape(10.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                disabledTextColor = Color.LightGray,
-                focusedBorderColor = Pink,
+                focusedTextColor = TextPrimary,
+                unfocusedTextColor = TextPrimary,
+                disabledTextColor = TextSecondary,
+                focusedBorderColor = PrimaryColor,
                 unfocusedBorderColor = Color.LightGray,
-                focusedLabelColor = Pink,
+                focusedLabelColor = PrimaryColor,
                 errorBorderColor = Color.Red,
                 // you can add as per your requirement
             )

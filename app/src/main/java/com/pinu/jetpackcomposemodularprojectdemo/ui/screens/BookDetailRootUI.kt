@@ -1,6 +1,7 @@
 package com.pinu.jetpackcomposemodularprojectdemo.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,8 +44,16 @@ import androidx.navigation.compose.rememberNavController
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.ui.components.CommonAppBar
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BookHubTypography
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.OnPrimaryColor
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryVariant
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.SurfaceColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.TextSecondary
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyBookDate
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyDescription
+import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.dummyString
 import com.pinu.jetpackcomposemodularprojectdemo.ui.util.showToast
 
 @Preview(showBackground = true)
@@ -57,10 +66,10 @@ fun BookDetailRootUI(navController: NavController = rememberNavController()) {
 
 
     Scaffold(
+        containerColor = SurfaceColor,
         topBar = {
-            CommonAppBar(title = "Book Detail",
-                canGoBack = true,
-                navController = navController)
+            CommonAppBar(title = stringResource(R.string.book_detail),
+                canGoBack = true, navController = navController)
         },
         bottomBar = {
             Row(
@@ -91,17 +100,13 @@ fun BookDetailRootUI(navController: NavController = rememberNavController()) {
                         navController.navigate(NavigationRoutes.CartScreen.route)
                     },
                     elevation = ButtonDefaults.elevatedButtonElevation(),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 12.dp),
+                    modifier = Modifier.fillMaxWidth().padding(start = 12.dp),
                     shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Pink)
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryVariant)
                 ) {
                     Text(
                         text = stringResource(R.string.add_to_cart),
-                        color = Color.White,
-                        style = TextStyle(fontWeight = FontWeight.Bold)
-                    )
+                        color = OnPrimaryColor,)
 
 
                 }
@@ -109,7 +114,7 @@ fun BookDetailRootUI(navController: NavController = rememberNavController()) {
 
         }
     ) { contentPadding ->
-        Surface(modifier = Modifier.padding(contentPadding)) {
+        Surface(modifier = Modifier.padding(contentPadding), color = SurfaceColor) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -124,52 +129,34 @@ fun BookDetailRootUI(navController: NavController = rememberNavController()) {
                     painter =/* rememberAsyncImagePainter(
                         model = "https://m.media-amazon.com/images/I/81gRz9A4F6L._UF1000,1000_QL80_.jpg"
                     )?:*/ painterResource(id = R.drawable.book),
-                    contentDescription = "book img",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(350.dp),
+                    contentDescription = stringResource(id = R.string.book),
+                    modifier = Modifier.fillMaxWidth().height(350.dp),
                     contentScale = ContentScale.Fit
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = "To apply the custom font across your app, you can set it as part of your app’s theme.",
-                    style = TextStyle(
-                        fontFamily = FontFamily.SansSerif,
-                        fontSize = 18.sp,
-                        color = Color.Black, fontWeight = FontWeight.Bold,
-                    ),
+                    text = dummyString,
+                    style = BookHubTypography.headlineSmall.copy(fontWeight = FontWeight.Medium),
                     overflow = TextOverflow.Ellipsis, maxLines = 2,
                     lineHeight = 18.sp,
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = "12/05/2323",
-                    style = TextStyle(
-                        fontFamily = FontFamily.SansSerif,
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                    ),
+                    text = dummyBookDate,
+                    style = BookHubTypography.bodySmall.copy(color = TextSecondary),
                     overflow = TextOverflow.Ellipsis, maxLines = 1,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = "$500", style = TextStyle(
-                        fontFamily = FontFamily.SansSerif,
-                        fontSize = 24.sp,
-                        color = Pink, fontWeight = FontWeight.Bold,
-                    ), overflow = TextOverflow.Ellipsis,
+                    text = "$500", style = BookHubTypography.headlineMedium.copy(color = PrimaryVariant), overflow = TextOverflow.Ellipsis,
                     maxLines = 2, lineHeight = 16.sp,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
                     text = "$dummyDescription \n\n $dummyDescription \n\n $dummyDescription \n\n $dummyDescription \n\n $dummyDescription ",
-                    style = TextStyle(
-                        fontFamily = FontFamily.SansSerif,
-                        fontSize = 14.sp,
-                        color = Color.Gray,
-                    ),
+                    style = BookHubTypography.bodyMedium.copy(color = TextSecondary),
                 )
 
             }

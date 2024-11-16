@@ -3,7 +3,6 @@ package com.pinu.jetpackcomposemodularprojectdemo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -18,10 +17,10 @@ import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.JetpackComposeModularP
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-
+//       not required edge-to-edge
+//        enableEdgeToEdge(navigationBarStyle = SystemBarStyle.dark(ContextCompat.getColor(this,R.color.black)))
         setContent {
-            JetpackComposeModularProjectDemoTheme {
+            JetpackComposeModularProjectDemoTheme(darkTheme = false) {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,

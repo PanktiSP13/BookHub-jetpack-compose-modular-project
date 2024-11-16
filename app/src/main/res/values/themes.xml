@@ -4,8 +4,8 @@
     <style name="Theme.JetpackComposeModularProjectDemo" parent="android:Theme.Material.Light.NoActionBar" />
 
     <style name="Theme.Splash" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">@color/pink</item>
-        <item name="android:windowBackground">@color/pink</item>
+        <item name="android:statusBarColor">@color/green</item>
+        <item name="android:windowBackground">@color/green</item>
 
         <!-- To remove the default app icon from the splash screen on Android 12 and above-->
         <item name="android:windowIsTranslucent">true</item>

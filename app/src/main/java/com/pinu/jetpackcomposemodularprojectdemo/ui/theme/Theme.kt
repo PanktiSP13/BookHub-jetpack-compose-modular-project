@@ -1,6 +1,5 @@
 package com.pinu.jetpackcomposemodularprojectdemo.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -12,25 +11,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = DarkPrimaryColor,
+    onPrimary = DarkOnPrimaryColor,
+    secondary = DarkSecondaryColor,
+    onSecondary = DarkOnSecondaryColor,
+    background = DarkBackgroundColor,
+    surface = DarkSurfaceColor,
+    onBackground = DarkTextPrimary,
+    onSurface = DarkTextPrimary,
+    error = DarkErrorColor,
+    onError = DarkOnErrorColor
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = PrimaryColor,
+    onPrimary = OnPrimaryColor,
+    secondary = SecondaryColor,
+    onSecondary = OnSecondaryColor,
+    background = BackgroundColor,
+    surface = SurfaceColor,
+    onBackground = TextPrimary,
+    onSurface = TextPrimary,
+    error = ErrorColor,
+    onError = OnErrorColor
 )
 
 @Composable
@@ -52,7 +55,8 @@ fun JetpackComposeModularProjectDemoTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = BookHubTypography,
         content = content
     )
 }
+
