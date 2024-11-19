@@ -23,5 +23,4 @@ rootProject.name = "JetpackComposeModularProjectDemo"
 include(":app")
 include(":data")
 include(":domain")
-include(":di")
 

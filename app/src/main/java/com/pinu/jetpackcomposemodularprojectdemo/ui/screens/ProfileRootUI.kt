@@ -1,12 +1,11 @@
 package com.pinu.jetpackcomposemodularprojectdemo.ui.screens
 
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
+
+import android.os.Build
 import android.util.Patterns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +40,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,40 +48,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.ui.components.CommonAppBar
+import com.pinu.jetpackcomposemodularprojectdemo.ui.dialog.UploadProfilePicDialog
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BackgroundColor
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BookHubTypography
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.OnPrimaryColor
-import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink80
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryColor
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryVariant
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.SurfaceColor
+import com.pinu.jetpackcomposemodularprojectdemo.ui.util.BookHubImage
 import com.pinu.jetpackcomposemodularprojectdemo.ui.util.CommonFormTextField
+import com.pinu.jetpackcomposemodularprojectdemo.ui.util.checkIfAllPermissionGranted
 import kotlinx.coroutines.launch
 
 @Preview
 @Composable
-fun ProfileRootUI(
-    navController: NavHostController = rememberNavController()
-) {
+fun ProfileRootUI(navController: NavHostController = rememberNavController()) {
 
     val scrollState = rememberScrollState()
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val showImagePickerDialog = remember { mutableStateOf(false) }
 
     /* ------form values-----------*/
     val userName = remember { mutableStateOf("") }
@@ -91,36 +87,43 @@ fun ProfileRootUI(
     val userEmail = remember { mutableStateOf("") }
     val userGender = remember { mutableStateOf("") }
     val selectedGender = remember { mutableStateOf("") }
-
     val focusManager = LocalFocusManager.current
 
-
     val context = LocalContext.current
-    val openCamera = remember { mutableStateOf(false) }
-    val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
+    val selectedImage = remember {
+        mutableStateOf<Any?>(null)
+    }
+
+    val imagePickerPermission =
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) arrayOf(android.Manifest.permission.CAMERA) else arrayOf(
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE
+        )
 
     // Launcher for permission request
     val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
+        contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { _ ->
-        openCamera.value = true
+        showImagePickerDialog.value = true
     }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
-        imageBitmap.value = bitmap
-        openCamera.value = false
+        selectedImage.value = bitmap
     }
 
-    LaunchedEffect(key1 = openCamera.value) {
-        if (openCamera.value) {
-            cameraLauncher.launch()
-        }
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract =
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        selectedImage.value = uri
     }
 
-
-    fun isValidData(error: (String) -> Unit = {}, onValidData: () -> Unit = {}) {
+    fun isValidData(
+        error: (String) -> Unit = {},
+        onValidData: () -> Unit = {}
+    ) {
         if (userName.value.isEmpty()) {
             error(context.getString(R.string.validation_empty_name))
         } else if (userEmail.value.isEmpty()) {
@@ -129,6 +132,8 @@ fun ProfileRootUI(
             error(context.getString(R.string.validation_email))
         } else if (userMobileNumber.value.isEmpty()) {
             error(context.getString(R.string.validation_mobile_number))
+        } else if (userMobileNumber.value.length < 10) {
+            error(context.getString(R.string.please_enter_valid_mobile_number))
         } else if (userGender.value.isEmpty()) {
             error(context.getString(R.string.validation_gender))
         } else if (selectedGender.value.isEmpty()) {
@@ -138,9 +143,7 @@ fun ProfileRootUI(
         }
     }
 
-
-    Scaffold(
-        topBar = {
+    Scaffold(topBar = {
             CommonAppBar(
                 isProfileOptionAvailable = false,
                 isFavouritesVisible = false,
@@ -185,8 +188,7 @@ fun ProfileRootUI(
                 )
 
             }
-        }
-    ) { paddingValues ->
+    }) { paddingValues ->
 
         Surface(
             color = SurfaceColor,
@@ -202,46 +204,20 @@ fun ProfileRootUI(
         ) {
             //profile pic
             Box {
-                if (imageBitmap.value != null) {
-                    imageBitmap.value?.asImageBitmap()?.let {
-                        Image(
-                            bitmap = it,
-                            contentDescription = "Profile",
-                            modifier = Modifier
-                                .padding(top = 70.dp)
-                                .size(150.dp)
-                                .clip(CircleShape)
-                                .border(1.dp, Pink80, CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.book),
+
+                BookHubImage(
+                    image = selectedImage.value ?: R.drawable.book,
                         contentDescription = stringResource(id = R.string.profile),
                         modifier = Modifier
                             .padding(top = 20.dp)
                             .size(150.dp)
                             .clip(CircleShape)
                             .border(1.dp, PrimaryColor, CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-
-                }
+                        contentScale = ContentScale.Crop)
 
                 IconButton(
                     onClick = {
-
-                        if (ContextCompat.checkSelfPermission(
-                                context,
-                                android.Manifest.permission.CAMERA
-                            )
-                            == PackageManager.PERMISSION_GRANTED
-                        ) {
-                            openCamera.value = true
-                        } else {
-                            permissionLauncher.launch(android.Manifest.permission.CAMERA)
-                        }
+                        showImagePickerDialog.value = true
                     },
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -250,7 +226,8 @@ fun ProfileRootUI(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "edit", tint = OnPrimaryColor
+                        contentDescription = stringResource(R.string.edit),
+                        tint = OnPrimaryColor
                     )
                 }
             }
@@ -352,7 +329,27 @@ fun ProfileRootUI(
             }
 
         }
-
         }
     }
+
+    if (showImagePickerDialog.value) {
+
+        if (checkIfAllPermissionGranted(context, imagePickerPermission)) {
+            UploadProfilePicDialog(
+                onDismiss = {
+                    showImagePickerDialog.value = false
+                },
+                onCameraClicked = {
+                    cameraLauncher.launch()
+                    showImagePickerDialog.value = false
+                },
+                onGalleryClicked = {
+                    galleryLauncher.launch("image/*")
+                    showImagePickerDialog.value = false
+                })
+        } else {
+            permissionLauncher.launch(imagePickerPermission)
+        }
+    }
+
 }

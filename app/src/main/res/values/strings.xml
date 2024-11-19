@@ -41,4 +41,10 @@
     <string name="qty">"Qty : "</string>
     <string name="remove">remove</string>
     <string name="payment_success">payment success</string>
+    <string name="please_enter_valid_mobile_number">Please enter valid mobile number</string>
+    <string name="image_picker">Image Picker</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
+    <string name="close">close</string>
+    <string name="edit">edit</string>
 </resources>

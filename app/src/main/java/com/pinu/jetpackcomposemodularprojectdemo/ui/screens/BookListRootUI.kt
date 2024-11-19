@@ -1,5 +1,6 @@
 package com.pinu.jetpackcomposemodularprojectdemo.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,11 +20,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,11 +43,13 @@ import com.pinu.jetpackcomposemodularprojectdemo.ui.components.CommonAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BookHubTypography
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.TextPrimary
+import com.pinu.jetpackcomposemodularprojectdemo.ui.util.getBookList
 
 @Preview(showBackground = true)
 @Composable
 fun BookListRootUI(navController: NavController = rememberNavController()){
 
+    val context = LocalContext.current
     // State for search query
     val searchQuery = remember { mutableStateOf(TextFieldValue("")) }
 
@@ -54,6 +59,11 @@ fun BookListRootUI(navController: NavController = rememberNavController()){
 //    }
 
     val filterItem = remember { mutableIntStateOf(15) }
+
+    LaunchedEffect(true) {
+        val bookList = getBookList(context)
+        Log.e("@@@@", "BookListRootUI: $bookList")
+    }
 
     Scaffold(
         containerColor = SurfaceColor,
