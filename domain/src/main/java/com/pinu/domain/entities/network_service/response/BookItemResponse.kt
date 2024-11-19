@@ -1,11 +1,6 @@
-package com.pinu.domain.entities
+package com.pinu.domain.entities.network_service.response
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-@Entity(tableName = "book-item")
-data class BookItemDataModel(
-    @PrimaryKey(autoGenerate = true)
+data class BookItemResponse(
     val id: Int,
     val name: String,
     val imageUrl: String,
@@ -17,5 +12,4 @@ data class BookItemDataModel(
     val publishedYear: Int,
     val sellerName: String,
     val numberOfPages: Int,
-    val isWishListed : Boolean,
 )

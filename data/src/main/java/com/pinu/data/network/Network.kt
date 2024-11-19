@@ -1,5 +1,8 @@
 package com.pinu.data.network
 
+import com.pinu.data.network.network_apis.BooksAPIs
+import com.pinu.data.network.network_apis.CartAPIs
+import com.pinu.data.network.network_apis.WishlistAPIs
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -89,6 +92,7 @@ class Network private constructor() {
 
 
     // API service
-    val apiService: NetworkAPIs by lazy { retrofit().create(NetworkAPIs::class.java) }
-
+    val booksAPIService: BooksAPIs by lazy { retrofit().create(BooksAPIs::class.java) }
+    val wishlistAPIService: WishlistAPIs by lazy { retrofit().create(WishlistAPIs::class.java) }
+    val cartAPIService: CartAPIs by lazy { retrofit().create(CartAPIs::class.java) }
 }
