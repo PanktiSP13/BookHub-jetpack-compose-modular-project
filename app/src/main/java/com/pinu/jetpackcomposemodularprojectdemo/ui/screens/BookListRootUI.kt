@@ -34,8 +34,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.pinu.domain.entities.viewmodels.BooksViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.ui.components.BookItem
@@ -48,6 +50,8 @@ import com.pinu.jetpackcomposemodularprojectdemo.ui.util.getBookList
 @Preview(showBackground = true)
 @Composable
 fun BookListRootUI(navController: NavController = rememberNavController()){
+
+    val booksViewModel = hiltViewModel<BooksViewModel>()
 
     val context = LocalContext.current
     // State for search query

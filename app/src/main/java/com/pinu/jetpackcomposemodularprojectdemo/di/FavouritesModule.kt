@@ -6,6 +6,5 @@ import dagger.hilt.android.components.ViewModelComponent
 
 @Module
 @InstallIn(ViewModelComponent::class)
-class BookModule {
-
+class FavouritesModule {
 }

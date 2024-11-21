@@ -40,5 +40,7 @@ dependencies {
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
 
-
+    // Hilt for DI
+    implementation(libs.hilt)
+    kapt(libs.hilt.compiler)
 }

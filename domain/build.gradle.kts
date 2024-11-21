@@ -30,4 +30,15 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
+
+    // Hilt for DI
+    implementation(libs.hilt)
+    implementation(libs.hilt.navigation.compose)
+    kapt(libs.hilt.compiler)
+
+    // GSON converter
+    implementation(libs.gson)
+
+    // Viewmodel Scope
+    implementation(libs.lifecycle.viewmodel.ktx)
 }

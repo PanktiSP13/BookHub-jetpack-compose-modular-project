@@ -83,6 +83,7 @@ dependencies {
     // Hilt for DI
     implementation(libs.hilt)
     kapt(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
 
     // Retrofit + Gson for Network calls & serialization
     implementation(libs.retrofit)

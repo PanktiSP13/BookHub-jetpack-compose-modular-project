@@ -13,3 +13,12 @@ data class BookItemResponse(
     val sellerName: String,
     val numberOfPages: Int,
 )
+
+data class BookListResponseWrapper(
+    val data: List<BookItemResponse>? = null,
+    val error: Throwable? = null
+) {
+    fun isSuccess(): Boolean {
+        return !data.isNullOrEmpty()
+    }
+}

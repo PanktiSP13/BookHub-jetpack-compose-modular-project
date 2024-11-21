@@ -1,7 +1,6 @@
 package com.pinu.jetpackcomposemodularprojectdemo.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,8 +31,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,8 +43,6 @@ import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.ui.components.CommonAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BookHubTypography
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.OnPrimaryColor
-import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
-import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryColor
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryVariant
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.TextSecondary

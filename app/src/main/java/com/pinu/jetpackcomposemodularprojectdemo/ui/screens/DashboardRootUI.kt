@@ -1,7 +1,6 @@
 package com.pinu.jetpackcomposemodularprojectdemo.ui.screens
 
 import android.app.Activity
-import android.widget.Space
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -41,18 +40,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.pinu.domain.entities.viewmodels.DashboardViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.ui.components.CommonAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.BookHubTypography
-import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.Pink
-import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.PrimaryColor
 import com.pinu.jetpackcomposemodularprojectdemo.ui.theme.TextPrimary
 import com.pinu.jetpackcomposemodularprojectdemo.ui.util.CommonAlertDialog
 
 @Preview(showBackground = true)
 @Composable
-fun DashboardRootUI(navController: NavController = rememberNavController()) {
+fun DashboardRootUI(
+    navController: NavController = rememberNavController(),
+    viewmodel: DashboardViewModel = DashboardViewModel()
+) {
 
     val showExitDialog = remember { mutableStateOf(false) }
     val activity = LocalContext.current as? Activity  // Get the current activity
@@ -83,7 +84,9 @@ fun DashboardRootUI(navController: NavController = rememberNavController()) {
 
     ) { contentPadding ->
         Surface(
-            modifier = Modifier.padding(contentPadding).background(Color.White),
+            modifier = Modifier
+                .padding(contentPadding)
+                .background(Color.White),
             color = Color.White) {
             Box(
                 modifier = Modifier.fillMaxSize(),
