@@ -29,8 +29,9 @@ class Network private constructor() {
             if (instance == null) {
                 instance = Network()
             }
-            return instance!!
+            return instance as Network
         }
+
     }
 
     fun setBaseUrl(url: String): Network {
@@ -39,13 +40,15 @@ class Network private constructor() {
         return this
     }
 
-    fun setCustomHeader(key: String, value: String) {
+    fun setCustomHeader(key: String, value: String):Network {
         customHeaders[key] = value
+        return this
     }
 
-    fun setCustomHeaders(headerList: Map<String, String>) {
+    fun setCustomHeaders(headerList: Map<String, String>) :Network{
         // add additional headers
         customHeaders.putAll(headerList)
+        return this
     }
 
     fun prepareFilePart(
@@ -89,7 +92,6 @@ class Network private constructor() {
                 chain.proceed(request.build())
             }).build()
     }
-
 
     // API service
     val booksAPIService: BooksAPIs by lazy { retrofit().create(BooksAPIs::class.java) }

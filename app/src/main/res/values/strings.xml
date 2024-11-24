@@ -47,4 +47,5 @@
     <string name="camera">Camera</string>
     <string name="close">close</string>
     <string name="edit">edit</string>
+    <string name="search">search</string>
 </resources>

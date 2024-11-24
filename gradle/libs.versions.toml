@@ -21,7 +21,8 @@ ksp = "2.0.20-1.0.25"
 composeNavigation = "2.8.4"
 coil = "2.2.2"
 google-accoompanist-permission = "0.32.0"
-lifecycle-ktx = "2.4.0"
+lifecycle-ktx = "2.8.7"
+kotlinSerialization = "2.0.20"
 
 
 

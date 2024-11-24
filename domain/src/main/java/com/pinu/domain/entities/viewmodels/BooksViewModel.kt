@@ -2,8 +2,9 @@ package com.pinu.domain.entities.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pinu.domain.entities.network_service.response.BookItemResponse
-import com.pinu.domain.usecases.BookUseCase
+import com.pinu.domain.entities.events.BooksEvents
+import com.pinu.domain.entities.states.BooksState
+import com.pinu.domain.repositories.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,25 +12,51 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BooksViewModel @Inject constructor(private val useCase: BookUseCase) : ViewModel() {
+class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) : ViewModel() {
 
-    private var _bookList = MutableStateFlow<List<BookItemResponse>>(emptyList())
-    var bookList = _bookList.asStateFlow()
+    private val _bookState = MutableStateFlow(BooksState())
+    val bookState = _bookState.asStateFlow()
 
-    private val _errorMessage = MutableStateFlow("")
-    val errorMessage = _errorMessage.asStateFlow()
-
-    init {
-        getBookList()
-    }
-
-    fun getBookList(searchText: String? = "", genre: String? = null, sortBy: String? = null) {
-
-        viewModelScope.launch {
-            useCase.apiCallGetBookList(
-                searchString = searchText,
-                genre = genre, sortBy = sortBy
-            ) { _errorMessage.value = it }
+    fun onEvent(event: BooksEvents) {
+        when (event) {
+            is BooksEvents.GetBookList -> getBookList()
+            is BooksEvents.OnSearchBooksByName -> getBookList(searchText = event.searchText)
+            is BooksEvents.NavigateToBookDetailScreen -> getBookDetail(bookId = event.bookId)
+            else -> Unit
         }
     }
+
+
+    private fun getBookList(
+        searchText: String? =null,
+        genre: String? = null,
+        sortBy: String? = null) {
+        _bookState.value = _bookState.value.copy(isLoading = true)
+        viewModelScope.launch {
+            bookRepo.getBookList(
+                searchString = searchText,
+                genre = genre,
+                sortBy = sortBy
+            ).collect { data ->
+                data.fold(onSuccess = { books ->
+                    _bookState.value = _bookState.value.copy(bookList = books)
+                }, onFailure = { error ->
+                    _bookState.value = _bookState.value.copy(error = error.message ?: "")
+                })
+            }
+        }
+    }
+
+    private fun getBookDetail(bookId: Int) {
+        viewModelScope.launch {
+            bookRepo.getBookDetail(bookId).collect { data ->
+                data.fold(onSuccess = { bookDetail ->
+                    _bookState.value = _bookState.value.copy(bookDetail = bookDetail)
+                }, onFailure = { error ->
+                    _bookState.value = _bookState.value.copy(error = error.message ?: "")
+                })
+            }
+        }
+    }
+
 }

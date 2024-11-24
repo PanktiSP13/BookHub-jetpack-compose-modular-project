@@ -24,7 +24,7 @@
         tools:replace="android:icon,android:roundIcon"
         tools:targetApi="tiramisu">
         <activity
-            android:name=".SplashActivity"
+            android:name=".presentation.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.Splash">
             <intent-filter>
@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.MainActivity"
             android:theme="@style/Theme.JetpackComposeModularProjectDemo"/>
     </application>
 

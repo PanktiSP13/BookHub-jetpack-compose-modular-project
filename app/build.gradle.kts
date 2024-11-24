@@ -100,4 +100,7 @@ dependencies {
 
     //runtime permission
     implementation(libs.google.accompanist.permission)
+
+    //coil image loading
+    implementation(libs.coil)
 }

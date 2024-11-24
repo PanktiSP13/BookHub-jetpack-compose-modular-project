@@ -1,5 +1,8 @@
 package com.pinu.domain.entities.network_service.response
 
+import com.google.gson.annotations.SerializedName
+
+
 data class BookItemResponse(
     val id: Int,
     val name: String,
@@ -9,16 +12,8 @@ data class BookItemResponse(
     val genre: String,
     val description: String,
     val authorName: String,
+    @SerializedName("book_published_data")val bookPublishedDate:String,
     val publishedYear: Int,
     val sellerName: String,
     val numberOfPages: Int,
 )
-
-data class BookListResponseWrapper(
-    val data: List<BookItemResponse>? = null,
-    val error: Throwable? = null
-) {
-    fun isSuccess(): Boolean {
-        return !data.isNullOrEmpty()
-    }
-}

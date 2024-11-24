@@ -11,12 +11,12 @@ interface BooksAPIs {
 
     @GET("/book-list")
     suspend fun getBookList(
-        @Query("search") search: String = "", // Search books by name or keyword
+        @Query("search") search: String? = null, // Search books by name or keyword
         @Query("genre") genre: String? = null, // Filter by genre
         @Query("sort") sort: String? = null // Sort by popularity, rating, etc.
     ): List<BookItemResponse>
 
     @GET("/book/{id}")
-    suspend fun getBookDetails(@Path("id") bookId: String): BookItemResponse
+    suspend fun getBookDetails(@Path("id") bookId: Int): BookItemResponse
 
 }
