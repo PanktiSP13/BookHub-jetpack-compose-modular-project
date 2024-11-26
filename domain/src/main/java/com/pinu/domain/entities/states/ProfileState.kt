@@ -6,4 +6,6 @@ data class ProfileState(
     val userProfileData: ProfileResponse? = null,
     val updatedProfilePath: String = "",
     val selectedGender: String = "",
+    val profileUpdateSuccess : Boolean = false,
+    val errorMessage : String = ""
 )

@@ -2,6 +2,7 @@ package com.pinu.data.network
 
 import com.pinu.data.network.network_apis.BooksAPIs
 import com.pinu.data.network.network_apis.CartAPIs
+import com.pinu.data.network.network_apis.ProfileAPIs
 import com.pinu.data.network.network_apis.WishlistAPIs
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -60,6 +61,7 @@ class Network private constructor() {
         return MultipartBody.Part.createFormData(partName, file.name, requestFile)
     }
 
+
     private fun retrofit(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -97,4 +99,5 @@ class Network private constructor() {
     val booksAPIService: BooksAPIs by lazy { retrofit().create(BooksAPIs::class.java) }
     val wishlistAPIService: WishlistAPIs by lazy { retrofit().create(WishlistAPIs::class.java) }
     val cartAPIService: CartAPIs by lazy { retrofit().create(CartAPIs::class.java) }
+    val profileAPIService: ProfileAPIs by lazy { retrofit().create(ProfileAPIs::class.java) }
 }

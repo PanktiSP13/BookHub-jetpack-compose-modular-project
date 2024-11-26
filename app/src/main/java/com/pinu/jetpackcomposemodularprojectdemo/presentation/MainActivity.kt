@@ -21,7 +21,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val viewmodel : DashboardViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +37,7 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     composable(route = NavigationRoutes.DashboardScreen.route) {
-                        DashboardRootUI(navController,viewmodel)
+                        DashboardRootUI(navController)
                     }
 
                     composable(route = NavigationRoutes.BookListScreen.route) {

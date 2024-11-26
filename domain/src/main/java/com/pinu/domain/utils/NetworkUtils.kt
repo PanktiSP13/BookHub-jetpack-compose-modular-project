@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.retry
 
+
 object NetworkUtils {
 
     /*
@@ -19,4 +20,5 @@ object NetworkUtils {
     }.flowOn(Dispatchers.IO)
         .retry(retryCount)
         .catch { error -> emit(Result.failure(error)) }
+
 }
