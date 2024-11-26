@@ -16,4 +16,8 @@ data class BookItemResponse(
     val publishedYear: Int,
     val sellerName: String,
     val numberOfPages: Int,
+
+    //todo add in ui model
+    val isInCart: Boolean = false,
+    val isFavourite : Boolean = false
 )
