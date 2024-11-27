@@ -63,7 +63,6 @@ fun BookListRootUI(navController: NavController = rememberNavController()){
             }
             booksViewModel.onEvent(event)
         })
-
 }
 
 @Preview(showBackground = true)

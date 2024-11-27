@@ -19,6 +19,10 @@ class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) :
 
     fun onEvent(event: BooksEvents) {
         when (event) {
+
+            is BooksEvents.ClearErrorMessage -> {
+                _bookState.value = _bookState.value.copy(error = "")
+            }
             is BooksEvents.GetBookList -> getBookList()
             is BooksEvents.OnSearchBooksByName -> getBookList(searchText = event.searchText)
             is BooksEvents.NavigateToBookDetailScreen -> getBookDetail(bookId = event.bookId)
@@ -48,10 +52,15 @@ class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) :
     }
 
     private fun getBookDetail(bookId: Int) {
+
+        // first set book detail data from book list and then update it with network response
+        val item = _bookState.value.bookList.filter { it.id == bookId }[0]
+        _bookState.value = _bookState.value.copy(selectedBookDetail = item)
+
         viewModelScope.launch {
             bookRepo.getBookDetail(bookId).collect { data ->
                 data.fold(onSuccess = { bookDetail ->
-                    _bookState.value = _bookState.value.copy(bookDetail = bookDetail)
+                    _bookState.value = _bookState.value.copy(selectedBookDetail = bookDetail)
                 }, onFailure = { error ->
                     _bookState.value = _bookState.value.copy(error = error.message ?: "")
                 })
@@ -59,4 +68,10 @@ class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) :
         }
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        //it will reset book state
+        //todo check without reset it
+//        _bookState.value = BooksState()
+    }
 }

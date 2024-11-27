@@ -48,4 +48,5 @@
     <string name="close">close</string>
     <string name="edit">edit</string>
     <string name="search">search</string>
+    <string name="go_to_cart">Go to Cart</string>
 </resources>

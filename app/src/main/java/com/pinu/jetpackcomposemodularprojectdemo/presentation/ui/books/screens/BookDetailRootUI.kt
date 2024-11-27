@@ -1,5 +1,6 @@
 package com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.books.screens
 
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,9 +39,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import com.pinu.domain.entities.events.BooksEvents
+import com.pinu.domain.entities.events.CartEvents
+import com.pinu.domain.entities.events.FavouritesEvents
+import com.pinu.domain.entities.states.BooksState
+import com.pinu.domain.entities.viewmodels.BooksViewModel
+import com.pinu.domain.entities.viewmodels.CartViewModel
+import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
+import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.CommonAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
@@ -51,14 +64,66 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.dummyDesc
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.dummyString
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showToast
 
-@Preview(showBackground = true)
 @Composable
 fun BookDetailRootUI(navController: NavController = rememberNavController()) {
+
+    val booksViewModel = hiltViewModel<BooksViewModel>()
+    val booksState = booksViewModel.bookState.collectAsState()
+
+    val cartViewModel = hiltViewModel<CartViewModel>()
+    val favouriteViewModel = hiltViewModel<FavouriteViewModel>()
+
+    BookDetailScreen(booksState = booksState.value,
+        navController = navController, onEvent = { events ->
+            when (events) {
+                is BooksEvents.NavigateBack -> navController.popBackStack()
+                is BooksEvents.AddToCart -> {
+                    // Book Detail Screen triggers the event, but the cart management logic stays centralized.
+                    // todo request model here
+                    cartViewModel.onEvent(CartEvents.AddToCart(events.bookID))
+                }
+                is BooksEvents.GoToCart ->{
+                    navController.navigate(route = NavigationRoutes.CartScreen.route)
+                }
+                is BooksEvents.AddAsFavourite ->{
+                    // Book Detail Screen triggers the event, but the favourite management logic stays centralized.
+                    favouriteViewModel.onEvent(FavouritesEvents.AddAsFavourite(events.bookID))
+                }
+                is BooksEvents.RemoveFromFavourites ->{
+                    favouriteViewModel.onEvent(FavouritesEvents.RemoveFromFavourites(events.bookID))
+                }
+
+                else -> {
+                    // do nothing
+                }
+            }
+            booksViewModel.onEvent(events)
+        })
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BookDetailScreen(
+    booksState: BooksState = BooksState(),
+    navController: NavController = rememberNavController(),
+    onEvent: (BooksEvents) -> Unit = {}
+) {
+
     val scrollState = rememberScrollState()
     val isFavourite = remember { mutableStateOf(false) }
-    val favouriteMessage = remember { mutableStateOf("") }
     val context = LocalContext.current
 
+
+    LaunchedEffect(booksState.selectedBookDetail) {
+        isFavourite.value = booksState.selectedBookDetail?.isFavourite ?: false
+    }
+
+    LaunchedEffect(booksState.error) {
+        if (booksState.error.isNotEmpty()) {
+            showToast(context = context, message = booksState.error)
+            onEvent(BooksEvents.ClearErrorMessage)
+        }
+    }
 
     Scaffold(
         containerColor = SurfaceColor,
@@ -67,48 +132,22 @@ fun BookDetailRootUI(navController: NavController = rememberNavController()) {
                 canGoBack = true, navController = navController)
         },
         bottomBar = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp)
-            ) {
-                Card(shape = CircleShape,
-                    colors = CardDefaults.cardColors(Color.White),
-                    elevation = CardDefaults.cardElevation(4.dp),
-                    onClick = {
-                        isFavourite.value = !isFavourite.value
-                        favouriteMessage.value = if (isFavourite.value) "Book added to your favourites" else "Book removed from your favourites"
-                        showToast(context, favouriteMessage.value)
+            BookDetailBottomCard(context = context,
+                isItemInCart = booksState.selectedBookDetail?.isInCart ?: false,
+                isFavourite = isFavourite.value,
+                addToCart = {
+                    onEvent(BooksEvents.AddToCart(booksState.selectedBookDetail?.id ?: 0))
+                },
+                onFavouriteChange = {
+                    isFavourite.value = it
+                    if (isFavourite.value) {
+                        onEvent(BooksEvents.AddAsFavourite(booksState.selectedBookDetail?.id ?: 0))
+                    } else {
+                        onEvent(BooksEvents.RemoveFromFavourites(booksState.selectedBookDetail?.id ?: 0))
+                    }
 
-                    }) {
-                    Image(
-                        painter = painterResource(id = if (isFavourite.value) R.drawable.favourite_checked else R.drawable.favourite_unchecked),
-                        contentDescription = favouriteMessage.value,
-                        modifier = Modifier
-                            .size(40.dp)
-                            .padding(8.dp)
-                    )
-                }
-                Button(
-                    onClick = {
-                        navController.navigate(NavigationRoutes.CartScreen.route)
-                    },
-                    elevation = ButtonDefaults.elevatedButtonElevation(),
-                    modifier = Modifier.fillMaxWidth().padding(start = 12.dp),
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryVariant)
-                ) {
-                    Text(
-                        text = stringResource(R.string.add_to_cart),
-                        color = OnPrimaryColor,)
-
-
-                }
-            }
-
-        }
-    ) { contentPadding ->
+                })
+        }) { contentPadding ->
         Surface(modifier = Modifier.padding(contentPadding), color = SurfaceColor) {
             Column(
                 modifier = Modifier
@@ -120,41 +159,97 @@ fun BookDetailRootUI(navController: NavController = rememberNavController()) {
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter =/* rememberAsyncImagePainter(
-                        model = "https://m.media-amazon.com/images/I/81gRz9A4F6L._UF1000,1000_QL80_.jpg"
-                    )?:*/ painterResource(id = R.drawable.book),
+                AsyncImage(
+                    model = booksState.selectedBookDetail?.imageUrl ?: R.drawable.book,
                     contentDescription = stringResource(id = R.string.book),
-                    modifier = Modifier.fillMaxWidth().height(350.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(350.dp),
                     contentScale = ContentScale.Fit
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = dummyString,
+                    text = booksState.selectedBookDetail?.name ?: dummyString,
                     style = BookHubTypography.headlineSmall.copy(fontWeight = FontWeight.Medium),
                     overflow = TextOverflow.Ellipsis, maxLines = 2,
                     lineHeight = 18.sp,
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = dummyBookDate,
+                    text = booksState.selectedBookDetail?.bookPublishedDate ?: dummyBookDate,
                     style = BookHubTypography.bodySmall.copy(color = TextSecondary),
                     overflow = TextOverflow.Ellipsis, maxLines = 1,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = "$500", style = BookHubTypography.headlineMedium.copy(color = PrimaryVariant), overflow = TextOverflow.Ellipsis,
+                    text = "$${booksState.selectedBookDetail?.price ?: 0.0}",
+                    style = BookHubTypography.headlineMedium.copy(color = PrimaryVariant),
+                    overflow = TextOverflow.Ellipsis,
                     maxLines = 2, lineHeight = 16.sp,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = "$dummyDescription \n\n $dummyDescription \n\n $dummyDescription \n\n $dummyDescription \n\n $dummyDescription ",
+                    text = booksState.selectedBookDetail?.description ?: dummyDescription,
                     style = BookHubTypography.bodyMedium.copy(color = TextSecondary),
                 )
 
             }
+        }
+    }
+
+}
+
+@Composable
+fun BookDetailBottomCard(
+    isItemInCart: Boolean,
+    context: Context, isFavourite: Boolean,
+    addToCart: () -> Unit,
+    onFavouriteChange: (Boolean) -> Unit
+) {
+
+    val favouriteMessage = remember { mutableStateOf("") }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+    ) {
+        Card(shape = CircleShape,
+            colors = CardDefaults.cardColors(Color.White),
+            elevation = CardDefaults.cardElevation(4.dp),
+            onClick = {
+                onFavouriteChange(!isFavourite)
+                favouriteMessage.value =
+                    if (isFavourite) "Book added to your favourites" else "Book removed from your favourites"
+                showToast(context, favouriteMessage.value)
+
+            }) {
+            Image(
+                painter = painterResource(id = if (isFavourite) R.drawable.favourite_checked else R.drawable.favourite_unchecked),
+                contentDescription = favouriteMessage.value,
+                modifier = Modifier
+                    .size(40.dp)
+                    .padding(8.dp)
+            )
+        }
+        Button(
+            onClick = { addToCart() },
+            elevation = ButtonDefaults.elevatedButtonElevation(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp),
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = PrimaryVariant)
+        ) {
+            Text(
+                text = if (isItemInCart) stringResource(R.string.go_to_cart) else stringResource(R.string.add_to_cart),
+                color = OnPrimaryColor,
+            )
+
+
         }
     }
 

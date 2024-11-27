@@ -7,5 +7,5 @@ data class BooksState(
     val searchText : String = "",
     val bookList: List<BookItemResponse> = emptyList(),
     val error: String = "",
-    val bookDetail: BookItemResponse? = null,
+    val selectedBookDetail: BookItemResponse? = null,
 )
