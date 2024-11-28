@@ -17,19 +17,19 @@ interface CartAPIs {
     /* -------------- Cart Services --------------------- */
 
     @GET("/cart/items")
-    suspend fun getCartItems(): CartItemsResponse
+    suspend fun fetchCartItems(): CartItemsResponse
 
     @POST("/cart/add")
     suspend fun addToCart(@Body request: AddToCartRequest): CartItemsResponse
 
     @POST("/cart/remove/{id}")
-    suspend fun removeFromCart(@Path("id") id: String): CartItemsResponse
+    suspend fun removeFromCart(@Path("id") id: Int): CartItemsResponse
 
     @PATCH("/cart/update-quantity")
     suspend fun updateQuantity(@Body request: UpdateItemQuantityRequest): CartItemsResponse
 
     @GET("/cart/is-in-cart")
-    suspend fun isItemInCart(@Query("bookId") bookId: Int): CommonResponse
+    suspend fun isItemInCart(@Query("bookId") bookId: Int): CartItemsResponse
 
     @DELETE("/cart/clear")
     suspend fun clearCart(): CartItemsResponse

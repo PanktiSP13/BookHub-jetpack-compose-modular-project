@@ -43,7 +43,7 @@ class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) :
                 sortBy = sortBy
             ).collect { data ->
                 data.fold(onSuccess = { books ->
-                    _bookState.value = _bookState.value.copy(bookList = books)
+                    _bookState.value = _bookState.value.copy(bookList = books.data?: emptyList())
                 }, onFailure = { error ->
                     _bookState.value = _bookState.value.copy(error = error.message ?: "")
                 })

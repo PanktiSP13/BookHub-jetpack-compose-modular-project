@@ -46,12 +46,12 @@ import coil.compose.AsyncImage
 import com.pinu.domain.entities.events.BooksEvents
 import com.pinu.domain.entities.events.CartEvents
 import com.pinu.domain.entities.events.FavouritesEvents
+import com.pinu.domain.entities.network_service.request.AddToCartRequest
 import com.pinu.domain.entities.states.BooksState
 import com.pinu.domain.entities.viewmodels.BooksViewModel
 import com.pinu.domain.entities.viewmodels.CartViewModel
 import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
-import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.CommonAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
@@ -80,7 +80,14 @@ fun BookDetailRootUI(navController: NavController = rememberNavController()) {
                 is BooksEvents.AddToCart -> {
                     // Book Detail Screen triggers the event, but the cart management logic stays centralized.
                     // todo request model here
-                    cartViewModel.onEvent(CartEvents.AddToCart(events.bookID))
+                    cartViewModel.onEvent(
+                        CartEvents.AddToCart(
+                            AddToCartRequest(
+                                bookId = events.bookID,
+                                qty = 0
+                            )
+                        )
+                    )
                 }
                 is BooksEvents.GoToCart ->{
                     navController.navigate(route = NavigationRoutes.CartScreen.route)

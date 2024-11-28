@@ -1,18 +1,25 @@
 package com.pinu.domain.entities.network_service.response
 
 class CartItemsResponse(
-    val items: List<CartItem>,
-    val totalItems: Int,
-    val totalPrice: Double
+    val success: Boolean = false,
+    val message: String = "",
+    val status: Int? = null,
+    val data: CartItemsData? = null
 ) {
 
-    data class CartItem(
-        val bookId: Int,
-        val title: String,
-        val author: String,
-        val price: Double,
-        val quantity: Int
-    )
+    data class CartItemsData(
+        val items: List<CartItem> = emptyList(),
+        val totalItems: Int = 0,
+        val totalPrice: Double? = null
+    ) {
+        data class CartItem(
+            val bookId: Int? = null,
+            val title: String = "",
+            val author: String = "",
+            val price: Double? = null,
+            val quantity: Int = 0
+        )
+    }
 }
 
 
