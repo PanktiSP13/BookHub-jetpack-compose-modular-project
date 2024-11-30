@@ -14,7 +14,7 @@ object NetworkUtils {
     API will be executed in a background thread.
     If a retry count is set, API will retry automatically on failure.
      */
-    suspend fun <T> safeApiCall(retryCount: Long = 1, apiCall: suspend () -> T)
+    fun <T> safeApiCall(retryCount: Long = 1, apiCall: suspend () -> T)
             : Flow<Result<T>> = flow {
         emit(Result.success(apiCall()))
     }.flowOn(Dispatchers.IO)

@@ -3,7 +3,6 @@ package com.pinu.data.network.network_apis
 import com.pinu.domain.entities.network_service.request.AddToCartRequest
 import com.pinu.domain.entities.network_service.request.UpdateItemQuantityRequest
 import com.pinu.domain.entities.network_service.response.CartItemsResponse
-import com.pinu.domain.entities.network_service.response.CommonResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
