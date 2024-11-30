@@ -1,11 +1,12 @@
 package com.pinu.domain.entities.states
 
-import com.pinu.domain.entities.network_service.response.BookItemResponse
+import com.pinu.domain.entities.network_service.response.BookResponse
+
 
 data class BooksState(
     val isLoading: Boolean = false,
     val searchText : String = "",
-    val bookList: List<BookItemResponse> = emptyList(),
+    val bookList: List<BookResponse.BookItemResponse> = emptyList(),
     val error: String = "",
-    val selectedBookDetail: BookItemResponse? = null,
+    val selectedBookDetail: BookResponse.BookItemResponse? = null,
 )

@@ -67,11 +67,4 @@ class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) :
             }
         }
     }
-
-    override fun onCleared() {
-        super.onCleared()
-        //it will reset book state
-        //todo check without reset it
-//        _bookState.value = BooksState()
-    }
 }

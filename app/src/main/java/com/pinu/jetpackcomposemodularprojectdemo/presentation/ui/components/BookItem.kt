@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.pinu.domain.entities.network_service.response.BookItemResponse
+import com.pinu.domain.entities.network_service.response.BookResponse
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
@@ -35,7 +35,7 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.dummyUrl
 
 @Composable
 fun BookItem(
-    bookItemData: BookItemResponse,
+    bookItemData: BookResponse.BookItemResponse,
     onItemClick : () -> Unit = {}
 ) {
 

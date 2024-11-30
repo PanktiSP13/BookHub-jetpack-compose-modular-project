@@ -11,6 +11,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    defaultConfig {
+        minSdk = 24
+        multiDexEnabled = true
+    }
     kotlinOptions {
         jvmTarget = "17"
     }

@@ -1,7 +1,7 @@
 [versions]
-agp = "8.6.0"
-kotlin = "1.9.0"
-org-jetbrains-kotlin-android = "1.8.0"
+agp = "8.7.2"
+kotlin = "2.0.20"
+org-jetbrains-kotlin-android = "2.0.20"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -17,7 +17,7 @@ gson = "2.11.0"
 retrofit = "2.11.0"
 okhttp = "4.12.0"
 room = "2.6.1"
-ksp = "2.0.20-1.0.25"
+ksp = "2.0.21-1.0.27"
 composeNavigation = "2.8.4"
 coil = "2.2.2"
 google-accoompanist-permission = "0.32.0"
@@ -66,5 +66,6 @@ kotlin-serialization = {id = "org.jetbrains.kotlin.plugin.serialization", versio
 org-jetbrains-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "org-jetbrains-kotlin-android" }
 hilt-android = { id = "com.google.dagger.hilt.android",version.ref = "hilt"}
 #room = { id = "androidx.room", version.ref = "room" }
-#ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
