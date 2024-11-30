@@ -39,7 +39,7 @@
     <string name="book_detail">Book Detail</string>
     <string name="cart">Cart</string>
     <string name="qty">"Qty : "</string>
-    <string name="remove">remove</string>
+    <string name="remove">Remove</string>
     <string name="payment_success">payment success</string>
     <string name="please_enter_valid_mobile_number">Please enter valid mobile number</string>
     <string name="image_picker">Image Picker</string>
@@ -49,4 +49,10 @@
     <string name="edit">edit</string>
     <string name="search">search</string>
     <string name="go_to_cart">Go to Cart</string>
+    <string name="favourites">Favourites</string>
+    <string name="move_to_cart">Move to cart</string>
+    <string name="remove_from_favourites">Are you sure you want to remove this item from your favourites?</string>
+    <string name="move_item_to_cart">Are you sure you want to move this item in cart?</string>
+    <string name="yes_move">Yes,Move</string>
+    <string name="maybe_later">Maybe later</string>
 </resources>

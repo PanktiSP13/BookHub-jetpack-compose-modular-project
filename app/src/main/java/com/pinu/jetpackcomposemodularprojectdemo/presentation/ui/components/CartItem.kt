@@ -1,8 +1,8 @@
 package com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,21 +36,26 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
+import com.pinu.domain.entities.events.CartEvents
+import com.pinu.domain.entities.network_service.request.UpdateItemQuantityRequest
+import com.pinu.domain.entities.network_service.response.CartItemsResponse
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.OnSecondaryColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.PrimaryColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.dummyString
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.dummyUrl
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.CommonAlertDialog
 
 @Preview(showBackground = false)
 @Composable
-fun CartItem() {
+fun CartItem(
+    cartItem: CartItemsResponse.CartItemsData.CartItem = CartItemsResponse.CartItemsData.CartItem(),
+    onEvent: (CartEvents) -> Unit = {}
+) {
+
     val qty = remember {
-        mutableIntStateOf(1)
+        mutableIntStateOf(cartItem.quantity ?: 1)
     }
     val showAlert = remember {
         mutableStateOf(false)
@@ -63,21 +68,32 @@ fun CartItem() {
         modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.book) ?: rememberAsyncImagePainter(dummyUrl),
+            AsyncImage(
+                model = cartItem.imgUrl ?: R.drawable.book,
                 contentDescription = stringResource(id = R.string.book),
                 modifier = Modifier
                     .size(width = 70.dp, height = 120.dp)
-                    .clip(RoundedCornerShape(6.dp)),
+                    .clip(RoundedCornerShape(6.dp))
+                    .clickable {
+                        onEvent(
+                            CartEvents.NavigateToBookDetailScreen(
+                                bookId = cartItem.bookId ?: 0
+                            )
+                        )
+                    },
                 contentScale = ContentScale.Crop
             )
             Column(modifier = Modifier
-                .fillMaxWidth().padding(horizontal = 12.dp)) {
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+            ) {
                 Text(
-                    text = dummyString,
+                    text = cartItem.title ?: "",
                     style = BookHubTypography.titleSmall.copy(fontWeight = FontWeight.Medium),
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 2,
@@ -85,7 +101,7 @@ fun CartItem() {
                 )
                 Spacer(modifier = Modifier.padding(top = 14.dp))
                 Text(
-                    text = "$500",
+                    text = "${cartItem.price ?: 0.0}",
                     style = BookHubTypography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 2,
@@ -99,11 +115,23 @@ fun CartItem() {
                         IconButton(onClick = {
                             if (qty.intValue > 1) {
                                 qty.intValue -= 1
+
+                                onEvent(
+                                    CartEvents.UpdateBookItemQuantity(
+                                        UpdateItemQuantityRequest(
+                                            bookId = cartItem.bookId ?: 0,
+                                            quantity = qty.intValue
+                                        )
+                                    )
+                                )
                             } else {
                                 showAlert.value = true
                             }
+
                         },
-                            modifier = Modifier.padding(start = 6.dp).size(25.dp)
+                            modifier = Modifier
+                                .padding(start = 6.dp)
+                                .size(25.dp)
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.remove),
@@ -115,7 +143,8 @@ fun CartItem() {
 
                     Spacer(modifier = Modifier.padding(start = 4.dp))
                     Box(
-                        modifier = Modifier.padding(start = 6.dp)
+                        modifier = Modifier
+                            .padding(start = 6.dp)
                             .defaultMinSize(minWidth = 25.dp, minHeight = 25.dp)
                             .border(
                                 border = BorderStroke(width = 1.dp, color = PrimaryColor),
@@ -129,7 +158,23 @@ fun CartItem() {
                     }
                     Spacer(modifier = Modifier.padding(start = 4.dp))
                     Box(contentAlignment = Alignment.Center) {
-                        IconButton(onClick = { qty.intValue += 1 },modifier = Modifier.padding(start = 6.dp).size(25.dp)) {
+                        IconButton(
+                            onClick = {
+                                qty.intValue += 1
+
+                                onEvent(
+                                    CartEvents.UpdateBookItemQuantity(
+                                        UpdateItemQuantityRequest(
+                                            bookId = cartItem.bookId ?: 0,
+                                            quantity = qty.intValue
+                                        )
+                                    )
+                                )
+
+                            }, modifier = Modifier
+                                .padding(start = 6.dp)
+                                .size(25.dp)
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = stringResource(id = R.string.add)
@@ -152,7 +197,10 @@ fun CartItem() {
     if (showAlert.value) {
         CommonAlertDialog(
             onNegativeButtonClicked = { showAlert.value = false },
-            onPositiveButtonClicked = { showAlert.value = false })
+            onPositiveButtonClicked = {
+                onEvent(CartEvents.RemoveBookItemFromCart(bookId = cartItem.bookId ?: 0))
+                showAlert.value = false
+            })
     }
 
 }

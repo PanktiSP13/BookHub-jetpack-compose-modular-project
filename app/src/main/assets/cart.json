@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "message": "Cart items retrieved successfully",
+  "status": 200,
+  "data": {
+    "items": [
+      {
+        "bookId": 1,
+        "title": "The White Tiger",
+        "author": "Aravind Adiga",
+        "imgUrl": "https://m.media-amazon.com/images/I/81TQpJPgUtL._AC_UF1000,1000_QL80_.jpg",
+        "price": 554.00,
+        "quantity": 2
+      },
+      {
+        "bookId": 2,
+        "title": "Train to Pakistan",
+        "author": "Khushwant Singh",
+        "imgUrl": "https://m.media-amazon.com/images/I/915ojTuXD+L._AC_UF1000,1000_QL80_.jpg",
+        "price": 354.49,
+        "quantity": 1
+      }
+    ],
+    "totalItems": 3,
+    "totalPrice": 1462.49
+  }
+}

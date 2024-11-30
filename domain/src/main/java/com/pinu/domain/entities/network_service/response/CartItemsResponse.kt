@@ -16,8 +16,9 @@ class CartItemsResponse(
             val bookId: Int? = null,
             val title: String = "",
             val author: String = "",
+            val imgUrl :String = "",
             val price: Double? = null,
-            val quantity: Int = 0
+            val quantity: Int = 1
         )
     }
 }

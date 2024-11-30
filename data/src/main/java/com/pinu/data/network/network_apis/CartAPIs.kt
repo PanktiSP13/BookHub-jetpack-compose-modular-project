@@ -16,7 +16,8 @@ interface CartAPIs {
 
     /* -------------- Cart Services --------------------- */
 
-    @GET("/cart/items")
+//    @GET("/cart/items")
+    @GET("https://mocki.io/v1/6a1eb5ac-c0fc-4f14-b9d6-2ddbfe226161")
     suspend fun fetchCartItems(): CartItemsResponse
 
     @POST("/cart/add")
@@ -28,9 +29,10 @@ interface CartAPIs {
     @PATCH("/cart/update-quantity")
     suspend fun updateQuantity(@Body request: UpdateItemQuantityRequest): CartItemsResponse
 
-    @GET("/cart/is-in-cart")
-    suspend fun isItemInCart(@Query("bookId") bookId: Int): CartItemsResponse
-
     @DELETE("/cart/clear")
     suspend fun clearCart(): CartItemsResponse
+
+    // optional
+    @GET("/cart/is-in-cart")
+    suspend fun isItemInCart(@Query("bookId") bookId: Int): CartItemsResponse
 }

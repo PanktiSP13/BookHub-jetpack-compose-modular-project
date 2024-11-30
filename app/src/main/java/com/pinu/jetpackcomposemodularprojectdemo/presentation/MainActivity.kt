@@ -7,7 +7,8 @@ import androidx.activity.viewModels
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.pinu.domain.entities.viewmodels.DashboardViewModel
+import com.pinu.domain.entities.viewmodels.BooksViewModel
+import com.pinu.domain.entities.viewmodels.CartViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.books.screens.BookDetailRootUI
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.books.screens.BookListRootUI
@@ -21,6 +22,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+
+    val booksViewModel : BooksViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,15 +44,16 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(route = NavigationRoutes.BookListScreen.route) {
-                        BookListRootUI(navController)
+                        BookListRootUI(navController,booksViewModel)
                     }
 
                     composable(route = NavigationRoutes.BookDetailScreen.route) {
-                        BookDetailRootUI(navController)
+                        BookDetailRootUI(navController,booksViewModel)
                     }
 
                     composable(route = NavigationRoutes.CartScreen.route) {
-                        CartRootUI(navController)
+                        val cartViewModel : CartViewModel by viewModels()
+                        CartRootUI(navController,cartViewModel)
                     }
 
                     composable(route = NavigationRoutes.ProfileScreen.route) {

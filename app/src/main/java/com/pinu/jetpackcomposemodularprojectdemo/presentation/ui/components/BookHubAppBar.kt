@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -19,6 +18,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -29,8 +29,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.pinu.domain.entities.events.FavouritesEvents
+import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
@@ -41,7 +44,7 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.PrimaryCo
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-fun CommonAppBar(
+fun BookHubAppBar(
     title: String = "Dashboard",
     canGoBack: Boolean = false,
     isCartVisible:Boolean = true,
@@ -49,10 +52,12 @@ fun CommonAppBar(
     isProfileOptionAvailable :Boolean= true,
     navController: NavController = rememberNavController(),
     onCartClick: () -> Unit = {},
-    onBackPressed: () -> Unit = {},
+    onBackPressed: () -> Unit = {}
 ) {
 
     val  showFavourites = remember { mutableStateOf(false) }
+    val favouriteViewModel = hiltViewModel<FavouriteViewModel>()
+    val favouriteState = favouriteViewModel.favouriteState.collectAsState()
 
     Surface(color = Pink) {
         TopAppBar(
@@ -98,12 +103,13 @@ fun CommonAppBar(
             actions = {
                 if (isFavouritesVisible){
                     IconButton(onClick = {
+                        favouriteViewModel.onEvent(FavouritesEvents.FetchFavourites)
                         showFavourites.value = true
                     }) {
                         Image(
                             painter = painterResource(id = R.drawable.favourite_checked),
                             modifier = Modifier.size(25.dp),
-                            contentDescription = "cart"
+                            contentDescription = stringResource(R.string.favourites)
                         )
                     }
                 }
@@ -115,7 +121,7 @@ fun CommonAppBar(
                         Image(
                             painter = painterResource(id = R.drawable.cart),
                             modifier = Modifier.size(25.dp),
-                            contentDescription = "cart",
+                            contentDescription = stringResource(R.string.cart),
                             colorFilter = ColorFilter.tint(color = Color.White)
                         )
                     }
@@ -125,7 +131,10 @@ fun CommonAppBar(
     }
 
     if (showFavourites.value){
-        FavouritesBottomSheet(onDismiss = {
+        FavouritesBottomSheet(
+            favouriteState = favouriteState.value,
+            onEvents = { favouriteViewModel.onEvent(it) },
+            onDismiss = {
             showFavourites.value = false
         })
     }

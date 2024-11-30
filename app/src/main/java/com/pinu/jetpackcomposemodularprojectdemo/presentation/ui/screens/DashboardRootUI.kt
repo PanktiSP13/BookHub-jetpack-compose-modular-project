@@ -38,13 +38,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.pinu.domain.entities.viewmodels.DashboardViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.CommonAppBar
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookHubAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.TextPrimary
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.CommonAlertDialog
@@ -79,7 +77,7 @@ fun DashboardRootUI(
 
     Scaffold(
         topBar = {
-            CommonAppBar(title = "Dashboard", navController = navController)
+            BookHubAppBar(title = "Dashboard", navController = navController)
         },
 
     ) { contentPadding ->

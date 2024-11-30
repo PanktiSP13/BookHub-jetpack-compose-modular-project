@@ -18,13 +18,12 @@ data class BookResponse(
         val genre: String,
         val description: String,
         val authorName: String,
-        @SerializedName("book_published_data") val bookPublishedDate: String,
+        @SerializedName("book_published_date") val bookPublishedDate: String,
         val publishedYear: Int,
         val sellerName: String,
         val numberOfPages: Int,
         val isInCart: Boolean = false,
         val isFavourite: Boolean = false
     )
-
 }
 

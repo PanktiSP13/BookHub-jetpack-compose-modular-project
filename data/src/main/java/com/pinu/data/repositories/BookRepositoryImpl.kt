@@ -20,7 +20,7 @@ class BookRepositoryImpl @Inject constructor(private val booksAPIs: BooksAPIs) :
     }
 
     override suspend fun getBookDetail(bookId: Int): Flow<Result<BookResponse.BookItemResponse>> {
-        return NetworkUtils.safeApiCall { booksAPIs.getBookDetails(bookId) }
+        return NetworkUtils.safeApiCall { booksAPIs.getBookDetails(/*bookId*/) }
     }
 
 

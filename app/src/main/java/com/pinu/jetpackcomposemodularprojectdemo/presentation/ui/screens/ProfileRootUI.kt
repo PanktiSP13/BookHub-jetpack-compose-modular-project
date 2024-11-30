@@ -66,7 +66,7 @@ import com.pinu.domain.entities.network_service.request.ProfileRequest
 import com.pinu.domain.entities.states.ProfileState
 import com.pinu.domain.entities.viewmodels.DashboardViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.CommonAppBar
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookHubAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.dialog.UploadProfilePicDialog
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BackgroundColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
@@ -179,7 +179,7 @@ fun ProfileScreen(
     }
 
     Scaffold(topBar = {
-        CommonAppBar(
+        BookHubAppBar(
             isProfileOptionAvailable = false,
             isFavouritesVisible = false,
             isCartVisible = false, canGoBack = true,

@@ -1,6 +1,7 @@
 package com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.books.screens
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Column
@@ -53,25 +54,27 @@ import com.pinu.domain.entities.viewmodels.CartViewModel
 import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.CommonAppBar
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookHubAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.OnPrimaryColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.PrimaryVariant
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.TextSecondary
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.dummyBookDate
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.dummyDescription
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.dummyString
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showToast
 
 @Composable
-fun BookDetailRootUI(navController: NavController = rememberNavController()) {
+fun BookDetailRootUI(
+    navController: NavController = rememberNavController(),
+    booksViewModel: BooksViewModel
+) {
 
-    val booksViewModel = hiltViewModel<BooksViewModel>()
-    val booksState = booksViewModel.bookState.collectAsState()
+    val booksState = booksViewModel.bookState.collectAsState(initial = BooksState())
+
+    Log.e("@@@", "BookDetailRootUI: ${booksState.value.bookList}")
 
     val cartViewModel = hiltViewModel<CartViewModel>()
     val favouriteViewModel = hiltViewModel<FavouriteViewModel>()
+
 
     BookDetailScreen(booksState = booksState.value,
         navController = navController, onEvent = { events ->
@@ -118,11 +121,14 @@ fun BookDetailScreen(
 
     val scrollState = rememberScrollState()
     val isFavourite = remember { mutableStateOf(false) }
+    val favouriteMessage = remember { mutableStateOf("") }
+    val isItemInCart = remember { mutableStateOf(false) }
     val context = LocalContext.current
 
 
     LaunchedEffect(booksState.selectedBookDetail) {
         isFavourite.value = booksState.selectedBookDetail?.isFavourite ?: false
+        isItemInCart.value = booksState.selectedBookDetail?.isInCart ?: false
     }
 
     LaunchedEffect(booksState.error) {
@@ -135,18 +141,30 @@ fun BookDetailScreen(
     Scaffold(
         containerColor = SurfaceColor,
         topBar = {
-            CommonAppBar(title = stringResource(R.string.book_detail),
+            BookHubAppBar(title = stringResource(R.string.book_detail),
                 canGoBack = true, navController = navController)
         },
         bottomBar = {
             BookDetailBottomCard(context = context,
-                isItemInCart = booksState.selectedBookDetail?.isInCart ?: false,
+                isItemInCart = booksState.selectedBookDetail?.isInCart ?: isItemInCart.value,
                 isFavourite = isFavourite.value,
                 addToCart = {
-                    onEvent(BooksEvents.AddToCart(booksState.selectedBookDetail?.id ?: 0))
+                    if (isItemInCart.value) {
+                        onEvent(BooksEvents.GoToCart)
+                    } else {
+                        onEvent(BooksEvents.AddToCart(booksState.selectedBookDetail?.id ?: 0))
+                    }
+
+                    // first perform action and then change title ... todo remove this for final change
+                    isItemInCart.value = !isItemInCart.value
+
                 },
                 onFavouriteChange = {
+
                     isFavourite.value = it
+                    favouriteMessage.value = if (it) context.getString(R.string.book_added_to_your_favourites) else context.getString(R.string.book_removed_from_your_favourites)
+                    showToast(context, favouriteMessage.value)
+
                     if (isFavourite.value) {
                         onEvent(BooksEvents.AddAsFavourite(booksState.selectedBookDetail?.id ?: 0))
                     } else {
@@ -157,6 +175,7 @@ fun BookDetailScreen(
         }) { contentPadding ->
         Surface(modifier = Modifier.padding(contentPadding), color = SurfaceColor) {
             Column(
+                horizontalAlignment = Alignment.Start,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 12.dp)
@@ -164,7 +183,6 @@ fun BookDetailScreen(
                     .verticalScroll(
                         scrollState, flingBehavior = ScrollableDefaults.flingBehavior()
                     ),
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 AsyncImage(
                     model = booksState.selectedBookDetail?.imageUrl ?: R.drawable.book,
@@ -176,14 +194,13 @@ fun BookDetailScreen(
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = booksState.selectedBookDetail?.name ?: dummyString,
+                    text = booksState.selectedBookDetail?.name ?: "",
                     style = BookHubTypography.headlineSmall.copy(fontWeight = FontWeight.Medium),
                     overflow = TextOverflow.Ellipsis, maxLines = 2,
-                    lineHeight = 18.sp,
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = booksState.selectedBookDetail?.bookPublishedDate ?: dummyBookDate,
+                    text = booksState.selectedBookDetail?.bookPublishedDate ?: "",
                     style = BookHubTypography.bodySmall.copy(color = TextSecondary),
                     overflow = TextOverflow.Ellipsis, maxLines = 1,
                     modifier = Modifier.fillMaxWidth()
@@ -198,7 +215,7 @@ fun BookDetailScreen(
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = booksState.selectedBookDetail?.description ?: dummyDescription,
+                    text = booksState.selectedBookDetail?.description ?: "",
                     style = BookHubTypography.bodyMedium.copy(color = TextSecondary),
                 )
 
@@ -216,8 +233,6 @@ fun BookDetailBottomCard(
     onFavouriteChange: (Boolean) -> Unit
 ) {
 
-    val favouriteMessage = remember { mutableStateOf("") }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -229,14 +244,12 @@ fun BookDetailBottomCard(
             elevation = CardDefaults.cardElevation(4.dp),
             onClick = {
                 onFavouriteChange(!isFavourite)
-                favouriteMessage.value =
-                    if (isFavourite) "Book added to your favourites" else "Book removed from your favourites"
-                showToast(context, favouriteMessage.value)
-
             }) {
             Image(
                 painter = painterResource(id = if (isFavourite) R.drawable.favourite_checked else R.drawable.favourite_unchecked),
-                contentDescription = favouriteMessage.value,
+                contentDescription = if (isFavourite) context.getString(R.string.book_added_to_your_favourites) else context.getString(
+                    R.string.book_removed_from_your_favourites
+                ),
                 modifier = Modifier
                     .size(40.dp)
                     .padding(8.dp)
@@ -255,8 +268,6 @@ fun BookDetailBottomCard(
                 text = if (isItemInCart) stringResource(R.string.go_to_cart) else stringResource(R.string.add_to_cart),
                 color = OnPrimaryColor,
             )
-
-
         }
     }
 

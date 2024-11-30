@@ -32,7 +32,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.pinu.domain.entities.events.BooksEvents
@@ -41,15 +40,16 @@ import com.pinu.domain.entities.viewmodels.BooksViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookItem
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.CommonAppBar
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookHubAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.TextPrimary
 
 @Composable
-fun BookListRootUI(navController: NavController = rememberNavController()){
+fun BookListRootUI(
+    navController: NavController = rememberNavController(),
+    booksViewModel: BooksViewModel){
 
-    val booksViewModel = hiltViewModel<BooksViewModel>()
     val bookState = booksViewModel.bookState.collectAsState()
 
     BookListScreen(bookState = bookState.value,
@@ -82,7 +82,7 @@ fun BookListScreen(
     Scaffold(
         containerColor = SurfaceColor,
         topBar = {
-            CommonAppBar(
+            BookHubAppBar(
                 title = stringResource(R.string.book_list),
                 canGoBack = true,
                 navController = navController
@@ -147,9 +147,11 @@ fun BookListScreen(
                             )
                         }
                     },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
-                    )
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done
+                    ),
+                    maxLines = 1
                 )
             }
 

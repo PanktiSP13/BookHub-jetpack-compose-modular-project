@@ -1,5 +1,6 @@
 package com.pinu.domain.entities.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pinu.domain.entities.events.BooksEvents
@@ -56,11 +57,14 @@ class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) :
         // first set book detail data from book list and then update it with network response
         val item = _bookState.value.bookList.filter { it.id == bookId }[0]
         _bookState.value = _bookState.value.copy(selectedBookDetail = item)
+        Log.e("@@@", "psp ------------->: ${_bookState.value.selectedBookDetail}")
+
 
         viewModelScope.launch {
             bookRepo.getBookDetail(bookId).collect { data ->
                 data.fold(onSuccess = { bookDetail ->
                     _bookState.value = _bookState.value.copy(selectedBookDetail = bookDetail)
+                    Log.e("@@@", "getBookDetail: ${_bookState.value.selectedBookDetail}")
                 }, onFailure = { error ->
                     _bookState.value = _bookState.value.copy(error = error.message ?: "")
                 })

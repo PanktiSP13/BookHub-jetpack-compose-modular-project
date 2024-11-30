@@ -50,7 +50,7 @@ fun BookItem(
             .fillMaxWidth()
             .padding(12.dp)) {
             AsyncImage(
-                model = bookItemData.imageUrl,
+                model = bookItemData.imageUrl?:"",
                 contentDescription = stringResource(R.string.book),
                 modifier = Modifier
                     .size(width = 100.dp, height = 150.dp)
@@ -62,20 +62,20 @@ fun BookItem(
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp)) {
                 Text(
-                    text = bookItemData.name,
+                    text = bookItemData.name?:"",
                     style = BookHubTypography.titleMedium,
                     overflow = TextOverflow.Ellipsis, maxLines = 2,
                     lineHeight = 18.sp
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = bookItemData.bookPublishedDate,
+                    text = bookItemData.bookPublishedDate?:"",
                     style = BookHubTypography.bodySmall.copy(color = TextSecondary),
                     overflow = TextOverflow.Ellipsis, maxLines = 1,
                 )
                 Spacer(modifier = Modifier.padding(top = 12.dp))
                 Text(
-                    text = bookItemData.description,
+                    text = bookItemData.description?:"",
                     style = BookHubTypography.bodySmall.copy(color = TextSecondary),
                     overflow = TextOverflow.Ellipsis,
                 )
