@@ -101,7 +101,7 @@ fun ProfileRootUI(navController: NavHostController = rememberNavController()) {
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun ProfileScreen(
     profileState: ProfileState = ProfileState(),
@@ -194,8 +194,7 @@ fun ProfileScreen(
                         snackBarHostState.showSnackbar(errorMsg)
                     }
                 }) {
-                    onEvent(
-                        ProfileEvents.AddUpdateProfileData(
+                    onEvent(ProfileEvents.AddUpdateProfileData(
                             ProfileRequest(
                                 name = userName.value,
                                 email = userEmail.value,

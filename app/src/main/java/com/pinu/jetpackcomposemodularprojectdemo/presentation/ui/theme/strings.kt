@@ -1,6 +1,8 @@
 package com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme
 
 import com.pinu.domain.entities.network_service.response.BookResponse
+import com.pinu.domain.entities.network_service.response.GenderType
+import com.pinu.domain.entities.network_service.response.ProfileResponse
 
 
 val defaultBook = BookResponse.BookItemResponse(
@@ -18,4 +20,18 @@ val defaultBook = BookResponse.BookItemResponse(
     numberOfPages = 320,
     isInCart = true,
     isFavourite = false
+)
+
+val dummyProfileResponse = ProfileResponse(
+    success = true,
+    message = "Profile loaded successfully",
+    status = 200,
+    data = ProfileResponse.ProfileData(
+        id = "123",
+        name = "John Doe",
+        email = "john.doe@example.com",
+        mobileNumber = "1234567890",
+        gender = GenderType.MALE,
+        profilePicUrl = "https://example.com/john_doe.jpg"
+    )
 )

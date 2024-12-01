@@ -6,6 +6,7 @@ sealed interface BooksEvents {
    data object GetBookList : BooksEvents
    data object ClearErrorMessage : BooksEvents
    data class NavigateToBookDetailScreen(val bookId : Int): BooksEvents
+   data class FetchBookDetails(val bookId : Int): BooksEvents
    data class OnSearchBooksByName(val searchText: String):BooksEvents
    data class AddAsFavourite(val bookID: Int) : BooksEvents
    data class RemoveFromFavourites(val bookID: Int) : BooksEvents

@@ -60,12 +60,14 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.OnPrimary
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.PrimaryVariant
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.TextSecondary
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.RenderScreen
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showToast
 
 @Composable
 fun BookDetailRootUI(
     navController: NavController = rememberNavController(),
-    booksViewModel: BooksViewModel
+    booksViewModel: BooksViewModel,
+    favouriteViewModel: FavouriteViewModel
 ) {
 
     val booksState = booksViewModel.bookState.collectAsState(initial = BooksState())
@@ -73,10 +75,10 @@ fun BookDetailRootUI(
     Log.e("@@@", "BookDetailRootUI: ${booksState.value.bookList}")
 
     val cartViewModel = hiltViewModel<CartViewModel>()
-    val favouriteViewModel = hiltViewModel<FavouriteViewModel>()
 
 
     BookDetailScreen(booksState = booksState.value,
+        favouriteViewModel = favouriteViewModel,
         navController = navController, onEvent = { events ->
             when (events) {
                 is BooksEvents.NavigateBack -> navController.popBackStack()
@@ -115,6 +117,7 @@ fun BookDetailRootUI(
 @Composable
 fun BookDetailScreen(
     booksState: BooksState = BooksState(),
+    favouriteViewModel: FavouriteViewModel = hiltViewModel<FavouriteViewModel>(),
     navController: NavController = rememberNavController(),
     onEvent: (BooksEvents) -> Unit = {}
 ) {
@@ -142,7 +145,9 @@ fun BookDetailScreen(
         containerColor = SurfaceColor,
         topBar = {
             BookHubAppBar(title = stringResource(R.string.book_detail),
-                canGoBack = true, navController = navController)
+                canGoBack = true, navController = navController,
+                favouriteViewModel = favouriteViewModel
+            )
         },
         bottomBar = {
             BookDetailBottomCard(context = context,
@@ -173,53 +178,63 @@ fun BookDetailScreen(
 
                 })
         }) { contentPadding ->
-        Surface(modifier = Modifier.padding(contentPadding), color = SurfaceColor) {
-            Column(
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 12.dp)
-                    .padding(top = 12.dp)
-                    .verticalScroll(
-                        scrollState, flingBehavior = ScrollableDefaults.flingBehavior()
-                    ),
-            ) {
-                AsyncImage(
-                    model = booksState.selectedBookDetail?.imageUrl ?: R.drawable.book,
-                    contentDescription = stringResource(id = R.string.book),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(350.dp),
-                    contentScale = ContentScale.Fit
-                )
-                Spacer(modifier = Modifier.padding(top = 12.dp))
-                Text(
-                    text = booksState.selectedBookDetail?.name ?: "",
-                    style = BookHubTypography.headlineSmall.copy(fontWeight = FontWeight.Medium),
-                    overflow = TextOverflow.Ellipsis, maxLines = 2,
-                )
-                Spacer(modifier = Modifier.padding(top = 12.dp))
-                Text(
-                    text = booksState.selectedBookDetail?.bookPublishedDate ?: "",
-                    style = BookHubTypography.bodySmall.copy(color = TextSecondary),
-                    overflow = TextOverflow.Ellipsis, maxLines = 1,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.padding(top = 12.dp))
-                Text(
-                    text = "$${booksState.selectedBookDetail?.price ?: 0.0}",
-                    style = BookHubTypography.headlineMedium.copy(color = PrimaryVariant),
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 2, lineHeight = 16.sp,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.padding(top = 12.dp))
-                Text(
-                    text = booksState.selectedBookDetail?.description ?: "",
-                    style = BookHubTypography.bodyMedium.copy(color = TextSecondary),
-                )
+        Surface(
+            modifier = Modifier.padding(contentPadding),
+            color = SurfaceColor
+        ) {
 
-            }
+            RenderScreen(
+                isLoading = booksState.isLoading,
+                onSuccess = {
+                    Column(
+                        horizontalAlignment = Alignment.Start,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 12.dp)
+                            .padding(top = 12.dp)
+                            .verticalScroll(
+                                scrollState,
+                                flingBehavior = ScrollableDefaults.flingBehavior()
+                            ),
+                    ) {
+                        AsyncImage(
+                            model = booksState.selectedBookDetail?.imageUrl ?: R.drawable.book,
+                            contentDescription = stringResource(id = R.string.book),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(350.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                        Spacer(modifier = Modifier.padding(top = 12.dp))
+                        Text(
+                            text = booksState.selectedBookDetail?.name ?: "",
+                            style = BookHubTypography.headlineSmall.copy(fontWeight = FontWeight.Medium),
+                            overflow = TextOverflow.Ellipsis, maxLines = 2,
+                        )
+                        Spacer(modifier = Modifier.padding(top = 12.dp))
+                        Text(
+                            text = booksState.selectedBookDetail?.bookPublishedDate ?: "",
+                            style = BookHubTypography.bodySmall.copy(color = TextSecondary),
+                            overflow = TextOverflow.Ellipsis, maxLines = 1,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.padding(top = 12.dp))
+                        Text(
+                            text = "$${booksState.selectedBookDetail?.price ?: 0.0}",
+                            style = BookHubTypography.headlineMedium.copy(color = PrimaryVariant),
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 2, lineHeight = 16.sp,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.padding(top = 12.dp))
+                        Text(
+                            text = booksState.selectedBookDetail?.description ?: "",
+                            style = BookHubTypography.bodyMedium.copy(color = TextSecondary),
+                        )
+
+                    }
+                },
+            )
         }
     }
 

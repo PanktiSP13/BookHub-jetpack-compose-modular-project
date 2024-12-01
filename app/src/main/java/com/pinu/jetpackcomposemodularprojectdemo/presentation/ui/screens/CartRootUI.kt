@@ -25,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import com.pinu.domain.entities.events.CartEvents
 import com.pinu.domain.entities.states.CartState
 import com.pinu.domain.entities.viewmodels.CartViewModel
+import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.CartItem

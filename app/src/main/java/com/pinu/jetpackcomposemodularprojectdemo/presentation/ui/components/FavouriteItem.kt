@@ -69,7 +69,9 @@ fun FavouriteItem(
                 contentDescription = stringResource(id = R.string.book),
                 modifier = Modifier
                     .size(width = 50.dp, height = 70.dp)
-                    .clip(RoundedCornerShape(6.dp)),
+                    .clip(RoundedCornerShape(6.dp)).clickable {
+                        onEvents(FavouritesEvents.NavigateToBookDetailScreen(favouriteItem.id))
+                    },
                 contentScale = ContentScale.Crop
             )
             Column(
@@ -84,7 +86,7 @@ fun FavouriteItem(
                 )
                 Spacer(modifier = Modifier.padding(top = 6.dp))
                 Text(
-                    text = favouriteItem.bookPublishedDate ?: "",
+                    text = favouriteItem.bookPublishedDate ?: defaultBook.bookPublishedDate,
                     style = BookHubTypography.labelMedium.copy(color = TextSecondary),
                     overflow = TextOverflow.Ellipsis, maxLines = 1,
                 )
@@ -110,13 +112,17 @@ fun FavouriteItem(
                             .padding(start = 6.dp, end = 6.dp),
                     )
                     Text(
-                        stringResource(R.string.move_to_cart),
+                        stringResource(if (favouriteItem.isInCart) R.string.go_to_cart else R.string.move_to_cart),
                         style = BookHubTypography.labelLarge.copy(
                             color = PrimaryColor,
                             fontWeight = FontWeight.Bold
                         ),
                         modifier = Modifier.clickable {
-                            showMoveToCartDialog.value = true
+                            if (favouriteItem.isInCart){
+                                onEvents(FavouritesEvents.GoToCart)
+                            }else{
+                                showMoveToCartDialog.value = true
+                            }
                         }
                     )
                 }

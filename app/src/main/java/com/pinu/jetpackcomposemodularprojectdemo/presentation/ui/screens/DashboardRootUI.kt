@@ -38,8 +38,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookHubAppBar
@@ -51,6 +54,7 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.CommonAler
 @Composable
 fun DashboardRootUI(
     navController: NavController = rememberNavController(),
+    favouriteViewModel: FavouriteViewModel = hiltViewModel<FavouriteViewModel>(),
 ) {
 
     val showExitDialog = remember { mutableStateOf(false) }
@@ -77,7 +81,10 @@ fun DashboardRootUI(
 
     Scaffold(
         topBar = {
-            BookHubAppBar(title = "Dashboard", navController = navController)
+            BookHubAppBar(
+                title = "Dashboard", navController = navController,
+                favouriteViewModel = favouriteViewModel
+            )
         },
 
     ) { contentPadding ->

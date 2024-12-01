@@ -4,22 +4,31 @@ import android.content.Context
 import com.pinu.domain.R
 
 data class ProfileResponse(
-    val name: String,
-    val email: String,
-    val mobileNumber: String,
-    val gender: GenderType = GenderType.NONE,
-    val profilePicUrl :String
-){
+    val success: Boolean = false,
+    val message: String = "",
+    val status: Int? = null,
+    val data: ProfileData? = null){
 
-    fun getGender(context: Context): String{
-       return when(gender){
-            GenderType.MALE -> context.getString(R.string.male)
-            GenderType.FEMALE -> context.getString(R.string.female)
-            GenderType.OTHER -> context.getString(R.string.other)
-            GenderType.NONE -> ""
-            else -> ""
+    class ProfileData(
+        val id: String,
+        val name: String,
+        val email: String,
+        val mobileNumber: String,
+        val gender: GenderType = GenderType.NONE,
+        val profilePicUrl: String
+    ) {
+        fun getGender(context: Context): String {
+            return when (gender) {
+                GenderType.MALE -> context.getString(R.string.male)
+                GenderType.FEMALE -> context.getString(R.string.female)
+                GenderType.OTHER -> context.getString(R.string.other)
+                GenderType.NONE -> ""
+                else -> ""
+            }
         }
     }
+
+
 }
 
 

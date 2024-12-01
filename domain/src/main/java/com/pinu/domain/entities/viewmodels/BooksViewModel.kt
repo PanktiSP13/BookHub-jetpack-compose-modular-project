@@ -27,6 +27,7 @@ class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) :
             is BooksEvents.GetBookList -> getBookList()
             is BooksEvents.OnSearchBooksByName -> getBookList(searchText = event.searchText)
             is BooksEvents.NavigateToBookDetailScreen -> getBookDetail(bookId = event.bookId)
+            is BooksEvents.FetchBookDetails -> getBookDetail(bookId = event.bookId)
             else -> Unit
         }
     }
@@ -55,18 +56,22 @@ class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) :
     private fun getBookDetail(bookId: Int) {
 
         // first set book detail data from book list and then update it with network response
-        val item = _bookState.value.bookList.filter { it.id == bookId }[0]
-        _bookState.value = _bookState.value.copy(selectedBookDetail = item)
-        Log.e("@@@", "psp ------------->: ${_bookState.value.selectedBookDetail}")
+        if (_bookState.value.bookList.isNotEmpty()) {
+            val item = _bookState.value.bookList.filter { it.id == bookId }[0]
+            _bookState.value = _bookState.value.copy(selectedBookDetail = item)
+            Log.e("@@@", "psp ------------->: ${_bookState.value.selectedBookDetail}")
+        }
 
-
+        _bookState.value = _bookState.value.copy(isLoading = true)
         viewModelScope.launch {
             bookRepo.getBookDetail(bookId).collect { data ->
                 data.fold(onSuccess = { bookDetail ->
-                    _bookState.value = _bookState.value.copy(selectedBookDetail = bookDetail)
+                    _bookState.value =
+                        _bookState.value.copy(selectedBookDetail = bookDetail, isLoading = false)
                     Log.e("@@@", "getBookDetail: ${_bookState.value.selectedBookDetail}")
                 }, onFailure = { error ->
-                    _bookState.value = _bookState.value.copy(error = error.message ?: "")
+                    _bookState.value =
+                        _bookState.value.copy(error = error.message ?: "", isLoading = false)
                 })
             }
         }

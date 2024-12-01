@@ -32,11 +32,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.pinu.domain.entities.events.BooksEvents
 import com.pinu.domain.entities.states.BooksState
 import com.pinu.domain.entities.viewmodels.BooksViewModel
+import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookItem
@@ -48,11 +50,14 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.TextPrima
 @Composable
 fun BookListRootUI(
     navController: NavController = rememberNavController(),
-    booksViewModel: BooksViewModel){
+    booksViewModel: BooksViewModel,
+    favouriteViewModel: FavouriteViewModel
+){
 
     val bookState = booksViewModel.bookState.collectAsState()
 
     BookListScreen(bookState = bookState.value,
+        favouriteViewModel = favouriteViewModel,
         navController = navController,
         onEvent = { event ->
             when (event) {
@@ -69,6 +74,7 @@ fun BookListRootUI(
 @Composable
 fun BookListScreen(
     bookState: BooksState = BooksState(),
+    favouriteViewModel: FavouriteViewModel= hiltViewModel<FavouriteViewModel>(),
     navController: NavController = rememberNavController(),
     onEvent: (BooksEvents) -> Unit = {}) {
 
@@ -85,7 +91,8 @@ fun BookListScreen(
             BookHubAppBar(
                 title = stringResource(R.string.book_list),
                 canGoBack = true,
-                navController = navController
+                navController = navController,
+                favouriteViewModel = favouriteViewModel
             )
         },
     ) { contentPadding ->

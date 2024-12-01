@@ -35,7 +35,7 @@ class DashboardViewModel @Inject constructor(private val profileRepo: ProfileRep
         viewModelScope.launch {
             profileRepo.fetchProfileData().collect { data ->
                 data.fold(onSuccess = {
-                    _profileState.value = _profileState.value.copy(userProfileData = it)
+                    _profileState.value = _profileState.value.copy(userProfileData = it.data)
                 }, onFailure = { setErrorMessage(it.message ?: "") })
             }
         }
@@ -45,8 +45,11 @@ class DashboardViewModel @Inject constructor(private val profileRepo: ProfileRep
         viewModelScope.launch {
             profileRepo.addUpdateProfileData(profileRequest).collect { data ->
                 data.fold(onSuccess = {
-                    _profileState.value =
-                        _profileState.value.copy(userProfileData = it, profileUpdateSuccess = true)
+                    _profileState.value = _profileState.value.copy(
+                        userProfileData = it.data,
+                        profileUpdateSuccess = true,
+                        successMessage = it.message
+                    )
                 }, onFailure = { setErrorMessage(it.message ?: "") })
             }
         }
@@ -57,7 +60,9 @@ class DashboardViewModel @Inject constructor(private val profileRepo: ProfileRep
         viewModelScope.launch {
             profileRepo.updateProfilePic(profilePic).collect { data ->
                 data.fold(onSuccess = {
-                    _profileState.value = _profileState.value.copy(userProfileData = it)
+                    _profileState.value = _profileState.value.copy(
+                        userProfileData = it.data,
+                        successMessage = it.message)
                 }, onFailure = { setErrorMessage(it.message ?: "") })
             }
         }
