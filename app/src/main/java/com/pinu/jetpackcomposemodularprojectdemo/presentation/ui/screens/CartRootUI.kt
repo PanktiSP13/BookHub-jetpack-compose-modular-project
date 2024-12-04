@@ -65,7 +65,7 @@ fun CartRootUI(
 
             is CartEvents.NavigateToBookDetailScreen -> {
                 //pass bookId
-                navController.navigate(route = NavigationRoutes.BookDetailScreen.route)
+                navController.navigate(route = NavigationRoutes.BookDetailScreen.getBookDetail(event.bookId))
             }
 
             else -> {}

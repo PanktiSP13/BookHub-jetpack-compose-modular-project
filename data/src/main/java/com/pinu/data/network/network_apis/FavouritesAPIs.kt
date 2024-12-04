@@ -11,13 +11,12 @@ interface FavouritesAPIs {
 
     /* -------------- Favourites Service --------------------- */
 
-//    @GET("/favourites")
-    @GET("https://mocki.io/v1/5e404991-4fb0-4716-9476-7697a8f00377")
+    @GET("api/favourites")
     suspend fun getFavourites(): BookResponse
 
-    @POST("/favourites/add")
+    @POST("api/favourites/add")
     suspend fun addToFavourites(@Body bookId: Int): BookResponse
 
-    @DELETE("/favourites/remove")
+    @POST("api/favourites/remove")
     suspend fun removeFromFavourites(@Query("book_id") bookId: Int): BookResponse
 }

@@ -11,17 +11,14 @@ import retrofit2.http.Part
 
 interface ProfileAPIs {
 
-    // Fetch Profile Data
-    @GET("/fetch-profile-data")
+    @GET("api/fetch-profile-data")
     suspend fun fetchProfile(): ProfileResponse
 
-    // Add or Update Profile Data
-    @POST("/add-update-profile-data")
+    @POST("api/add-update-profile-data")
     suspend fun addUpdateProfile(@Body profileRequest: ProfileRequest): ProfileResponse
 
-    // Update Profile Picture
     @Multipart
-    @POST("/update-profile-pic")
+    @POST("api/update-profile-pic")
     suspend fun updateProfilePicture(@Part profilePic: MultipartBody.Part): ProfileResponse
 
 }

@@ -61,7 +61,6 @@ fun BookHubAppBar(
     onBackPressed: () -> Unit = {}
 ) {
 
-    val booksViewModel = hiltViewModel<BooksViewModel>()
     val  showFavourites = remember { mutableStateOf(false) }
     val favouriteState = favouriteViewModel.favouriteState.collectAsState()
     val context = LocalContext.current
@@ -153,8 +152,7 @@ fun BookHubAppBar(
             onEvents = { event ->
                 when (event) {
                     is FavouritesEvents.NavigateToBookDetailScreen -> {
-                        booksViewModel.onEvent(BooksEvents.NavigateToBookDetailScreen(event.bookID))
-                        navController.navigate(NavigationRoutes.BookDetailScreen.route)
+                        navController.navigate(NavigationRoutes.BookDetailScreen.getBookDetail(event.bookID))
                     }
                     is FavouritesEvents.GoToCart -> {
                         navController.navigate(NavigationRoutes.CartScreen.route)

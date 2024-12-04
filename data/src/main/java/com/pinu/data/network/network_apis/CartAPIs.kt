@@ -15,23 +15,22 @@ interface CartAPIs {
 
     /* -------------- Cart Services --------------------- */
 
-//    @GET("/cart/items")
-    @GET("https://mocki.io/v1/6a1eb5ac-c0fc-4f14-b9d6-2ddbfe226161")
+    @GET("api/cart/items")
     suspend fun fetchCartItems(): CartItemsResponse
 
-    @POST("/cart/add")
+    @POST("api/cart/add")
     suspend fun addToCart(@Body request: AddToCartRequest): CartItemsResponse
 
-    @POST("/cart/remove/{id}")
-    suspend fun removeFromCart(@Path("id") id: Int): CartItemsResponse
+    @POST("api/cart/remove")
+    suspend fun removeFromCart(@Query("id") id: Int): CartItemsResponse
 
-    @PATCH("/cart/update-quantity")
+    @PATCH("api/cart/update-quantity")
     suspend fun updateQuantity(@Body request: UpdateItemQuantityRequest): CartItemsResponse
 
-    @DELETE("/cart/clear")
+    @DELETE("api/cart/clear")
     suspend fun clearCart(): CartItemsResponse
 
     // optional
-    @GET("/cart/is-in-cart")
+    @GET("api/cart/is-in-cart")
     suspend fun isItemInCart(@Query("bookId") bookId: Int): CartItemsResponse
 }

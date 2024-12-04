@@ -21,8 +21,14 @@ sealed class NavigationRoutes(val route: String) {
     data object BookListScreen : NavigationRoutes(NavRoutes.BOOK_LIST_SCREEN)
 
     data object BookDetailScreen :
-        NavigationRoutes("${NavRoutes.BOOK_DETAIL_SCREEN}/{${NavArguments.BOOK_ID}}") {
-        fun getBookDetail(bookId: Int) = "${NavRoutes.BOOK_DETAIL_SCREEN}/$bookId"
+        NavigationRoutes("${NavRoutes.BOOK_DETAIL_SCREEN}?${NavArguments.BOOK_ID}={${NavArguments.BOOK_ID}}") {
+        fun getBookDetail(bookId: Int?=null): String {
+            return if (bookId == null) {
+                NavRoutes.BOOK_DETAIL_SCREEN
+            } else {
+                "${NavRoutes.BOOK_DETAIL_SCREEN}?${NavArguments.BOOK_ID}=$bookId"
+            }
+        }
     }
 
     /*    data object BookDetailScreen :

@@ -81,9 +81,7 @@ fun CartItem(
                     .clip(RoundedCornerShape(6.dp))
                     .clickable {
                         onEvent(
-                            CartEvents.NavigateToBookDetailScreen(
-                                bookId = cartItem.bookId ?: 0
-                            )
+                            CartEvents.NavigateToBookDetailScreen(bookId = cartItem.bookId ?: 0)
                         )
                     },
                 contentScale = ContentScale.Crop

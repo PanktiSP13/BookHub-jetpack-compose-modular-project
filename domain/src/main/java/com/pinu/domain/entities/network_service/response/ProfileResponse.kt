@@ -1,6 +1,7 @@
 package com.pinu.domain.entities.network_service.response
 
 import android.content.Context
+import com.google.gson.annotations.SerializedName
 import com.pinu.domain.R
 
 data class ProfileResponse(
@@ -13,25 +14,22 @@ data class ProfileResponse(
         val id: String,
         val name: String,
         val email: String,
-        val mobileNumber: String,
-        val gender: GenderType = GenderType.NONE,
-        val profilePicUrl: String
+        @SerializedName("mobile_number")val mobileNumber: String,
+        val gender: String ,
+        @SerializedName("profile_pic_url")val profilePicUrl: String
     ) {
         fun getGender(context: Context): String {
             return when (gender) {
-                GenderType.MALE -> context.getString(R.string.male)
-                GenderType.FEMALE -> context.getString(R.string.female)
-                GenderType.OTHER -> context.getString(R.string.other)
-                GenderType.NONE -> ""
+                GenderType.MALE.type -> context.getString(R.string.male)
+                GenderType.FEMALE.type -> context.getString(R.string.female)
+                GenderType.OTHER.type -> context.getString(R.string.other)
                 else -> ""
             }
         }
     }
-
-
 }
 
 
-enum class GenderType {
-    MALE, FEMALE, OTHER, NONE
+enum class GenderType(val type: String) {
+    MALE("male"), FEMALE("female"), OTHER("other")
 }

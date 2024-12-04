@@ -41,8 +41,8 @@ import com.pinu.domain.entities.viewmodels.BooksViewModel
 import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookItem
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookHubAppBar
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookItem
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.TextPrimary
@@ -62,7 +62,7 @@ fun BookListRootUI(
         onEvent = { event ->
             when (event) {
                 is BooksEvents.NavigateToBookDetailScreen -> {
-                    navController.navigate(NavigationRoutes.BookDetailScreen.route)
+                    navController.navigate(NavigationRoutes.BookDetailScreen.getBookDetail())
                 }
                 else -> Unit
             }
