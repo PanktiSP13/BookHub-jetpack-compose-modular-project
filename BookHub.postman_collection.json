@@ -1,0 +1,268 @@
+{
+	"info": {
+		"_postman_id": "1a8057e4-7a0c-48bd-815f-5615ed4ad7c6",
+		"name": "BookHub",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39457994"
+	},
+	"item": [
+		{
+			"name": "get book list",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "get book detail",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "get cart history",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/api/cart/items",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"cart",
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add to cart",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id",
+							"value": "3",
+							"type": "text"
+						},
+						{
+							"key": "qty",
+							"value": "4",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base-url}}/api/cart/add",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"cart",
+						"add"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "5",
+							"disabled": true
+						},
+						{
+							"key": "qty",
+							"value": "4",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove item from cart",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/api/cart/remove?id=3",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"cart",
+						"remove"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update cart item quantity",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id",
+							"value": "2",
+							"type": "text"
+						},
+						{
+							"key": "qty",
+							"value": "6",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base-url}}/api/cart/update-quantity",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"cart",
+						"update-quantity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "clear cart",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/api/cart/clear",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"cart",
+						"clear"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get favourites",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "add to favourites",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id",
+							"value": "13",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base-url}}/api/favourites/add",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"favourites",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "remove from favourite",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "id",
+							"value": "13",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base-url}}/api/favourites/remove",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"favourites",
+						"remove"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "fetch profile data",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "update profile data",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}
