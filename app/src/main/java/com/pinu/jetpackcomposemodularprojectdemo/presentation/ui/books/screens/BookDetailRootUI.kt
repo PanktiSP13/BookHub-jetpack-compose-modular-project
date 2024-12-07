@@ -47,6 +47,7 @@ import coil.compose.AsyncImage
 import com.pinu.domain.entities.events.BooksEvents
 import com.pinu.domain.entities.events.CartEvents
 import com.pinu.domain.entities.events.FavouritesEvents
+import com.pinu.domain.entities.events.ProfileEvents
 import com.pinu.domain.entities.network_service.request.AddToCartRequest
 import com.pinu.domain.entities.states.BooksState
 import com.pinu.domain.entities.viewmodels.BooksViewModel
@@ -61,6 +62,7 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.PrimaryVa
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.TextSecondary
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.RenderScreen
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showCustomToast
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showToast
 
 @Composable
@@ -72,10 +74,7 @@ fun BookDetailRootUI(
 
     val booksState = booksViewModel.bookState.collectAsState(initial = BooksState())
 
-    Log.e("@@@", "BookDetailRootUI: ${booksState.value.bookList}")
-
     val cartViewModel = hiltViewModel<CartViewModel>()
-
 
     BookDetailScreen(booksState = booksState.value,
         favouriteViewModel = favouriteViewModel,
@@ -134,11 +133,10 @@ fun BookDetailScreen(
         isItemInCart.value = booksState.selectedBookDetail?.isInCart ?: false
     }
 
-    LaunchedEffect(booksState.error) {
-        if (booksState.error.isNotEmpty()) {
-            showToast(context = context, message = booksState.error)
-            onEvent(BooksEvents.ClearErrorMessage)
-        }
+
+    LaunchedEffect(key1 = booksState.toastMessage) {
+        showCustomToast(context = context, toastMessage = booksState.toastMessage)
+        onEvent(BooksEvents.ClearToastMessage)
     }
 
     Scaffold(

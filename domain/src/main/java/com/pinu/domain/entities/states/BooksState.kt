@@ -1,5 +1,6 @@
 package com.pinu.domain.entities.states
 
+import com.pinu.domain.entities.ToastMessage
 import com.pinu.domain.entities.network_service.response.BookResponse
 
 
@@ -7,6 +8,6 @@ data class BooksState(
     val isLoading: Boolean = false,
     val searchText : String = "",
     val bookList: List<BookResponse.BookItemResponse> = emptyList(),
-    val error: String = "",
     val selectedBookDetail: BookResponse.BookItemResponse? = null,
+    val toastMessage: ToastMessage = ToastMessage()
 )

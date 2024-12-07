@@ -3,12 +3,15 @@ package com.pinu.domain.entities.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pinu.domain.entities.ToastMessage
+import com.pinu.domain.entities.ToastMessageType
 import com.pinu.domain.entities.events.BooksEvents
 import com.pinu.domain.entities.states.BooksState
 import com.pinu.domain.repositories.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,8 +24,14 @@ class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) :
     fun onEvent(event: BooksEvents) {
         when (event) {
 
-            is BooksEvents.ClearErrorMessage -> {
-                _bookState.value = _bookState.value.copy(error = "")
+            is BooksEvents.ClearToastMessage -> {
+                _bookState.update {
+                    it.copy(
+                        toastMessage = ToastMessage(
+                            ToastMessageType.NONE, ""
+                        )
+                    )
+                }
             }
             is BooksEvents.GetBookList -> getBookList()
             is BooksEvents.OnSearchBooksByName -> getBookList(searchText = event.searchText)
@@ -37,7 +46,8 @@ class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) :
         searchText: String? =null,
         genre: String? = null,
         sortBy: String? = null) {
-        _bookState.value = _bookState.value.copy(isLoading = true)
+
+        _bookState.update { state -> state.copy(isLoading = true) }
         viewModelScope.launch {
             bookRepo.getBookList(
                 searchString = searchText,
@@ -45,10 +55,8 @@ class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) :
                 sortBy = sortBy
             ).collect { data ->
                 data.fold(onSuccess = { books ->
-                    _bookState.value = _bookState.value.copy(bookList = books.data?: emptyList())
-                }, onFailure = { error ->
-                    _bookState.value = _bookState.value.copy(error = error.message ?: "")
-                })
+                    _bookState.value = _bookState.value.copy(bookList = books.data?: emptyList(), isLoading = false)
+                }, onFailure = { error -> onFailure(error.message ?: "") })
             }
         }
     }
@@ -59,21 +67,26 @@ class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) :
         if (_bookState.value.bookList.isNotEmpty()) {
             val item = _bookState.value.bookList.filter { it.id == bookId }[0]
             _bookState.value = _bookState.value.copy(selectedBookDetail = item)
-            Log.e("@@@", "psp ------------->: ${_bookState.value.selectedBookDetail}")
         }
 
-        _bookState.value = _bookState.value.copy(isLoading = true)
+        // Loader not required here
+        // Latest data will be seamlessly updated in the UI layer once the API response is received.
         viewModelScope.launch {
             bookRepo.getBookDetail(bookId).collect { data ->
                 data.fold(onSuccess = { bookDetail ->
-                    _bookState.value =
-                        _bookState.value.copy(selectedBookDetail = bookDetail, isLoading = false)
-                    Log.e("@@@", "getBookDetail: ${_bookState.value.selectedBookDetail}")
-                }, onFailure = { error ->
-                    _bookState.value =
-                        _bookState.value.copy(error = error.message ?: "", isLoading = false)
-                })
+                    _bookState.value = _bookState.value.copy(selectedBookDetail = bookDetail)
+                }, onFailure = { error -> onFailure(error.message ?: "") })
             }
+        }
+    }
+
+    private fun onFailure(errorMessage: String) {
+        _bookState.update {
+            it.copy(
+                toastMessage = ToastMessage(
+                    type = ToastMessageType.ERROR, errorMessage
+                ), isLoading = false
+            )
         }
     }
 }

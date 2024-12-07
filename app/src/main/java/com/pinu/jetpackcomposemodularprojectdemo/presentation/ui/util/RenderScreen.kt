@@ -12,7 +12,9 @@ fun RenderScreen(
     isLoading: Boolean = false,
     showError : Boolean = false,
     onSuccess: @Composable () -> Unit,
-    onLoading: @Composable () -> Unit = { CircularProgressIndicator() },
+    onLoading: @Composable () -> Unit = {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+    },
     onError: @Composable () -> Unit = {}
 ) {
     Box(

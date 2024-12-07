@@ -46,6 +46,7 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.Book
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.TextPrimary
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.RenderScreen
 
 @Composable
 fun BookListRootUI(
@@ -80,9 +81,9 @@ fun BookListScreen(
 
     val searchQuery = remember { mutableStateOf("") }
 
-    // Trigger API call when the composable loads
+    // Trigger once and prevent re-execution when returning to the screen.
     LaunchedEffect(Unit) {
-        onEvent(BooksEvents.GetBookList)
+        bookState.bookList.takeIf { it.isEmpty() }?.let { onEvent(BooksEvents.GetBookList) }
     }
 
     Scaffold(
@@ -109,7 +110,10 @@ fun BookListScreen(
                     value = searchQuery.value,
                     onValueChange = { value ->
                         searchQuery.value = value
-                        onEvent(BooksEvents.OnSearchBooksByName(value))
+                        // based on requirement
+                        if (value.length > 5) {
+                            onEvent(BooksEvents.OnSearchBooksByName(value))
+                        }
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
@@ -162,15 +166,23 @@ fun BookListScreen(
                 )
             }
 
-            if (bookState.bookList.isNotEmpty()){
-                LazyColumn {
-                    items(bookState.bookList) { item->
-                        BookItem(item) {
-                            onEvent(BooksEvents.NavigateToBookDetailScreen(item.id))
+            RenderScreen(
+                isLoading = bookState.isLoading,
+                onSuccess = {
+                    if (bookState.bookList.isNotEmpty()) {
+                        LazyColumn {
+                            items(bookState.bookList) { item ->
+                                BookItem(item) {
+                                    onEvent(BooksEvents.NavigateToBookDetailScreen(item.id))
+                                }
+                            }
                         }
                     }
+                },
+                onError = {
+
                 }
-            }
+            )
         }
     }
 
