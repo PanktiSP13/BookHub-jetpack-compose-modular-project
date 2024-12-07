@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 class Network private constructor() {
 
-    private var baseUrl: String = "https://bookhub.free.beeceptor.com/"
+    private var baseUrl: String = "https://bookhub.proxy.beeceptor.com/"
     private val customHeaders = mutableMapOf<String, String>()
 
     companion object {

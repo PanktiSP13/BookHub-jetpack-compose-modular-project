@@ -31,7 +31,7 @@ val dummyProfileResponse = ProfileResponse(
         name = "John Doe",
         email = "john.doe@example.com",
         mobileNumber = "1234567890",
-        gender = GenderType.MALE,
+        gender = "male",
         profilePicUrl = "https://example.com/john_doe.jpg"
     )
 )

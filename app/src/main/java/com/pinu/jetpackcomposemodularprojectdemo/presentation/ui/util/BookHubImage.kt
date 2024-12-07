@@ -10,16 +10,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
+import com.pinu.jetpackcomposemodularprojectdemo.R
 
 @Composable
 fun BookHubImage(
     image: Any,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
-    contentScale: ContentScale = ContentScale.FillBounds
+    contentScale: ContentScale = ContentScale.FillBounds,
+    placeholderImg: Painter = painterResource(R.drawable.img_placeholder)
 ) {
 
     when (image) {
@@ -33,20 +36,22 @@ fun BookHubImage(
         }
 
         is String -> { // URL
-            Image(
-                painter = rememberAsyncImagePainter(model = image),
+            AsyncImage(
+                model = image,
                 contentDescription = contentDescription,
                 modifier = modifier,
-                contentScale = contentScale
+                contentScale = contentScale,
+                placeholder = placeholderImg
             )
         }
 
         is Uri -> { // URI
-            Image(
-                painter = rememberAsyncImagePainter(model = image),
+            AsyncImage(
+                model = image,
                 contentDescription = contentDescription,
                 modifier = modifier,
-                contentScale = contentScale
+                contentScale = contentScale,
+                placeholder = placeholderImg
             )
         }
 

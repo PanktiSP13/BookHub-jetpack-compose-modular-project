@@ -105,4 +105,8 @@ dependencies {
 
     //coil image loading
     implementation(libs.coil)
+
+    // custom toast message
+    implementation(libs.custom.toast)
+
 }

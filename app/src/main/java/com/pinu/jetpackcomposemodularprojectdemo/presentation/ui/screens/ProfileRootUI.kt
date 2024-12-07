@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,15 +54,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.pinu.domain.entities.ToastMessage
+import com.pinu.domain.entities.ToastMessageType
 import com.pinu.domain.entities.events.ProfileEvents
 import com.pinu.domain.entities.network_service.request.ProfileRequest
 import com.pinu.domain.entities.states.ProfileState
@@ -76,9 +82,14 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.PrimaryVa
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.BookHubImage
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.CommonFormTextField
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.FileUtils
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.Permissions.imagePickerPermission
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.checkIfAllPermissionGranted
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.getImageUri
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showCustomToast
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 
 @Composable
 fun ProfileRootUI(navController: NavHostController = rememberNavController()) {
@@ -136,12 +147,18 @@ fun ProfileScreen(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
         selectedImage.value = bitmap
+        bitmap?.let {
+            onEvent(ProfileEvents.UpdateProfilePic(FileUtils.saveBitmapToFile(context, it)))
+        }
     }
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         selectedImage.value = uri
+        uri?.let {
+            onEvent(ProfileEvents.UpdateProfilePic(File(FileUtils.getRealPathFromURI(context,uri)?:"")))
+        }
     }
 
     fun isValidData(
@@ -176,7 +193,16 @@ fun ProfileScreen(
         userEmail.value = profileState.userProfileData?.email ?: ""
         userMobileNumber.value = profileState.userProfileData?.mobileNumber ?: ""
         userGender.value = profileState.userProfileData?.getGender(context) ?: ""
+        selectedGender.value = profileState.userProfileData?.getGender(context) ?: ""
+        selectedImage.value = profileState.userProfileData?.profilePicUrl ?: ""
     }
+
+
+    LaunchedEffect(key1 = profileState.toastMessage) {
+        showCustomToast(context = context, toastMessage = profileState.toastMessage)
+        onEvent(ProfileEvents.ClearToastMessage)
+    }
+
 
     Scaffold(topBar = {
         BookHubAppBar(
@@ -188,21 +214,30 @@ fun ProfileScreen(
         )
     },
         bottomBar = {
-            ProfileAddUpdateCTA {
+            ProfileAddUpdateCTA(
+                isLoading = profileState.isLoading,
+                buttonText = if (profileState.userProfileData != null) stringResource(R.string.update) else stringResource(
+                    R.string.add
+                )
+            ) {
                 isValidData(error = { errorMsg ->
                     coroutineScope.launch {
                         snackBarHostState.showSnackbar(errorMsg)
                     }
                 }) {
-                    onEvent(ProfileEvents.AddUpdateProfileData(
+
+                    coroutineScope.launch {
+                        delay(300) // debounce interval
+                        onEvent(
+                            ProfileEvents.AddUpdateProfileData(
                             ProfileRequest(
                                 name = userName.value,
                                 email = userEmail.value,
-                                mobileNumber = userMobileNumber.value,
-                                gender = userGender.value
+                                mobileNumber = userMobileNumber.value
                             )
                         )
-                    )
+                        )
+                    }
                     focusManager.clearFocus()
                 }
             }
@@ -222,7 +257,7 @@ fun ProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 //profile pic
-                ProfilePic(selectedImage.value) { showImagePickerDialog.value = true }
+                ProfilePic(profileState.userProfileData?.profilePicUrl?:selectedImage.value) { showImagePickerDialog.value = true }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -244,9 +279,11 @@ fun ProfileScreen(
                     },
                     onGenderChange = {
                         userGender.value = it
+                        selectedGender.value = it
                     },
                     onGenderSelected = {
                         selectedGender.value = it
+                        userGender.value = it
                     })
             }
         }
@@ -395,7 +432,8 @@ fun ProfilePic(selectedImage: Any?, showImagePickerDialog: () -> Unit) {
                 .size(150.dp)
                 .clip(CircleShape)
                 .border(1.dp, PrimaryColor, CircleShape),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            placeholderImg = painterResource(R.drawable.user_placeholder)
         )
 
         IconButton(
@@ -433,7 +471,11 @@ fun ShowSnackBar(snackBarHostState: SnackbarHostState) {
 }
 
 @Composable
-fun ProfileAddUpdateCTA(onClickOnAddProfile: () -> Unit) {
+fun ProfileAddUpdateCTA(
+    isLoading: Boolean = false,
+    buttonText: String,
+    onClickOnAddProfile: () -> Unit
+) {
     ElevatedButton(
         onClick = { onClickOnAddProfile() },
         modifier = Modifier
@@ -443,8 +485,13 @@ fun ProfileAddUpdateCTA(onClickOnAddProfile: () -> Unit) {
         shape = RoundedCornerShape(8.dp)
     ) {
         Text(
-            text = stringResource(R.string.add),
+            text = buttonText,
             style = BookHubTypography.bodyMedium.copy(color = OnPrimaryColor)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        if (isLoading) CircularProgressIndicator(
+            color = Color.White,
+            modifier = Modifier.size(15.dp)
         )
     }
 }

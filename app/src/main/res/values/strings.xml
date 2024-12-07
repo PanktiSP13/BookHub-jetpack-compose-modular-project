@@ -55,4 +55,7 @@
     <string name="move_item_to_cart">Are you sure you want to move this item in cart?</string>
     <string name="yes_move">Yes, Move</string>
     <string name="maybe_later">Maybe later</string>
+    <string name="update">Update</string>
+    <string name="success">Success</string>
+    <string name="error">Error</string>
 </resources>

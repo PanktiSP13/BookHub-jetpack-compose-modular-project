@@ -17,9 +17,6 @@ class FavouriteViewModel @Inject constructor(private val favouriteRepo: Favourit
     private val _favouriteState = MutableStateFlow(FavouritesState())
     val favouriteState = _favouriteState.asStateFlow()
 
-    init {
-        getFavourites()
-    }
 
     fun onEvent(events: FavouritesEvents){
         when(events){

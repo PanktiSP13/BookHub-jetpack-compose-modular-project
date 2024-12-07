@@ -44,8 +44,7 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 NavHost(
                     navController = navController,
-                    startDestination = NavigationRoutes.DashboardScreen.route
-                ) {
+                    startDestination = NavigationRoutes.DashboardScreen.route) {
 
                     composable(route = NavigationRoutes.DashboardScreen.route) {
                         DashboardRootUI(navController, favouriteViewModel)

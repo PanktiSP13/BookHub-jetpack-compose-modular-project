@@ -1,6 +1,7 @@
 package com.pinu.domain.entities.network_service.response
 
 import android.content.Context
+import androidx.compose.ui.text.toLowerCase
 import com.google.gson.annotations.SerializedName
 import com.pinu.domain.R
 
@@ -19,7 +20,7 @@ data class ProfileResponse(
         @SerializedName("profile_pic_url")val profilePicUrl: String
     ) {
         fun getGender(context: Context): String {
-            return when (gender) {
+            return when (gender.lowercase()) {
                 GenderType.MALE.type -> context.getString(R.string.male)
                 GenderType.FEMALE.type -> context.getString(R.string.female)
                 GenderType.OTHER.type -> context.getString(R.string.other)

@@ -21,16 +21,22 @@ class ProfileRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addUpdateProfileData(profileRequest: ProfileRequest): Flow<Result<ProfileResponse>> {
-        return NetworkUtils.safeApiCall { profileAPIs.addUpdateProfile(profileRequest) }
+        return NetworkUtils.safeApiCall {
+            profileAPIs.addUpdateProfile(
+                name = profileRequest.name,
+                email = profileRequest.email,
+                mobileNumber = profileRequest.mobileNumber
+            )
+        }
     }
 
-    override suspend fun updateProfilePic(img: String): Flow<Result<ProfileResponse>> {
+    override suspend fun updateProfilePic(img: File): Flow<Result<ProfileResponse>> {
         return NetworkUtils.safeApiCall {
             profileAPIs.updateProfilePicture(
                 network.prepareFilePart(
-                    file = File(img),
+                    file = img,
                     mimeType = "image/*",
-                    partName = "profilePic"
+                    partName = "profile_img"
                 )
             )
         }

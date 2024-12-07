@@ -34,9 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.pinu.domain.entities.events.BooksEvents
 import com.pinu.domain.entities.events.FavouritesEvents
-import com.pinu.domain.entities.viewmodels.BooksViewModel
 import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
@@ -65,11 +63,12 @@ fun BookHubAppBar(
     val favouriteState = favouriteViewModel.favouriteState.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        if (favouriteState.value.favouriteList.isEmpty()) {
-            favouriteViewModel.onEvent(FavouritesEvents.FetchFavourites)
-        }
-    }
+    //todo uncomment
+//    LaunchedEffect(key1 = favouriteState.value.favouriteList.isEmpty()) {
+//        if (favouriteViewModel.favouriteState.value.favouriteList.isEmpty()){
+//            favouriteViewModel.onEvent(FavouritesEvents.FetchFavourites)
+//        }
+//    }
 
     Surface(color = Pink) {
         TopAppBar(

@@ -22,7 +22,7 @@ composeNavigation = "2.8.4"
 coil = "2.2.2"
 google-accoompanist-permission = "0.32.0"
 lifecycle-ktx = "2.8.7"
-kotlinSerialization = "2.0.20"
+customToast = "1.0.5"
 
 
 
@@ -57,6 +57,7 @@ compose-navigation = {group = "androidx.navigation", name = "navigation-compose"
 coil = {group = "io.coil-kt", name = "coil-compose", version.ref = "coil"}
 google-accompanist-permission = {group ="com.google.accompanist", name="accompanist-permissions" , version.ref = "google-accoompanist-permission"}
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle-ktx" }
+custom-toast = { group = "com.github.emreesen27", name = "Android-Custom-Toast-Message", version.ref = "customToast" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
