@@ -1,7 +1,6 @@
 package com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.books.screens
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Column
@@ -47,7 +46,6 @@ import coil.compose.AsyncImage
 import com.pinu.domain.entities.events.BooksEvents
 import com.pinu.domain.entities.events.CartEvents
 import com.pinu.domain.entities.events.FavouritesEvents
-import com.pinu.domain.entities.events.ProfileEvents
 import com.pinu.domain.entities.network_service.request.AddToCartRequest
 import com.pinu.domain.entities.states.BooksState
 import com.pinu.domain.entities.viewmodels.BooksViewModel
