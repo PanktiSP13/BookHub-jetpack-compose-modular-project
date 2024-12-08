@@ -36,8 +36,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//       not required edge-to-edge
-//        enableEdgeToEdge(navigationBarStyle = SystemBarStyle.dark(ContextCompat.getColor(this,R.color.black)))
 
         setContent {
             JetpackComposeModularProjectDemoTheme(darkTheme = false) {
@@ -47,7 +45,8 @@ class MainActivity : ComponentActivity() {
                     startDestination = NavigationRoutes.DashboardScreen.route) {
 
                     composable(route = NavigationRoutes.DashboardScreen.route) {
-                        DashboardRootUI(navController, favouriteViewModel)
+                        val cartViewModel = hiltViewModel<CartViewModel>()
+                        DashboardRootUI(navController, favouriteViewModel,cartViewModel)
                     }
 
                     composable(route = NavigationRoutes.BookListScreen.route) {
@@ -66,8 +65,8 @@ class MainActivity : ComponentActivity() {
                         if (bookId != 0) {
                             booksViewModel.onEvent(BooksEvents.FetchBookDetails(bookId))
                         }
-
-                        BookDetailRootUI(navController, booksViewModel, favouriteViewModel)
+                        val cartViewModel = hiltViewModel<CartViewModel>()
+                        BookDetailRootUI(navController, booksViewModel, favouriteViewModel, cartViewModel)
                     }
 
                     composable(route = NavigationRoutes.CartScreen.route) {
@@ -76,7 +75,6 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(route = NavigationRoutes.ProfileScreen.route) {
-                        val dashboardViewModel = hiltViewModel<DashboardViewModel>(it)
                         ProfileRootUI(navController)
                     }
 

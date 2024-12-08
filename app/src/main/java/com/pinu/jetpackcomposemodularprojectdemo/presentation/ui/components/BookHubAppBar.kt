@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -34,7 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.pinu.domain.entities.events.CartEvents
 import com.pinu.domain.entities.events.FavouritesEvents
+import com.pinu.domain.entities.viewmodels.CartViewModel
 import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
@@ -42,7 +45,7 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTy
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.OnPrimaryColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.Pink
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.PrimaryColor
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showToast
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showCustomToast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
@@ -50,25 +53,43 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showToast
 fun BookHubAppBar(
     title: String = "Dashboard",
     canGoBack: Boolean = false,
-    isCartVisible:Boolean = true,
-    isFavouritesVisible : Boolean = true,
-    isProfileOptionAvailable :Boolean= true,
+    isCartVisible: Boolean = false,
+    isFavouritesVisible: Boolean = false,
+    isProfileOptionAvailable: Boolean = false,
     navController: NavController = rememberNavController(),
     favouriteViewModel: FavouriteViewModel = hiltViewModel<FavouriteViewModel>(),
+    cartViewModel: CartViewModel = hiltViewModel<CartViewModel>(),
     onCartClick: () -> Unit = {},
-    onBackPressed: () -> Unit = {}
+    onBackPressed: () -> Unit = {},
 ) {
 
-    val  showFavourites = remember { mutableStateOf(false) }
-    val favouriteState = favouriteViewModel.favouriteState.collectAsState()
+    val showFavourites = rememberSaveable { mutableStateOf(false) }
+    val cartState = cartViewModel.cartState.collectAsState().value
+    val favouriteState = favouriteViewModel.favouriteState.collectAsState().value
+
     val context = LocalContext.current
 
-    //todo uncomment
-//    LaunchedEffect(key1 = favouriteState.value.favouriteList.isEmpty()) {
-//        if (favouriteViewModel.favouriteState.value.favouriteList.isEmpty()){
-//            favouriteViewModel.onEvent(FavouritesEvents.FetchFavourites)
-//        }
-//    }
+    LaunchedEffect(favouriteState.toastMessage) {
+        favouriteState.toastMessage.message.takeIf { it.isNotEmpty() }?.let {
+            showCustomToast(context = context, toastMessage = favouriteState.toastMessage)
+            favouriteViewModel.onEvent(FavouritesEvents.ClearToastMessage)
+        }
+    }
+
+    LaunchedEffect(cartState.toastMessage) {
+        cartState.toastMessage.message.takeIf { it.isNotEmpty() }?.let {
+            showCustomToast(context = context, toastMessage = cartState.toastMessage)
+            cartViewModel.onEvent(CartEvents.ClearToastMessage)
+        }
+    }
+
+    LaunchedEffect(key1 = cartState.itemMovedToCart) {
+        cartState.itemMovedToCart.takeIf { it }?.let {
+            showFavourites.value = false
+            navController.navigate(route = NavigationRoutes.CartScreen.route)
+            cartViewModel.onEvent(CartEvents.ValueUpdateItemMovedToCart)
+        }
+    }
 
     Surface(color = Pink) {
         TopAppBar(
@@ -113,14 +134,7 @@ fun BookHubAppBar(
             },
             actions = {
                 if (isFavouritesVisible){
-                    IconButton(onClick = {
-                        if (favouriteState.value.favouriteList.isNotEmpty()) {
-                            showFavourites.value = true
-                        } else {
-                            showToast(context = context, message = "Favourite list is empty")
-                        }
-
-                    }) {
+                    IconButton(onClick = { showFavourites.value = true }) {
                         Image(
                             painter = painterResource(id = R.drawable.favourite_checked),
                             modifier = Modifier.size(25.dp),
@@ -147,23 +161,28 @@ fun BookHubAppBar(
 
     if (showFavourites.value){
         FavouritesBottomSheet(
-            favouriteState = favouriteState.value,
+            favouriteState = favouriteState,
             onEvents = { event ->
                 when (event) {
                     is FavouritesEvents.NavigateToBookDetailScreen -> {
                         navController.navigate(NavigationRoutes.BookDetailScreen.getBookDetail(event.bookID))
+                        showFavourites.value = false
                     }
-                    is FavouritesEvents.GoToCart -> {
+                    is FavouritesEvents.NavigateToCartScreen -> {
                         navController.navigate(NavigationRoutes.CartScreen.route)
+                        showFavourites.value = false
                     }
 
                     else -> {}
                 }
                 favouriteViewModel.onEvent(event)
             },
+            onCartEvents = { cartEvent ->
+                cartViewModel.onEvent(cartEvent)
+            },
             onDismiss = {
             showFavourites.value = false
         })
     }
-
 }
+

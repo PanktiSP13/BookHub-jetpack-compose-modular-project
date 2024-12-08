@@ -5,9 +5,11 @@ import com.pinu.domain.entities.network_service.request.UpdateItemQuantityReques
 
 sealed interface CartEvents {
     data object NavigateBack : CartEvents
-    data class AddToCart(val cartRequest: AddToCartRequest) : CartEvents
-    data class UpdateBookItemQuantity(val updateItemQuantityRequest: UpdateItemQuantityRequest) :
-        CartEvents
+    data object ClearToastMessage : CartEvents
+    data object ValueUpdateReloadBookDetail : CartEvents
+    data object ValueUpdateItemMovedToCart : CartEvents
+    data class AddToCart(val isFromBookDetail: Boolean, val cartRequest: AddToCartRequest) : CartEvents
+    data class UpdateBookItemQuantity(val updateItemQuantityRequest: UpdateItemQuantityRequest) : CartEvents
     data class RemoveBookItemFromCart(val bookId: Int) : CartEvents
     data class NavigateToBookDetailScreen(val bookId: Int) : CartEvents
     data object ClearCart : CartEvents

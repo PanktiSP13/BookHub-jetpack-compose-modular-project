@@ -1,19 +1,14 @@
 package com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -27,9 +22,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,7 +37,6 @@ import com.pinu.domain.entities.network_service.response.CartItemsResponse
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.OnSecondaryColor
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.PrimaryColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.CommonAlertDialog
 
@@ -59,6 +52,37 @@ fun CartItem(
     }
     val showAlert = remember {
         mutableStateOf(false)
+    }
+
+    fun onUpdateQuantityCTA(isQtyDecrease: Boolean) {
+        if (isQtyDecrease) {
+            if (qty.intValue > 1) {
+                qty.intValue -= 1
+
+                onEvent(
+                    CartEvents.UpdateBookItemQuantity(
+                        UpdateItemQuantityRequest(
+                            bookId = cartItem.bookId ?: 0,
+                            quantity = qty.intValue
+                        )
+                    )
+                )
+            } else {
+                showAlert.value = true
+            }
+
+        } else {
+            qty.intValue += 1
+            onEvent(
+                CartEvents.UpdateBookItemQuantity(
+                    UpdateItemQuantityRequest(
+                        bookId = cartItem.bookId ?: 0,
+                        quantity = qty.intValue
+                    )
+                )
+            )
+
+        }
     }
 
     Card(
@@ -108,77 +132,11 @@ fun CartItem(
                 Spacer(modifier = Modifier.padding(top = 6.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-                    Text(text = stringResource(R.string.qty), style = BookHubTypography.bodySmall)
-                    Box(contentAlignment = Alignment.Center) {
-                        IconButton(onClick = {
-                            if (qty.intValue > 1) {
-                                qty.intValue -= 1
 
-                                onEvent(
-                                    CartEvents.UpdateBookItemQuantity(
-                                        UpdateItemQuantityRequest(
-                                            bookId = cartItem.bookId ?: 0,
-                                            quantity = qty.intValue
-                                        )
-                                    )
-                                )
-                            } else {
-                                showAlert.value = true
-                            }
+                    QuantityItem(qtyValue = qty.intValue,
+                        onQtyDecrease = { onUpdateQuantityCTA(isQtyDecrease = true) },
+                        onQtyIncrease = { onUpdateQuantityCTA(isQtyDecrease = false) })
 
-                        },
-                            modifier = Modifier
-                                .padding(start = 6.dp)
-                                .size(25.dp)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.remove),
-                                contentDescription = "Add",
-                                tint = if (qty.intValue > 1) Color.Black else Color.LightGray,
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.padding(start = 4.dp))
-                    Box(
-                        modifier = Modifier
-                            .padding(start = 6.dp)
-                            .defaultMinSize(minWidth = 25.dp, minHeight = 25.dp)
-                            .border(
-                                border = BorderStroke(width = 1.dp, color = PrimaryColor),
-                                shape = RoundedCornerShape(4.dp)
-                            ), contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "${qty.intValue}",
-                            style = BookHubTypography.bodyMedium
-                        )
-                    }
-                    Spacer(modifier = Modifier.padding(start = 4.dp))
-                    Box(contentAlignment = Alignment.Center) {
-                        IconButton(
-                            onClick = {
-                                qty.intValue += 1
-
-                                onEvent(
-                                    CartEvents.UpdateBookItemQuantity(
-                                        UpdateItemQuantityRequest(
-                                            bookId = cartItem.bookId ?: 0,
-                                            quantity = qty.intValue
-                                        )
-                                    )
-                                )
-
-                            }, modifier = Modifier
-                                .padding(start = 6.dp)
-                                .size(25.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = stringResource(id = R.string.add)
-                            )
-                        }
-                    }
                     Spacer(modifier = Modifier.weight(1f))
                     IconButton(onClick = { showAlert.value = true }) {
                         Icon(

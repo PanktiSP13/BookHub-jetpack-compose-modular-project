@@ -1,12 +1,21 @@
 package com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.screens
 
+import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -15,9 +24,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -25,16 +41,17 @@ import androidx.navigation.compose.rememberNavController
 import com.pinu.domain.entities.events.CartEvents
 import com.pinu.domain.entities.states.CartState
 import com.pinu.domain.entities.viewmodels.CartViewModel
-import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.CartItem
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookHubAppBar
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.dialog.PaymentSuccessfulDialog
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.CartItem
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.GreenSuccess
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.OnPrimaryColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.PrimaryVariant
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.CommonAlertDialog
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showCustomToast
 
 @Composable
 fun CartRootUI(
@@ -53,8 +70,6 @@ fun CartRootUI(
             is CartEvents.NavigateBack -> navController.popBackStack()
 
             is CartEvents.ContinueShoppingNavigateToDashBoard -> {
-                // after successful payment, clear cart
-                cartViewModel.onEvent(CartEvents.ClearCart)
                 // redirect back to dashboard with removing all stack entries
                 navController.navigate(NavigationRoutes.DashboardScreen.route) {
                     // Clear the stack up to the root
@@ -83,11 +98,19 @@ fun CartScreenUI(
     onEvent: (CartEvents) -> Unit = {}
 ) {
 
+    val context = LocalContext.current
     val showAlert = remember { mutableStateOf(false) }
-    val showPaymentSuccessDialog = remember { mutableStateOf(false) }
+    val showPaymentProceedDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         onEvent(CartEvents.FetchCartHistory)
+    }
+
+    LaunchedEffect(cartState.toastMessage) {
+        cartState.toastMessage.message.takeIf { it.isNotEmpty() }?.let {
+            showCustomToast(context = context, toastMessage = cartState.toastMessage)
+            onEvent(CartEvents.ClearToastMessage)
+        }
     }
 
     Scaffold(
@@ -100,23 +123,30 @@ fun CartScreenUI(
             )
         },
         bottomBar = {
-            Button(
-                onClick = {
-                    showPaymentSuccessDialog.value = true
-                },
-                elevation = ButtonDefaults.elevatedButtonElevation(),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryVariant
-                )
-            ) {
-                Text(
-                    text = stringResource(R.string.proceed_to_checkout),
-                    color = OnPrimaryColor
-                )
+            if (cartState.cartItemResponse?.data?.items?.isNotEmpty() == true){
+                Button(
+                    onClick = {
+                        showPaymentProceedDialog.value = true
+                    },
+                    elevation = ButtonDefaults.elevatedButtonElevation(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PrimaryVariant
+                    )
+                ) {
+                    Text(
+                        text = stringResource(R.string.proceed_to_checkout),
+                        color = OnPrimaryColor
+                    )
+                    if (cartState.isLoadingForPayment) CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(start = 12.dp)
+                            .size(15.dp)
+                    )
+                }
             }
         }
     ) { contentPadding ->
@@ -129,6 +159,50 @@ fun CartScreenUI(
                 LazyColumn {
                     items(items = cartState.cartItemResponse?.data?.items ?: emptyList()) {
                         CartItem(cartItem = it,onEvent = onEvent)
+                    }
+                }
+            } else {
+                if (cartState.isLoading.not() && cartState.isLoadingForPayment.not() &&
+                    cartState.cartItemResponse?.data?.items?.isEmpty() == true
+                ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(18.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+
+                            Image(
+                                painter = painterResource(id = R.drawable.payment_success),
+                                contentDescription = stringResource(R.string.payment_success),
+                                modifier = Modifier.size(70.dp),
+                                contentScale = ContentScale.Crop
+                            )
+                            Spacer(modifier = Modifier.padding(top = 16.dp))
+                            Text(
+                                text = stringResource(R.string.payment_successful),
+                                style = BookHubTypography.headlineSmall.copy(fontWeight = FontWeight.Medium),
+                            )
+                            Spacer(modifier = Modifier.padding(top = 16.dp))
+                            Text(
+                                text = stringResource(R.string.payment_success_desc),
+                                style = BookHubTypography.titleSmall,
+                                textAlign = TextAlign.Center,
+                            )
+                            Spacer(modifier = Modifier.padding(top = 16.dp))
+                            ElevatedButton(
+                                onClick = { onEvent(CartEvents.ContinueShoppingNavigateToDashBoard) },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = GreenSuccess)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.continue_shopping),
+                                    style = TextStyle(color = Color.White)
+                                )
+                            }
+
+                        }
                     }
                 }
             }
@@ -144,12 +218,16 @@ fun CartScreenUI(
                 showAlert.value = false
             })
     }
-    if (showPaymentSuccessDialog.value) {
-        PaymentSuccessfulDialog(onDismiss = {
-            showPaymentSuccessDialog.value = false
-        }, onContinueShoppingClicked = {
-            showPaymentSuccessDialog.value = false
-            onEvent(CartEvents.ContinueShoppingNavigateToDashBoard)
+    if (showPaymentProceedDialog.value) {
+        CommonAlertDialog(
+            title = stringResource(R.string.are_you_sure_you_want_to_proceed),
+            positiveButtonText = stringResource(R.string.yes),
+            negativeButtonText = stringResource(R.string.no),
+            onNegativeButtonClicked = {
+                showPaymentProceedDialog.value = false
+            }, onPositiveButtonClicked = {
+                onEvent(CartEvents.ClearCart)
+                showPaymentProceedDialog.value = false
         })
     }
 

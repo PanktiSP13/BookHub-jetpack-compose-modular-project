@@ -15,10 +15,11 @@ fun RenderScreen(
     onLoading: @Composable () -> Unit = {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
     },
-    onError: @Composable () -> Unit = {}
+    onError: @Composable () -> Unit = {},
+    modifier: Modifier? = null
 ) {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier ?: Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
 

@@ -28,7 +28,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.pinu.domain.entities.events.CartEvents
 import com.pinu.domain.entities.events.FavouritesEvents
+import com.pinu.domain.entities.network_service.request.AddToCartRequest
 import com.pinu.domain.entities.network_service.response.BookResponse
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
@@ -42,7 +44,8 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.CommonAler
 @Composable
 fun FavouriteItem(
     favouriteItem: BookResponse.BookItemResponse = defaultBook,
-    onEvents: (FavouritesEvents) -> Unit = {}
+    onEvents: (FavouritesEvents) -> Unit = {},
+    onCartEvents: (CartEvents) -> Unit = {}
 ) {
 
     val showRemoveFromFavouriteDialog = remember { mutableStateOf(false) }
@@ -69,7 +72,8 @@ fun FavouriteItem(
                 contentDescription = stringResource(id = R.string.book),
                 modifier = Modifier
                     .size(width = 50.dp, height = 70.dp)
-                    .clip(RoundedCornerShape(6.dp)).clickable {
+                    .clip(RoundedCornerShape(6.dp))
+                    .clickable {
                         onEvents(FavouritesEvents.NavigateToBookDetailScreen(favouriteItem.id))
                     },
                 contentScale = ContentScale.Crop
@@ -119,7 +123,7 @@ fun FavouriteItem(
                         ),
                         modifier = Modifier.clickable {
                             if (favouriteItem.isInCart){
-                                onEvents(FavouritesEvents.GoToCart)
+                                onEvents(FavouritesEvents.NavigateToCartScreen)
                             }else{
                                 showMoveToCartDialog.value = true
                             }
@@ -139,7 +143,15 @@ fun FavouriteItem(
                 showMoveToCartDialog.value = false
             },
             onPositiveButtonClicked = {
-                onEvents(FavouritesEvents.MoveToCart(favouriteItem.id))
+                onCartEvents(
+                    CartEvents.AddToCart(
+                        isFromBookDetail = false,
+                        cartRequest = AddToCartRequest(
+                            bookId = favouriteItem.id,
+                            qty = 1
+                        )
+                    )
+                )
                 showMoveToCartDialog.value = false
             })
     }

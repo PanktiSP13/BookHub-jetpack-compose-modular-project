@@ -85,7 +85,6 @@ class DashboardViewModel @Inject constructor(private val profileRepo: ProfileRep
                     )
                 }, onFailure = {
                     onFailure(it.message ?: "")
-                    Log.e("@@@@@", "updateProfilePic: ${it.message}" )
                 })
             }
         }

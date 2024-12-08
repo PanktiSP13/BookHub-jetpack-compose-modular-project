@@ -1,6 +1,7 @@
 package com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.books.screens
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Column
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,12 +21,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,23 +47,27 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.pinu.domain.entities.ToastMessage
+import com.pinu.domain.entities.ToastMessageType
 import com.pinu.domain.entities.events.BooksEvents
 import com.pinu.domain.entities.events.CartEvents
 import com.pinu.domain.entities.events.FavouritesEvents
 import com.pinu.domain.entities.network_service.request.AddToCartRequest
 import com.pinu.domain.entities.states.BooksState
+import com.pinu.domain.entities.states.CartState
+import com.pinu.domain.entities.states.FavouritesState
 import com.pinu.domain.entities.viewmodels.BooksViewModel
 import com.pinu.domain.entities.viewmodels.CartViewModel
 import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookHubAppBar
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.QuantityItem
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.BookHubTypography
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.OnPrimaryColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.PrimaryVariant
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.TextSecondary
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.RenderScreen
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showCustomToast
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showToast
 
@@ -67,56 +75,44 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showToast
 fun BookDetailRootUI(
     navController: NavController = rememberNavController(),
     booksViewModel: BooksViewModel,
-    favouriteViewModel: FavouriteViewModel
+    favouriteViewModel: FavouriteViewModel,
+    cartViewModel: CartViewModel
 ) {
 
-    val booksState = booksViewModel.bookState.collectAsState(initial = BooksState())
-
-    val cartViewModel = hiltViewModel<CartViewModel>()
-
-    BookDetailScreen(booksState = booksState.value,
+    BookDetailScreen(
+        booksState = booksViewModel.bookState.collectAsState().value,
+        cartState = cartViewModel.cartState.collectAsState().value,
+        favouritesState = favouriteViewModel.favouriteState.collectAsState().value,
         favouriteViewModel = favouriteViewModel,
-        navController = navController, onEvent = { events ->
+        navController = navController,
+        onEvent = { events ->
             when (events) {
                 is BooksEvents.NavigateBack -> navController.popBackStack()
-                is BooksEvents.AddToCart -> {
-                    // Book Detail Screen triggers the event, but the cart management logic stays centralized.
-                    // todo request model here
-                    cartViewModel.onEvent(
-                        CartEvents.AddToCart(
-                            AddToCartRequest(
-                                bookId = events.bookID,
-                                qty = 0
-                            )
-                        )
-                    )
-                }
-                is BooksEvents.GoToCart ->{
+                is BooksEvents.NavigateToCartScreen -> {
                     navController.navigate(route = NavigationRoutes.CartScreen.route)
                 }
-                is BooksEvents.AddAsFavourite ->{
-                    // Book Detail Screen triggers the event, but the favourite management logic stays centralized.
-                    favouriteViewModel.onEvent(FavouritesEvents.AddAsFavourite(events.bookID))
-                }
-                is BooksEvents.RemoveFromFavourites ->{
-                    favouriteViewModel.onEvent(FavouritesEvents.RemoveFromFavourites(events.bookID))
-                }
-
                 else -> {
                     // do nothing
                 }
             }
             booksViewModel.onEvent(events)
-        })
+        },
+        onCartEvent = cartViewModel::onEvent,
+        onFavouriteEvent = favouriteViewModel::onEvent
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun BookDetailScreen(
     booksState: BooksState = BooksState(),
+    cartState: CartState = CartState(),
+    favouritesState: FavouritesState = FavouritesState(),
     favouriteViewModel: FavouriteViewModel = hiltViewModel<FavouriteViewModel>(),
     navController: NavController = rememberNavController(),
-    onEvent: (BooksEvents) -> Unit = {}
+    onEvent: (BooksEvents) -> Unit = {},
+    onCartEvent: (CartEvents) -> Unit = {},
+    onFavouriteEvent: (FavouritesEvents) -> Unit = {}
 ) {
 
     val scrollState = rememberScrollState()
@@ -125,17 +121,86 @@ fun BookDetailScreen(
     val isItemInCart = remember { mutableStateOf(false) }
     val context = LocalContext.current
 
+    val qty = remember { mutableIntStateOf(1) }
 
     LaunchedEffect(booksState.selectedBookDetail) {
         isFavourite.value = booksState.selectedBookDetail?.isFavourite ?: false
         isItemInCart.value = booksState.selectedBookDetail?.isInCart ?: false
     }
-
-
     LaunchedEffect(key1 = booksState.toastMessage) {
         showCustomToast(context = context, toastMessage = booksState.toastMessage)
         onEvent(BooksEvents.ClearToastMessage)
     }
+
+    LaunchedEffect(key1 = cartState.toastMessage) {
+        showCustomToast(context = context, toastMessage = cartState.toastMessage)
+        onCartEvent(CartEvents.ClearToastMessage)
+    }
+
+    LaunchedEffect(key1 = favouritesState.toastMessage) {
+        showCustomToast(context = context, toastMessage = favouritesState.toastMessage)
+        onFavouriteEvent(FavouritesEvents.ClearToastMessage)
+    }
+
+    LaunchedEffect(key1 = cartState.reloadBookDetail) {
+        cartState.reloadBookDetail.takeIf { it }?.let {
+            onEvent(BooksEvents.FetchBookDetails(bookId = booksState.selectedBookDetail?.id ?: 0))
+            onCartEvent(CartEvents.ValueUpdateReloadBookDetail)
+        }
+    }
+
+
+    fun addToCartCTA() {
+        if (isItemInCart.value) {
+            onEvent(BooksEvents.NavigateToCartScreen)
+        } else {
+            onCartEvent(
+                CartEvents.AddToCart(
+                    isFromBookDetail = true,
+                    AddToCartRequest(
+                        bookId = booksState.selectedBookDetail?.id ?: 0,
+                        qty = qty.intValue
+                    )
+                )
+            )
+        }
+    }
+
+    fun onFavouriteCTA(isFavourited: Boolean) {
+        isFavourite.value = isFavourited
+        if (isFavourite.value) {
+            onFavouriteEvent(
+                FavouritesEvents.AddAsFavourite(
+                    booksState.selectedBookDetail?.id ?: 0
+                )
+            )
+        } else {
+            onFavouriteEvent(
+                FavouritesEvents.RemoveFromFavourites(
+                    booksState.selectedBookDetail?.id ?: 0
+                )
+            )
+        }
+    }
+
+    fun onUpdateQuantityCTA(isQtyDecrease: Boolean) {
+        if (isQtyDecrease) {
+            if (qty.intValue > 1) {
+                qty.intValue -= 1
+            } else {
+                showCustomToast(
+                    context,
+                    toastMessage = ToastMessage(
+                        type = ToastMessageType.WARNING,
+                        message = context.getString(R.string.qty_validation)
+                    )
+                )
+            }
+        } else {
+            qty.intValue += 1
+        }
+    }
+
 
     Scaffold(
         containerColor = SurfaceColor,
@@ -147,41 +212,18 @@ fun BookDetailScreen(
         },
         bottomBar = {
             BookDetailBottomCard(context = context,
+                isLoading = cartState.isLoading,
                 isItemInCart = booksState.selectedBookDetail?.isInCart ?: isItemInCart.value,
                 isFavourite = isFavourite.value,
-                addToCart = {
-                    if (isItemInCart.value) {
-                        onEvent(BooksEvents.GoToCart)
-                    } else {
-                        onEvent(BooksEvents.AddToCart(booksState.selectedBookDetail?.id ?: 0))
-                    }
-
-                    // first perform action and then change title ... todo remove this for final change
-                    isItemInCart.value = !isItemInCart.value
-
-                },
-                onFavouriteChange = {
-
-                    isFavourite.value = it
-                    favouriteMessage.value = if (it) context.getString(R.string.book_added_to_your_favourites) else context.getString(R.string.book_removed_from_your_favourites)
-                    showToast(context, favouriteMessage.value)
-
-                    if (isFavourite.value) {
-                        onEvent(BooksEvents.AddAsFavourite(booksState.selectedBookDetail?.id ?: 0))
-                    } else {
-                        onEvent(BooksEvents.RemoveFromFavourites(booksState.selectedBookDetail?.id ?: 0))
-                    }
-
-                })
+                addToCart = ::addToCartCTA,
+                onFavouriteChange = ::onFavouriteCTA
+            )
         }) { contentPadding ->
         Surface(
             modifier = Modifier.padding(contentPadding),
             color = SurfaceColor
         ) {
 
-            RenderScreen(
-                isLoading = booksState.isLoading,
-                onSuccess = {
                     Column(
                         horizontalAlignment = Alignment.Start,
                         modifier = Modifier
@@ -205,7 +247,8 @@ fun BookDetailScreen(
                         Text(
                             text = booksState.selectedBookDetail?.name ?: "",
                             style = BookHubTypography.headlineSmall.copy(fontWeight = FontWeight.Medium),
-                            overflow = TextOverflow.Ellipsis, maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 2,
                         )
                         Spacer(modifier = Modifier.padding(top = 12.dp))
                         Text(
@@ -215,6 +258,11 @@ fun BookDetailScreen(
                             modifier = Modifier.fillMaxWidth()
                         )
                         Spacer(modifier = Modifier.padding(top = 12.dp))
+
+                        QuantityItem(qtyValue = qty.intValue,
+                            onQtyIncrease = { onUpdateQuantityCTA(false) },
+                            onQtyDecrease = { onUpdateQuantityCTA(true) })
+
                         Text(
                             text = "$${booksState.selectedBookDetail?.price ?: 0.0}",
                             style = BookHubTypography.headlineMedium.copy(color = PrimaryVariant),
@@ -229,15 +277,14 @@ fun BookDetailScreen(
                         )
 
                     }
-                },
-            )
         }
     }
-
 }
+
 
 @Composable
 fun BookDetailBottomCard(
+    isLoading: Boolean,
     isItemInCart: Boolean,
     context: Context, isFavourite: Boolean,
     addToCart: () -> Unit,
@@ -253,9 +300,7 @@ fun BookDetailBottomCard(
         Card(shape = CircleShape,
             colors = CardDefaults.cardColors(Color.White),
             elevation = CardDefaults.cardElevation(4.dp),
-            onClick = {
-                onFavouriteChange(!isFavourite)
-            }) {
+            onClick = { onFavouriteChange(!isFavourite) }) {
             Image(
                 painter = painterResource(id = if (isFavourite) R.drawable.favourite_checked else R.drawable.favourite_unchecked),
                 contentDescription = if (isFavourite) context.getString(R.string.book_added_to_your_favourites) else context.getString(
@@ -278,6 +323,11 @@ fun BookDetailBottomCard(
             Text(
                 text = if (isItemInCart) stringResource(R.string.go_to_cart) else stringResource(R.string.add_to_cart),
                 color = OnPrimaryColor,
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            if (isLoading) CircularProgressIndicator(
+                color = Color.White,
+                modifier = Modifier.size(15.dp)
             )
         }
     }

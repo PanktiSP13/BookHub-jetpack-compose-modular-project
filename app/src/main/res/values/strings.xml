@@ -58,4 +58,9 @@
     <string name="update">Update</string>
     <string name="success">Success</string>
     <string name="error">Error</string>
+    <string name="qty_validation">Quantity must be at least 1</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="no_favourites_found">No favourites found</string>
+    <string name="cart_is_empty_continue_shopping">Cart is empty! Continue shopping</string>
+    <string name="are_you_sure_you_want_to_proceed">Are you sure you want to proceed payment?</string>
 </resources>

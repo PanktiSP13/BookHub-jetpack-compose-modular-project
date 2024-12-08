@@ -2,12 +2,15 @@ package com.pinu.domain.entities.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pinu.domain.entities.ToastMessage
+import com.pinu.domain.entities.ToastMessageType
 import com.pinu.domain.entities.events.FavouritesEvents
 import com.pinu.domain.entities.states.FavouritesState
 import com.pinu.domain.repositories.FavouriteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,12 +34,15 @@ class FavouriteViewModel @Inject constructor(private val favouriteRepo: Favourit
 
     private fun getFavourites() {
         viewModelScope.launch {
+
+            _favouriteState.update { it.copy(isLoading = true) }
+
             favouriteRepo.fetchFavourites().collect { data ->
                 data.fold(onSuccess = {
                     _favouriteState.value = _favouriteState.value.copy(
-                        favouriteList = it.data ?: emptyList())
+                        favouriteList = it.data ?: emptyList(), isLoading = false)
                 }, onFailure = {
-                    setErrorMessage(it.message ?: "")
+                    onFailure(it.message ?: "")
                 })
             }
         }
@@ -48,9 +54,13 @@ class FavouriteViewModel @Inject constructor(private val favouriteRepo: Favourit
                 data.fold(onSuccess = {
                     _favouriteState.value =
                         _favouriteState.value.copy(favouriteList = it.data ?: emptyList(),
-                             successMessage = it.message)
+                            toastMessage = ToastMessage(
+                                type = ToastMessageType.SUCCESS,
+                                message = it.message
+                            )
+                        )
                 }, onFailure = {
-                    setErrorMessage(it.message ?: "")
+                    onFailure(it.message ?: "")
                 })
             }
         }
@@ -62,19 +72,25 @@ class FavouriteViewModel @Inject constructor(private val favouriteRepo: Favourit
                 data.fold(onSuccess = {
                     _favouriteState.value =
                         _favouriteState.value.copy(favouriteList = it.data ?: emptyList(),
-                            successMessage = it.message)
+                            toastMessage = ToastMessage(
+                                type = ToastMessageType.SUCCESS,
+                                message = it.message
+                            ))
                 }, onFailure = {
-                    setErrorMessage(it.message ?: "")
+                    onFailure(it.message ?: "")
                 })
             }
         }
     }
 
-    private fun setErrorMessage(errorMessage: String) {
-        _favouriteState.value = _favouriteState.value.copy(errorMessage = errorMessage)
+    private fun onFailure(errorMessage: String) {
+        _favouriteState.update {
+            it.copy(
+                toastMessage = ToastMessage(type = ToastMessageType.ERROR, message = errorMessage),
+                isLoading = false
+            )
+        }
     }
 
-    private fun updateSuccessMessage(successMessage: String) {
-        _favouriteState.value = _favouriteState.value.copy(errorMessage = successMessage)
-    }
+
 }

@@ -42,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.pinu.domain.entities.viewmodels.CartViewModel
 import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
@@ -55,6 +56,7 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.CommonAler
 fun DashboardRootUI(
     navController: NavController = rememberNavController(),
     favouriteViewModel: FavouriteViewModel = hiltViewModel<FavouriteViewModel>(),
+    cartViewModel: CartViewModel = hiltViewModel<CartViewModel>(),
 ) {
 
     val showExitDialog = remember { mutableStateOf(false) }
@@ -82,8 +84,12 @@ fun DashboardRootUI(
     Scaffold(
         topBar = {
             BookHubAppBar(
-                title = "Dashboard", navController = navController,
-                favouriteViewModel = favouriteViewModel
+                title = stringResource(R.string.dashboard),
+                navController = navController,
+                isCartVisible = true, isFavouritesVisible = true,
+                isProfileOptionAvailable = true,
+                favouriteViewModel = favouriteViewModel,
+                cartViewModel = cartViewModel
             )
         },
 
@@ -111,13 +117,6 @@ fun DashboardRootUI(
                         modifier = Modifier
                             .size(100.dp, 120.dp)
                             .scale(scale),
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = stringResource(R.string.press_me),
-                        textAlign = TextAlign.Center,
-                        style = BookHubTypography.bodyLarge.copy(color = TextPrimary),
-                        modifier = Modifier.scale(scale)
                     )
                 }
 
