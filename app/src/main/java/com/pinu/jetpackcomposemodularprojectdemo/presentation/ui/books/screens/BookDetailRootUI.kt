@@ -1,7 +1,6 @@
 package com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.books.screens
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.layout.Column
@@ -69,7 +68,6 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.PrimaryVa
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.TextSecondary
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showCustomToast
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showToast
 
 @Composable
 fun BookDetailRootUI(
@@ -117,7 +115,6 @@ fun BookDetailScreen(
 
     val scrollState = rememberScrollState()
     val isFavourite = remember { mutableStateOf(false) }
-    val favouriteMessage = remember { mutableStateOf("") }
     val isItemInCart = remember { mutableStateOf(false) }
     val context = LocalContext.current
 

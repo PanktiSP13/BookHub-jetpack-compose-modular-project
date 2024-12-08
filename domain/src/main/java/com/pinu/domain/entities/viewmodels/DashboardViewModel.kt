@@ -1,6 +1,5 @@
 package com.pinu.domain.entities.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pinu.domain.entities.ToastMessage

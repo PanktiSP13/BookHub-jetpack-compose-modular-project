@@ -13,7 +13,6 @@ import androidx.navigation.navArgument
 import com.pinu.domain.entities.events.BooksEvents
 import com.pinu.domain.entities.viewmodels.BooksViewModel
 import com.pinu.domain.entities.viewmodels.CartViewModel
-import com.pinu.domain.entities.viewmodels.DashboardViewModel
 import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavArguments
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes

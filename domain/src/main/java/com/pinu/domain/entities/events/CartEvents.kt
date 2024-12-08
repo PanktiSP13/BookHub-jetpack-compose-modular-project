@@ -15,5 +15,4 @@ sealed interface CartEvents {
     data object ClearCart : CartEvents
     data object FetchCartHistory : CartEvents
     data object ContinueShoppingNavigateToDashBoard : CartEvents
-    data object ProceedToCheckout : CartEvents
 }
