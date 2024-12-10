@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.pinu.domain.entities.ToastMessage
 import com.pinu.domain.entities.ToastMessageType
 import com.pinu.domain.entities.events.FavouritesEvents
+import com.pinu.domain.entities.events.SharedEvents
 import com.pinu.domain.entities.states.FavouritesState
 import com.pinu.domain.repositories.FavouriteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FavouriteViewModel @Inject constructor(private val favouriteRepo: FavouriteRepository):ViewModel() {
+class FavouriteViewModel @Inject constructor(
+    private val sharedViewModel: SharedViewModel,
+    private val favouriteRepo: FavouriteRepository,
+) : ViewModel() {
 
     private val _favouriteState = MutableStateFlow(FavouritesState())
     val favouriteState = _favouriteState.asStateFlow()
@@ -51,14 +55,12 @@ class FavouriteViewModel @Inject constructor(private val favouriteRepo: Favourit
     private fun addToFavourites(bookId: Int) {
         viewModelScope.launch {
             favouriteRepo.addToFavourites(bookId).collect { data ->
-                data.fold(onSuccess = {
-                    _favouriteState.value =
-                        _favouriteState.value.copy(favouriteList = it.data ?: emptyList(),
-                            toastMessage = ToastMessage(
-                                type = ToastMessageType.SUCCESS,
-                                message = it.message
-                            )
-                        )
+                data.fold(onSuccess = { favourites ->
+
+                    _favouriteState.update {
+                        it.copy(favouriteList = favourites.data ?: emptyList())
+                    }
+                    showToastMessage(ToastMessageType.SUCCESS,favourites.message)
                 }, onFailure = {
                     onFailure(it.message ?: "")
                 })
@@ -69,13 +71,12 @@ class FavouriteViewModel @Inject constructor(private val favouriteRepo: Favourit
     private fun removeFromFavourites(bookId: Int) {
         viewModelScope.launch {
             favouriteRepo.removeFromFavourites(bookId).collect { data ->
-                data.fold(onSuccess = {
-                    _favouriteState.value =
-                        _favouriteState.value.copy(favouriteList = it.data ?: emptyList(),
-                            toastMessage = ToastMessage(
-                                type = ToastMessageType.SUCCESS,
-                                message = it.message
-                            ))
+                data.fold(onSuccess = { favourites ->
+                    _favouriteState.update {
+                        it.copy(favouriteList = favourites.data ?: emptyList())
+                    }
+                    showToastMessage(ToastMessageType.SUCCESS,favourites.message)
+
                 }, onFailure = {
                     onFailure(it.message ?: "")
                 })
@@ -84,12 +85,12 @@ class FavouriteViewModel @Inject constructor(private val favouriteRepo: Favourit
     }
 
     private fun onFailure(errorMessage: String) {
-        _favouriteState.update {
-            it.copy(
-                toastMessage = ToastMessage(type = ToastMessageType.ERROR, message = errorMessage),
-                isLoading = false
-            )
-        }
+        _favouriteState.update { it.copy(isLoading = false) }
+        showToastMessage(ToastMessageType.ERROR,errorMessage)
+    }
+
+    private fun showToastMessage(type: ToastMessageType, msg: String) {
+        sharedViewModel.onEvent(SharedEvents.ShowToastMessage(ToastMessage(type = type, message = msg)))
     }
 
 

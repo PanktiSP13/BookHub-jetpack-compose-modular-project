@@ -22,6 +22,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,26 +36,38 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.pinu.domain.entities.AppBarEvents
+import com.pinu.domain.entities.AppBarState
+import com.pinu.domain.entities.AppBarUIConfig
+import com.pinu.domain.entities.events.CartEvents
+import com.pinu.domain.entities.events.FavouritesEvents
+import com.pinu.domain.entities.events.ProfileEvents
+import com.pinu.domain.entities.events.SharedEvents
 import com.pinu.domain.entities.viewmodels.CartViewModel
 import com.pinu.domain.entities.viewmodels.FavouriteViewModel
+import com.pinu.domain.entities.viewmodels.SharedViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookHubAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.CommonAlertDialog
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showCustomToast
 
 @Preview(showBackground = true)
 @Composable
 fun DashboardRootUI(
     navController: NavController = rememberNavController(),
-    favouriteViewModel: FavouriteViewModel = hiltViewModel<FavouriteViewModel>(),
-    cartViewModel: CartViewModel = hiltViewModel<CartViewModel>(),
+    favouriteViewModel: FavouriteViewModel = viewModel(),
+    cartViewModel: CartViewModel = viewModel(),
+    sharedViewModel: SharedViewModel = viewModel(),
 ) {
 
     val showExitDialog = remember { mutableStateOf(false) }
     val activity = LocalContext.current as? Activity  // Get the current activity
+    val context = LocalContext.current
+    val sharedState = sharedViewModel.sharedState.collectAsState().value
 
 
     // Define an infinite transition
@@ -69,6 +83,12 @@ fun DashboardRootUI(
         ), label = ""
     )
 
+
+    LaunchedEffect(key1 = sharedState.toastMessage) {
+        showCustomToast(context, sharedState.toastMessage)
+        sharedViewModel.onEvent(SharedEvents.ClearToastMessage)
+    }
+
     // Intercept back press
     BackHandler {
         showExitDialog.value = true
@@ -77,12 +97,56 @@ fun DashboardRootUI(
     Scaffold(
         topBar = {
             BookHubAppBar(
-                title = stringResource(R.string.dashboard),
-                navController = navController,
-                isCartVisible = true, isFavouritesVisible = true,
-                isProfileOptionAvailable = true,
-                favouriteViewModel = favouriteViewModel,
-                cartViewModel = cartViewModel
+                appBarUIConfig = AppBarUIConfig(
+                    title = stringResource(R.string.dashboard),
+                    isCartVisible = true,
+                    isFavouritesVisible = true,
+                    isProfileOptionAvailable = true
+                ),
+                appBarState = AppBarState(
+                    cartState = cartViewModel.cartState.collectAsState().value,
+                    favouriteState = favouriteViewModel.favouriteState.collectAsState().value
+                ),
+                appBarEvents = AppBarEvents(
+                    cartEvents = {
+                        when (it) {
+                            is CartEvents.ValueUpdateItemMovedToCart -> {
+                                navController.navigate(route = NavigationRoutes.CartScreen.route)
+                            }
+
+                            is CartEvents.NavigateToCartScreen -> {
+                                navController.navigate(route = NavigationRoutes.CartScreen.route)
+                            }
+                            else -> {}
+                        }
+                        cartViewModel.onEvent(it)
+                    },
+                    favouriteEvents = {
+                        when (it) {
+                            is FavouritesEvents.NavigateToBookDetailScreen -> {
+                                navController.navigate(
+                                    NavigationRoutes.BookDetailScreen.getBookDetail(
+                                        it.bookID
+                                    )
+                                )
+                            }
+
+                            else -> {}
+
+                        }
+                        favouriteViewModel.onEvent(it)
+                    },
+                    profileEvents = {
+                        when (it) {
+                            is ProfileEvents.NavigateToProfileScreen -> {
+                                navController.navigate(route = NavigationRoutes.ProfileScreen.route)
+                            }
+
+                            else -> {}
+                        }
+                    },
+                    onBackPressed = { navController.popBackStack() }
+                ),
             )
         },
 

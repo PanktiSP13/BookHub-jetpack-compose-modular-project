@@ -60,13 +60,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.pinu.domain.entities.ToastMessage
-import com.pinu.domain.entities.ToastMessageType
+import com.pinu.domain.entities.AppBarEvents
+import com.pinu.domain.entities.AppBarUIConfig
 import com.pinu.domain.entities.events.ProfileEvents
 import com.pinu.domain.entities.network_service.request.ProfileRequest
 import com.pinu.domain.entities.states.ProfileState
@@ -85,7 +84,6 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.CommonForm
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.FileUtils
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.Permissions.imagePickerPermission
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.checkIfAllPermissionGranted
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.getImageUri
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showCustomToast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -206,11 +204,13 @@ fun ProfileScreen(
 
     Scaffold(topBar = {
         BookHubAppBar(
-            isProfileOptionAvailable = false,
-            isFavouritesVisible = false,
-            isCartVisible = false, canGoBack = true,
-            title = stringResource(R.string.profile),
-            navController = navController
+            appBarUIConfig = AppBarUIConfig(
+                title = stringResource(R.string.profile),
+                isProfileOptionAvailable = false,
+                isFavouritesVisible = false,
+                isCartVisible = false, canGoBack = true
+            ),
+            appBarEvents = AppBarEvents(onBackPressed = { navController.popBackStack() })
         )
     },
         bottomBar = {

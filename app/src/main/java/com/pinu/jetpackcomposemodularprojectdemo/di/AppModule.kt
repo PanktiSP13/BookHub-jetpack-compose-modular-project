@@ -3,6 +3,7 @@ package com.pinu.jetpackcomposemodularprojectdemo.di
 import android.content.Context
 import com.pinu.data.db.BookHubDatabase
 import com.pinu.data.network.Network
+import com.pinu.domain.entities.viewmodels.SharedViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.MyApplication
 import dagger.Module
 import dagger.Provides
@@ -17,9 +18,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun providesNetwork(): Network {
-        return Network.init()
-    }
+    fun providesNetwork(): Network = Network.init()
 
 
     @Singleton
@@ -27,5 +26,9 @@ object AppModule {
     fun providesBookHubDatabase(@ApplicationContext context: Context): BookHubDatabase {
         return BookHubDatabase.getDatabase(context)
     }
+
+    @Singleton
+    @Provides
+    fun providesSharedViewModel() :SharedViewModel = SharedViewModel()
 
 }

@@ -19,16 +19,23 @@ class SharedViewModel @Inject constructor() : ViewModel() {
 
     fun onEvent(sharedEvents: SharedEvents) {
         when (sharedEvents) {
-            is SharedEvents.ClearToastMessage -> _sharedState.update {
-                it.copy(
-                    toastMessage = ToastMessage(
-                        type = ToastMessageType.NONE,
-                        message = ""
-                    )
-                )
-            }
-            is SharedEvents.ShowToastMessage -> _sharedState.update { it.copy(toastMessage = it.toastMessage) }
-
+            is SharedEvents.ClearToastMessage -> clearToast()
+            is SharedEvents.ShowToastMessage -> showToast(sharedEvents.toastMessage)
         }
+    }
+
+    private fun clearToast() {
+        _sharedState.update {
+            it.copy(
+                toastMessage = ToastMessage(
+                    type = ToastMessageType.NONE,
+                    message = ""
+                )
+            )
+        }
+    }
+
+    private fun showToast(toastMessage: ToastMessage) {
+        _sharedState.update { it.copy(toastMessage = toastMessage) }
     }
 }

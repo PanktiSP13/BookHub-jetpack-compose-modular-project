@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.pinu.domain.entities.ToastMessage
 import com.pinu.domain.entities.ToastMessageType
 import com.pinu.domain.entities.events.CartEvents
+import com.pinu.domain.entities.events.SharedEvents
 import com.pinu.domain.entities.network_service.request.AddToCartRequest
 import com.pinu.domain.entities.network_service.request.UpdateItemQuantityRequest
 import com.pinu.domain.entities.states.CartState
@@ -17,7 +18,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CartViewModel @Inject constructor(private val cartRepo: CartRepository) : ViewModel() {
+class CartViewModel @Inject constructor(
+    private val sharedViewModel: SharedViewModel,
+    private val cartRepo: CartRepository,
+) : ViewModel() {
 
     private val _cartState = MutableStateFlow(CartState())
     val cartState = _cartState.asStateFlow()
@@ -31,6 +35,7 @@ class CartViewModel @Inject constructor(private val cartRepo: CartRepository) : 
             is CartEvents.RemoveBookItemFromCart -> removeItemFromCart(events.bookId)
             is CartEvents.UpdateBookItemQuantity -> updateItemQuantity(events.updateItemQuantityRequest)
             is CartEvents.ClearToastMessage -> {
+                //todo remove
                 _cartState.update {
                     it.copy(
                         toastMessage = ToastMessage(
@@ -60,8 +65,7 @@ class CartViewModel @Inject constructor(private val cartRepo: CartRepository) : 
         viewModelScope.launch {
             cartRepo.fetchCartHistory().collect { data ->
                 data.fold(onSuccess = {
-                    _cartState.value =
-                        _cartState.value.copy(cartItemResponse = it, isLoading = false)
+                    _cartState.value = _cartState.value.copy(cartItemResponse = it, isLoading = false)
                 }, onFailure = { onFailure(it.message ?: "") })
             }
         }
@@ -72,10 +76,14 @@ class CartViewModel @Inject constructor(private val cartRepo: CartRepository) : 
         viewModelScope.launch {
             _cartState.update { it.copy(isLoadingForPayment = true) }
             cartRepo.clearCart().collect { data ->
-                data.fold(onSuccess = {
-                    _cartState.value = _cartState.value.copy(
-                        cartItemResponse = it,
-                        isLoadingForPayment = false)
+                data.fold(onSuccess = { response ->
+                    _cartState.update {
+                        it.copy(
+                        cartItemResponse = response,
+                            isLoadingForPayment = false
+                        )
+                    }
+
                 }, onFailure = {
                     _cartState.update { it.copy(isLoadingForPayment = false) }
                     onFailure(it.message ?: "")
@@ -91,18 +99,14 @@ class CartViewModel @Inject constructor(private val cartRepo: CartRepository) : 
 
             cartRepo.addToCart(cartRequest).collect { data ->
 
-                data.fold(onSuccess = {
-                    _cartState.value = _cartState.value.copy(
-                        cartItemResponse = it,
-                        toastMessage = ToastMessage(
-                            type = ToastMessageType.SUCCESS,
-                            message = it.message
-                        ),
-                        isLoading = false,
-                        reloadBookDetail = isFromBookDetail,
-                        itemMovedToCart = true
-                    )
-
+                data.fold(onSuccess = { response ->
+                    _cartState.update {
+                        it.copy(
+                            cartItemResponse = response, isLoading = false,
+                            reloadBookDetail = isFromBookDetail, itemMovedToCart = true
+                        )
+                    }
+                    showToastMessage(ToastMessageType.SUCCESS, response.message)
                 }, onFailure = { onFailure(it.message ?: "") })
             }
         }
@@ -111,14 +115,9 @@ class CartViewModel @Inject constructor(private val cartRepo: CartRepository) : 
     private fun removeItemFromCart(bookID: Int) {
         viewModelScope.launch {
             cartRepo.removeItemFromCart(bookID).collect { data ->
-                data.fold(onSuccess = {
-                    _cartState.value = _cartState.value.copy(
-                        cartItemResponse = it,
-                        toastMessage = ToastMessage(
-                            type = ToastMessageType.SUCCESS,
-                            message = it.message
-                        )
-                    )
+                data.fold(onSuccess = { response ->
+                    _cartState.update { it.copy(cartItemResponse = response) }
+                    showToastMessage(ToastMessageType.SUCCESS, response.message)
                 }, onFailure = { onFailure(it.message ?: "") })
             }
         }
@@ -127,29 +126,29 @@ class CartViewModel @Inject constructor(private val cartRepo: CartRepository) : 
     private fun updateItemQuantity(updateItemQuantityRequest: UpdateItemQuantityRequest) {
         viewModelScope.launch {
             cartRepo.updateItemQuantity(updateItemQuantityRequest).collect { data ->
-                data.fold(onSuccess = {
-                    _cartState.value = _cartState.value.copy(
-                        cartItemResponse = it, isLoading = false,
-                        toastMessage = ToastMessage(
-                            type = ToastMessageType.SUCCESS,
-                            message = it.message
-                        )
-                    )
+                data.fold(onSuccess = { response ->
+                    _cartState.update { it.copy(cartItemResponse = response, isLoading = false) }
+                    showToastMessage(ToastMessageType.SUCCESS, response.message)
                 }, onFailure = { onFailure(it.message ?: "") })
             }
         }
     }
 
     private fun onFailure(errorMessage: String) {
-        _cartState.update {
-            it.copy(
-                toastMessage = ToastMessage(
-                    type = ToastMessageType.ERROR,
-                    message = errorMessage
-                ),
-                isLoading = false
+        _cartState.update { it.copy(isLoading = false) }
+        showToastMessage(ToastMessageType.ERROR, errorMessage)
+    }
+
+
+    private fun showToastMessage(type: ToastMessageType, msg: String) {
+        sharedViewModel.onEvent(
+            SharedEvents.ShowToastMessage(
+                ToastMessage(
+                    type = type,
+                    message = msg
+                )
             )
-        }
+        )
     }
 
 

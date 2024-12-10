@@ -46,6 +46,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.pinu.domain.entities.AppBarEvents
+import com.pinu.domain.entities.AppBarState
+import com.pinu.domain.entities.AppBarUIConfig
 import com.pinu.domain.entities.ToastMessage
 import com.pinu.domain.entities.ToastMessageType
 import com.pinu.domain.entities.events.BooksEvents
@@ -129,15 +132,6 @@ fun BookDetailScreen(
         onEvent(BooksEvents.ClearToastMessage)
     }
 
-    LaunchedEffect(key1 = cartState.toastMessage) {
-        showCustomToast(context = context, toastMessage = cartState.toastMessage)
-        onCartEvent(CartEvents.ClearToastMessage)
-    }
-
-    LaunchedEffect(key1 = favouritesState.toastMessage) {
-        showCustomToast(context = context, toastMessage = favouritesState.toastMessage)
-        onFavouriteEvent(FavouritesEvents.ClearToastMessage)
-    }
 
     LaunchedEffect(key1 = cartState.reloadBookDetail) {
         cartState.reloadBookDetail.takeIf { it }?.let {
@@ -202,9 +196,15 @@ fun BookDetailScreen(
     Scaffold(
         containerColor = SurfaceColor,
         topBar = {
-            BookHubAppBar(title = stringResource(R.string.book_detail),
-                canGoBack = true, navController = navController,
-                favouriteViewModel = favouriteViewModel
+            BookHubAppBar(
+                appBarUIConfig = AppBarUIConfig(
+                    title = stringResource(R.string.book_detail),
+                    canGoBack = true
+                ),
+                appBarState = AppBarState(
+                    favouriteState = favouriteViewModel.favouriteState.collectAsState().value
+                ),
+                appBarEvents = AppBarEvents(onBackPressed = { navController.popBackStack() })
             )
         },
         bottomBar = {

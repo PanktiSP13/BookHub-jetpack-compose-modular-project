@@ -35,6 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.pinu.domain.entities.AppBarEvents
+import com.pinu.domain.entities.AppBarState
+import com.pinu.domain.entities.AppBarUIConfig
 import com.pinu.domain.entities.events.BooksEvents
 import com.pinu.domain.entities.states.BooksState
 import com.pinu.domain.entities.viewmodels.BooksViewModel
@@ -90,10 +93,12 @@ fun BookListScreen(
         containerColor = SurfaceColor,
         topBar = {
             BookHubAppBar(
-                title = stringResource(R.string.book_list),
-                canGoBack = true,
-                navController = navController,
-                favouriteViewModel = favouriteViewModel
+                appBarUIConfig = AppBarUIConfig(title = stringResource(R.string.book_list),
+                    canGoBack = true),
+                appBarState = AppBarState(
+                    favouriteState = favouriteViewModel.favouriteState.collectAsState().value
+                ),
+                appBarEvents = AppBarEvents(onBackPressed = { navController.popBackStack() })
             )
         },
     ) { contentPadding ->

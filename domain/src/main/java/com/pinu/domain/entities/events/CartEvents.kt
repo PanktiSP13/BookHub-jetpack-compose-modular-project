@@ -5,6 +5,7 @@ import com.pinu.domain.entities.network_service.request.UpdateItemQuantityReques
 
 sealed interface CartEvents {
     data object NavigateBack : CartEvents
+    data object NavigateToCartScreen : CartEvents
     data object ClearToastMessage : CartEvents
     data object ValueUpdateReloadBookDetail : CartEvents
     data object ValueUpdateItemMovedToCart : CartEvents

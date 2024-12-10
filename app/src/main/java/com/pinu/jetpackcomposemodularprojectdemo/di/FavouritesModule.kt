@@ -4,6 +4,7 @@ import com.pinu.data.network.Network
 import com.pinu.data.network.network_apis.FavouritesAPIs
 import com.pinu.data.repositories.FavouriteRepositoryImpl
 import com.pinu.domain.entities.viewmodels.FavouriteViewModel
+import com.pinu.domain.entities.viewmodels.SharedViewModel
 import com.pinu.domain.repositories.FavouriteRepository
 import dagger.Module
 import dagger.Provides
@@ -30,7 +31,10 @@ object FavouritesModule {
 
     @Provides
     @ViewModelScoped
-    fun providesFavouriteViewModel(favouriteRepository: FavouriteRepository): FavouriteViewModel {
-        return FavouriteViewModel(favouriteRepository)
+    fun providesFavouriteViewModel(
+        sharedViewModel: SharedViewModel,
+        favouriteRepository: FavouriteRepository,
+    ): FavouriteViewModel {
+        return FavouriteViewModel(sharedViewModel, favouriteRepository)
     }
 }

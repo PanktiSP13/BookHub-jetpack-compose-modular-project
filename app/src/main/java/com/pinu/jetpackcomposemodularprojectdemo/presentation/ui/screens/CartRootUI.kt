@@ -37,6 +37,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.pinu.domain.entities.AppBarEvents
+import com.pinu.domain.entities.AppBarUIConfig
 import com.pinu.domain.entities.events.CartEvents
 import com.pinu.domain.entities.states.CartState
 import com.pinu.domain.entities.viewmodels.CartViewModel
@@ -116,9 +118,11 @@ fun CartScreenUI(
         containerColor = SurfaceColor,
         topBar = {
             BookHubAppBar(
-                title = stringResource(R.string.cart),
-                canGoBack = true, navController = navController,
-                isCartVisible = false, isFavouritesVisible = false
+                appBarUIConfig = AppBarUIConfig(
+                    title = stringResource(R.string.cart),
+                    canGoBack = true, isCartVisible = false, isFavouritesVisible = false
+                ),
+                appBarEvents = AppBarEvents(onBackPressed = { navController.popBackStack() })
             )
         },
         bottomBar = {

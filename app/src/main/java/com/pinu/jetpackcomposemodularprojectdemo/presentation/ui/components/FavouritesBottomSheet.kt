@@ -31,14 +31,13 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.RenderScre
 @Composable
 fun FavouritesBottomSheet(
     favouriteState: FavouritesState = FavouritesState(),
-    onEvents: (FavouritesEvents)-> Unit = {},
+    onFavouriteEvents: (FavouritesEvents)-> Unit = {},
     onCartEvents: (CartEvents) -> Unit = {},
     onDismiss: () -> Unit = {}) {
 
 
-
     LaunchedEffect(Unit) {
-        onEvents(FavouritesEvents.FetchFavourites)
+        onFavouriteEvents(FavouritesEvents.FetchFavourites)
     }
 
     ModalBottomSheet(onDismissRequest = { onDismiss()},
@@ -58,16 +57,14 @@ fun FavouritesBottomSheet(
                     items(favouriteState.favouriteList) {
                         FavouriteItem(
                             favouriteItem = it,
-                            onEvents = onEvents, onCartEvents = onCartEvents
+                            onEvents = onFavouriteEvents, onCartEvents = onCartEvents
                         )
                     }
                 }
             },
             onError = {
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp),
+                    modifier = Modifier.fillMaxWidth().height(300.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     if (favouriteState.favouriteList.isEmpty()) {

@@ -4,6 +4,7 @@ import com.pinu.data.network.Network
 import com.pinu.data.network.network_apis.CartAPIs
 import com.pinu.data.repositories.CartRepositoryImpl
 import com.pinu.domain.entities.viewmodels.CartViewModel
+import com.pinu.domain.entities.viewmodels.SharedViewModel
 import com.pinu.domain.repositories.CartRepository
 import dagger.Module
 import dagger.Provides
@@ -30,7 +31,7 @@ object CartModule {
 
     @Provides
     @ViewModelScoped
-    fun providesCartViewModel(cartRepository: CartRepository):CartViewModel{
-        return CartViewModel(cartRepository)
+    fun providesCartViewModel(sharedViewModel: SharedViewModel,cartRepository: CartRepository):CartViewModel{
+        return CartViewModel(sharedViewModel,cartRepository)
     }
 }
