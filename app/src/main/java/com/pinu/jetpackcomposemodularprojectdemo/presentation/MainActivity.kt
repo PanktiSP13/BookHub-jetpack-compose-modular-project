@@ -14,6 +14,7 @@ import com.pinu.domain.entities.events.BooksEvents
 import com.pinu.domain.entities.viewmodels.BooksViewModel
 import com.pinu.domain.entities.viewmodels.CartViewModel
 import com.pinu.domain.entities.viewmodels.FavouriteViewModel
+import com.pinu.domain.entities.viewmodels.SharedViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavArguments
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.books.screens.BookDetailRootUI
@@ -45,7 +46,14 @@ class MainActivity : ComponentActivity() {
 
                     composable(route = NavigationRoutes.DashboardScreen.route) {
                         val cartViewModel = hiltViewModel<CartViewModel>()
-                        DashboardRootUI(navController, favouriteViewModel,cartViewModel)
+                        val sharedViewModel = hiltViewModel<SharedViewModel>()
+
+                        DashboardRootUI(
+                            navController,
+                            favouriteViewModel,
+                            cartViewModel,
+                            sharedViewModel
+                        )
                     }
 
                     composable(route = NavigationRoutes.BookListScreen.route) {
