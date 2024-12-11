@@ -9,8 +9,6 @@ The **BookHub** project is a demo application that showcases modern Android deve
 
 ---
 
-## Project Highlights
-
 ### **Modularized Architecture**
 
 The app is modularized into three distinct layers for better scalability and maintainability:
@@ -18,7 +16,9 @@ The app is modularized into three distinct layers for better scalability and mai
 - **Domain module**: Contains business logic.
 - **Presentation module**: Handles UI rendering and user interactions.
 
----
+###
+
+## Project Highlights
 
 - **Architecture Pattern** :  Implemented **Model-View-Intent (MVI)** architecture pattern to maintain a unidirectional data flow and predictable state management.
 - **Clean Architecture Principles** :  Follows Clean Architecture principles to ensure modularity, scalability, and a clear separation of layers.
