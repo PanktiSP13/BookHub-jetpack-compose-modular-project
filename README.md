@@ -1,6 +1,6 @@
 # BookHub
 
-The **BookHub** project is a demo application that showcases modern Android development practices, including **MVI architecture**, **Clean Architecture principles**, **network calls with Retrofit**, **Hilt for dependency injection**.
+The **BookHub** project is a demo application that showcases modern Android development practices, including **MVI architecture**, **Clean Architecture principles**, **Network calls with Retrofit**, **Hilt for dependency injection**.
 
 ---
 
@@ -9,7 +9,7 @@ The **BookHub** project is a demo application that showcases modern Android deve
 
 ---
 
-## Features
+## Project Highlights
 
 ### **Modularized Architecture**
 
@@ -18,7 +18,7 @@ The app is modularized into three distinct layers for better scalability and mai
 - **Domain module**: Contains business logic.
 - **Presentation module**: Handles UI rendering and user interactions.
 
-## Features
+---
 
 - **Architecture Pattern** :  Implemented **Model-View-Intent (MVI)** architecture pattern to maintain a unidirectional data flow and predictable state management.
 - **Clean Architecture Principles** :  Follows Clean Architecture principles to ensure modularity, scalability, and a clear separation of layers.
@@ -27,7 +27,7 @@ The app is modularized into three distinct layers for better scalability and mai
 - **Image Handling** :  Used **Coil** for asynchronous image loading & a **common image picker** with robust permission handling.
 - **Reactive Programming** :  Used  **Kotlin Flow** for reactive and asynchronous data streams.
 - **Dependency Management** :  All dependencies are managed using a centralized **TOML** file for better maintainability.
-- **KSP (Kotlin Symbol Processing)** is used over **KAPT** for improved build performance.
+- **KSP (Kotlin Symbol Processing)** is used over **KAPT** for improved build performance (Reduces annotation processing overhead).
 
 
 ### Prerequisites
