@@ -31,7 +31,7 @@ The app is modularized into three distinct layers for better scalability and mai
 
 
 ### Prerequisites
-- **Android Studio Koala ** or later (Used Android studio Ladybug).
+- **Android Studio Koala** or later (Used Android studio Ladybug).
 - **JDK 17**.
 - A device/emulator running Android 7.0 (API level 24) or higher.
 
