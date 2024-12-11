@@ -15,11 +15,8 @@ The **BookHub** project is a demo application that showcases modern Android deve
 
 The app is modularized into three distinct layers for better scalability and maintainability:
 - **Data module**: Responsible for managing API calls and local data storage.
-  <img src="https://github.com/user-attachments/assets/f88cf162-786d-4118-8ccf-566e6b2214d4" width="250" >
 - **Domain module**: Contains business logic.
-   <img src="https://github.com/user-attachments/assets/fd7b35ba-4ad0-4984-90dc-83ddda3cbb16" width="250" >
 - **Presentation module**: Handles UI rendering and user interactions.
- <img src="https://github.com/user-attachments/assets/cb5015d2-52ba-486d-aa60-ef80b6668b7e" width="250" >
 
 
 **Architecture Pattern** : Implemented **Model-View-Intent (MVI)** architecture pattern to maintain a unidirectional data flow and predictable state management.
@@ -41,6 +38,10 @@ Clone the repository:
    ```bash
    git clone https://github.com/PanktiSP13/jetpack_modular_project_demo.git
    ```
+
+<img src="https://github.com/user-attachments/assets/f88cf162-786d-4118-8ccf-566e6b2214d4" width="250" >
+<img src="https://github.com/user-attachments/assets/fd7b35ba-4ad0-4984-90dc-83ddda3cbb16" width="250" >
+<img src="https://github.com/user-attachments/assets/cb5015d2-52ba-486d-aa60-ef80b6668b7e" width="250" >
 
 Feel free to explore, use, and contribute to **BookHub** to learn and grow with modern Android development practices! 🚀
 
