@@ -40,6 +40,7 @@ import com.pinu.domain.entities.AppBarState
 import com.pinu.domain.entities.AppBarUIConfig
 import com.pinu.domain.entities.events.BooksEvents
 import com.pinu.domain.entities.states.BooksState
+import com.pinu.domain.entities.states.FavouritesState
 import com.pinu.domain.entities.viewmodels.BooksViewModel
 import com.pinu.domain.entities.viewmodels.FavouriteViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
@@ -53,15 +54,14 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.RenderScre
 
 @Composable
 fun BookListRootUI(
-    navController: NavController = rememberNavController(),
-    booksViewModel: BooksViewModel,
-    favouriteViewModel: FavouriteViewModel
+    navController: NavController
 ){
 
-    val bookState = booksViewModel.bookState.collectAsState()
+    val booksViewModel = hiltViewModel<BooksViewModel>()
+    val favouriteViewModel = hiltViewModel<FavouriteViewModel>()
 
-    BookListScreen(bookState = bookState.value,
-        favouriteViewModel = favouriteViewModel,
+    BookListScreen(bookState =  booksViewModel.bookState.collectAsState().value,
+        favouritesState = favouriteViewModel.favouriteState.collectAsState().value,
         navController = navController,
         onEvent = { event ->
             when (event) {
@@ -78,7 +78,7 @@ fun BookListRootUI(
 @Composable
 fun BookListScreen(
     bookState: BooksState = BooksState(),
-    favouriteViewModel: FavouriteViewModel= hiltViewModel<FavouriteViewModel>(),
+    favouritesState: FavouritesState = FavouritesState(),
     navController: NavController = rememberNavController(),
     onEvent: (BooksEvents) -> Unit = {}) {
 
@@ -93,16 +93,14 @@ fun BookListScreen(
         containerColor = SurfaceColor,
         topBar = {
             BookHubAppBar(
-                appBarUIConfig = AppBarUIConfig(title = stringResource(R.string.book_list),
-                    canGoBack = true),
-                appBarState = AppBarState(
-                    favouriteState = favouriteViewModel.favouriteState.collectAsState().value
-                ),
+                appBarUIConfig = AppBarUIConfig(title = stringResource(R.string.book_list), canGoBack = true),
+                appBarState = AppBarState(favouriteState = favouritesState),
                 appBarEvents = AppBarEvents(onBackPressed = { navController.popBackStack() })
             )
         },
     ) { contentPadding ->
         Column(modifier = Modifier.padding(contentPadding)) {
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -178,7 +176,7 @@ fun BookListScreen(
                         LazyColumn {
                             items(bookState.bookList) { item ->
                                 BookItem(item) {
-                                    onEvent(BooksEvents.NavigateToBookDetailScreen(item.id))
+                                    onEvent(BooksEvents.NavigateToBookDetailScreen(bookId = item.id,item = item))
                                 }
                             }
                         }
@@ -190,5 +188,4 @@ fun BookListScreen(
             )
         }
     }
-
 }

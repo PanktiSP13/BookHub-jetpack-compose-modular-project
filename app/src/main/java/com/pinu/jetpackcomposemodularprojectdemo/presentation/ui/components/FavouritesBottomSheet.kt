@@ -42,7 +42,7 @@ fun FavouritesBottomSheet(
     onDismiss: () -> Unit = {}) {
 
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(favouriteState.favouriteList) {
         onFavouriteEvents(FavouritesEvents.FetchFavourites)
     }
 

@@ -34,11 +34,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.pinu.domain.entities.AppBarEvents
 import com.pinu.domain.entities.AppBarState
 import com.pinu.domain.entities.AppBarUIConfig
@@ -55,14 +53,13 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.Book
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.CommonAlertDialog
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showCustomToast
 
-@Preview(showBackground = true)
 @Composable
 fun DashboardRootUI(
-    navController: NavController = rememberNavController(),
-    favouriteViewModel: FavouriteViewModel = viewModel(),
-    cartViewModel: CartViewModel = viewModel(),
-    sharedViewModel: SharedViewModel = viewModel(),
-) {
+    navController: NavController,
+    sharedViewModel: SharedViewModel) {
+
+    val favouriteViewModel = hiltViewModel<FavouriteViewModel>()
+    val cartViewModel = hiltViewModel<CartViewModel>()
 
     val showExitDialog = remember { mutableStateOf(false) }
     val activity = LocalContext.current as? Activity  // Get the current activity
@@ -124,11 +121,7 @@ fun DashboardRootUI(
                     favouriteEvents = {
                         when (it) {
                             is FavouritesEvents.NavigateToBookDetailScreen -> {
-                                navController.navigate(
-                                    NavigationRoutes.BookDetailScreen.getBookDetail(
-                                        it.bookID
-                                    )
-                                )
+                                navController.navigate(NavigationRoutes.BookDetailScreen.getBookDetail(it.bookID))
                             }
 
                             else -> {}

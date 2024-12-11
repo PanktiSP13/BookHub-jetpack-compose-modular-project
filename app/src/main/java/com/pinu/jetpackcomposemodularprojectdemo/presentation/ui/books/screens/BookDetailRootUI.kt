@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -73,23 +74,22 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.OnPrimary
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.PrimaryVariant
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.SurfaceColor
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme.TextSecondary
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.RenderScreen
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showCustomToast
 
 @Composable
-fun BookDetailRootUI(
-    navController: NavController = rememberNavController(),
-    booksViewModel: BooksViewModel,
-    favouriteViewModel: FavouriteViewModel,
-    cartViewModel: CartViewModel,
-    sharedViewModel: SharedViewModel,
-) {
+fun BookDetailRootUI(navController: NavController, bookId: Int = 0, sharedViewModel: SharedViewModel) {
+
+    val booksViewModel = hiltViewModel<BooksViewModel>()
+    val favouriteViewModel = hiltViewModel<FavouriteViewModel>()
+    val cartViewModel = hiltViewModel<CartViewModel>()
 
     BookDetailScreen(
+        bookId,
         booksState = booksViewModel.bookState.collectAsState().value,
         cartState = cartViewModel.cartState.collectAsState().value,
         favouritesState = favouriteViewModel.favouriteState.collectAsState().value,
         sharedState = sharedViewModel.sharedState.collectAsState().value,
-        favouriteViewModel = favouriteViewModel,
         navController = navController,
         onSharedEvents = sharedViewModel::onEvent,
         onEvent = { events ->
@@ -112,10 +112,10 @@ fun BookDetailRootUI(
 @Preview(showBackground = true)
 @Composable
 fun BookDetailScreen(
+    bookId: Int = 0,
     booksState: BooksState = BooksState(),
     cartState: CartState = CartState(),
     favouritesState: FavouritesState = FavouritesState(),
-    favouriteViewModel: FavouriteViewModel = viewModel(),
     sharedState: SharedState = SharedState(),
     navController: NavController = rememberNavController(),
     onEvent: (BooksEvents) -> Unit = {},
@@ -131,6 +131,12 @@ fun BookDetailScreen(
     val context = LocalContext.current
 
     val qty = remember { mutableIntStateOf(1) }
+
+    LaunchedEffect(key1 = bookId) {
+        bookId.takeIf { it != 0 }.let {
+            onEvent(BooksEvents.FetchBookDetails(bookId))
+        }
+    }
 
     LaunchedEffect(booksState.selectedBookDetail) {
         isFavourite.value = booksState.selectedBookDetail?.isFavourite ?: false
@@ -207,13 +213,8 @@ fun BookDetailScreen(
         containerColor = SurfaceColor,
         topBar = {
             BookHubAppBar(
-                appBarUIConfig = AppBarUIConfig(
-                    title = stringResource(R.string.book_detail),
-                    canGoBack = true
-                ),
-                appBarState = AppBarState(
-                    favouriteState = favouriteViewModel.favouriteState.collectAsState().value
-                ),
+                appBarUIConfig = AppBarUIConfig(title = stringResource(R.string.book_detail), canGoBack = true),
+                appBarState = AppBarState(favouriteState = favouritesState),
                 appBarEvents = AppBarEvents(onBackPressed = { navController.popBackStack() })
             )
         },
@@ -231,7 +232,10 @@ fun BookDetailScreen(
             color = SurfaceColor
         ) {
 
-            Column(
+            RenderScreen(
+                isLoading = booksState.isLoading && bookId !=0,
+                onSuccess = {
+                    Column(
                         horizontalAlignment = Alignment.Start,
                         modifier = Modifier
                             .fillMaxSize()
@@ -243,7 +247,7 @@ fun BookDetailScreen(
                             ),
                     ) {
                         AsyncImage(
-                            model = booksState.selectedBookDetail?.imageUrl ?: R.drawable.book,
+                            model = booksState.selectedBookDetail?.imageUrl ?: R.drawable.img_placeholder,
                             contentDescription = stringResource(id = R.string.book),
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -284,6 +288,9 @@ fun BookDetailScreen(
                         )
 
                     }
+                }
+            )
+
         }
     }
 }

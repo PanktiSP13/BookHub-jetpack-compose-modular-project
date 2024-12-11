@@ -1,11 +1,13 @@
 package com.pinu.domain.entities.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pinu.domain.entities.ToastMessage
 import com.pinu.domain.entities.ToastMessageType
 import com.pinu.domain.entities.events.BooksEvents
 import com.pinu.domain.entities.events.SharedEvents
+import com.pinu.domain.entities.network_service.response.BookResponse
 import com.pinu.domain.entities.states.BooksState
 import com.pinu.domain.repositories.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +29,10 @@ class BooksViewModel @Inject constructor(
         when (event) {
             is BooksEvents.GetBookList -> getBookList()
             is BooksEvents.OnSearchBooksByName -> getBookList(searchText = event.searchText)
-            is BooksEvents.NavigateToBookDetailScreen -> getBookDetail(bookId = event.bookId)
+            is BooksEvents.NavigateToBookDetailScreen -> getBookDetail(
+                bookId = event.bookId,
+                bookItemResponse = event.item
+            )
             is BooksEvents.FetchBookDetails -> getBookDetail(bookId = event.bookId)
             else -> Unit
         }
@@ -53,21 +58,24 @@ class BooksViewModel @Inject constructor(
         }
     }
 
-    private fun getBookDetail(bookId: Int) {
+    private fun getBookDetail(
+        bookId: Int,
+        bookItemResponse: BookResponse.BookItemResponse? = null,
+    ) {
 
         // first set book detail data from book list and then update it with network response
-        if (_bookState.value.bookList.isNotEmpty()) {
-            val item = _bookState.value.bookList.filter { it.id == bookId }[0]
-            _bookState.update { it.copy(selectedBookDetail = item) }
+        if (bookItemResponse != null) {
+            _bookState.update { it.copy(selectedBookDetail = bookItemResponse) }
+            Log.e("@@@", "getBookDetail: $bookItemResponse")
+        } else {
+            _bookState.update { state -> state.copy(isLoading = true) }
         }
-
-
-        // Loader not required here
-        // Latest data will be seamlessly updated in the UI layer once the API response is received.
         viewModelScope.launch {
             bookRepo.getBookDetail(bookId).collect { data ->
                 data.fold(onSuccess = { bookDetail ->
-                    _bookState.update { it.copy(selectedBookDetail = bookDetail) }
+                    _bookState.update {
+                        it.copy(selectedBookDetail = bookDetail, isLoading = false)
+                    }
                 }, onFailure = { error -> onFailure(error.message ?: "") })
             }
         }

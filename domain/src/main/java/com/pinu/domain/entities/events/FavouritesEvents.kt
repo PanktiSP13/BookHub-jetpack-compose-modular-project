@@ -5,5 +5,5 @@ sealed interface FavouritesEvents {
     data object NavigateToCartScreen : FavouritesEvents
     data class AddAsFavourite(val bookID: Int) : FavouritesEvents
     data class RemoveFromFavourites(val bookID: Int) : FavouritesEvents
-    data class NavigateToBookDetailScreen(val bookID: Int ) : FavouritesEvents
+    data class NavigateToBookDetailScreen(val bookID: Int) : FavouritesEvents
 }

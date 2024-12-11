@@ -38,7 +38,6 @@ class FavouriteViewModel @Inject constructor(
 
     private fun getFavourites() {
         viewModelScope.launch {
-
             _favouriteState.update { it.copy(isLoading = true) }
 
             favouriteRepo.fetchFavourites().collect { data ->

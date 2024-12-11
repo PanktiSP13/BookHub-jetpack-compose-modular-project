@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.pinu.domain.entities.AppBarEvents
@@ -61,15 +62,12 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.CommonAler
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showCustomToast
 
 @Composable
-fun CartRootUI(
-    navController: NavController = rememberNavController(),
-    cartViewModel: CartViewModel, sharedViewModel: SharedViewModel,
-) {
+fun CartRootUI(navController: NavController, sharedViewModel: SharedViewModel) {
 
-    val cartState = cartViewModel.cartState.collectAsState()
+    val cartViewModel = hiltViewModel<CartViewModel>()
 
     CartScreenUI(
-        cartState = cartState.value,
+        cartState = cartViewModel.cartState.collectAsState().value,
         sharedState = sharedViewModel.sharedState.collectAsState().value,
         navController = navController,
         onSharedEvents = sharedViewModel::onEvent,
@@ -88,7 +86,6 @@ fun CartRootUI(
             }
 
             is CartEvents.NavigateToBookDetailScreen -> {
-                //pass bookId
                 navController.navigate(route = NavigationRoutes.BookDetailScreen.getBookDetail(event.bookId))
             }
 
