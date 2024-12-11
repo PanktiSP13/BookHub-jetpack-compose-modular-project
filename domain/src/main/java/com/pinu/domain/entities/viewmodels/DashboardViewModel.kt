@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.pinu.domain.entities.ToastMessage
 import com.pinu.domain.entities.ToastMessageType
 import com.pinu.domain.entities.events.ProfileEvents
+import com.pinu.domain.entities.events.SharedEvents
 import com.pinu.domain.entities.network_service.request.ProfileRequest
 import com.pinu.domain.entities.states.ProfileState
 import com.pinu.domain.repositories.ProfileRepository
@@ -17,7 +18,10 @@ import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
-class DashboardViewModel @Inject constructor(private val profileRepo: ProfileRepository) :
+class DashboardViewModel @Inject constructor(
+    private val sharedViewModel: SharedViewModel,
+    private val profileRepo: ProfileRepository,
+) :
     ViewModel() {
 
     private val _profileState = MutableStateFlow(ProfileState())
@@ -29,16 +33,6 @@ class DashboardViewModel @Inject constructor(private val profileRepo: ProfileRep
             is ProfileEvents.FetchProfileData -> fetchProfileData()
             is ProfileEvents.AddUpdateProfileData -> addUpdateProfileData(events.profileData)
             is ProfileEvents.UpdateProfilePic -> updateProfilePic(events.profilePic)
-            is ProfileEvents.ClearToastMessage -> {
-                _profileState.update {
-                    it.copy(
-                        toastMessage = ToastMessage(
-                            ToastMessageType.NONE,
-                            ""
-                        )
-                    )
-                }
-            }
             else -> {
                 // do nothing
             }
@@ -48,8 +42,8 @@ class DashboardViewModel @Inject constructor(private val profileRepo: ProfileRep
     private fun fetchProfileData() {
         viewModelScope.launch {
             profileRepo.fetchProfileData().collect { data ->
-                data.fold(onSuccess = {
-                    _profileState.value = _profileState.value.copy(userProfileData = it.data)
+                data.fold(onSuccess = { response ->
+                    _profileState.update { it.copy(userProfileData = response.data) }
                 }, onFailure = { onFailure(it.message ?: "") })
             }
         }
@@ -60,13 +54,15 @@ class DashboardViewModel @Inject constructor(private val profileRepo: ProfileRep
 
             _profileState.update { state -> state.copy(isLoading = true) }
             profileRepo.addUpdateProfileData(profileRequest).collect { data ->
-                data.fold(onSuccess = {
-                    _profileState.value = _profileState.value.copy(
-                        userProfileData = it.data,
-                        profileUpdateSuccess = true,
-                        toastMessage = ToastMessage(type = ToastMessageType.SUCCESS, it.message)
-                    )
-                    _profileState.update { state -> state.copy(isLoading = false) }
+                data.fold(onSuccess = { response ->
+                    _profileState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            userProfileData = response.data,
+                            profileUpdateSuccess = true
+                        )
+                    }
+                    showToastMessage(ToastMessageType.SUCCESS, response.message)
 
                 }, onFailure = { onFailure(it.message ?: "") })
             }
@@ -75,14 +71,15 @@ class DashboardViewModel @Inject constructor(private val profileRepo: ProfileRep
 
 
     private fun updateProfilePic(profilePic: File) {
+
+        _profileState.update { state -> state.copy(isUploadingProfilePic = true) }
         viewModelScope.launch {
             profileRepo.updateProfilePic(profilePic).collect { data ->
-                data.fold(onSuccess = {
-                    _profileState.value = _profileState.value.copy(
-                        userProfileData = it.data,
-                        toastMessage = ToastMessage(type = ToastMessageType.SUCCESS, it.message)
-                    )
+                data.fold(onSuccess = { response ->
+                    _profileState.update { it.copy(userProfileData = response.data, isUploadingProfilePic = false) }
+                    showToastMessage(ToastMessageType.SUCCESS, response.message)
                 }, onFailure = {
+                    _profileState.update { state -> state.copy(isUploadingProfilePic = false) }
                     onFailure(it.message ?: "")
                 })
             }
@@ -90,11 +87,18 @@ class DashboardViewModel @Inject constructor(private val profileRepo: ProfileRep
     }
 
     private fun onFailure(errorMessage: String) {
-        _profileState.value = _profileState.value.copy(
-            toastMessage = ToastMessage(
-                type = ToastMessageType.ERROR,
-                errorMessage
-            ), isLoading = false
+        _profileState.update { it.copy(isLoading = false) }
+        showToastMessage(ToastMessageType.ERROR, errorMessage)
+    }
+
+    private fun showToastMessage(type: ToastMessageType, msg: String) {
+        sharedViewModel.onEvent(
+            SharedEvents.ShowToastMessage(
+                ToastMessage(
+                    type = type,
+                    message = msg
+                )
+            )
         )
     }
 }

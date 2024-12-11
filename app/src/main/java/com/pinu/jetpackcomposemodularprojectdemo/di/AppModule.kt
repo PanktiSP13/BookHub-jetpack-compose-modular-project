@@ -4,7 +4,6 @@ import android.content.Context
 import com.pinu.data.db.BookHubDatabase
 import com.pinu.data.network.Network
 import com.pinu.domain.entities.viewmodels.SharedViewModel
-import com.pinu.jetpackcomposemodularprojectdemo.MyApplication
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

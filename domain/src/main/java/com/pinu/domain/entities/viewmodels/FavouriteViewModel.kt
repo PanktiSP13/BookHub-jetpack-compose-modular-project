@@ -93,5 +93,4 @@ class FavouriteViewModel @Inject constructor(
         sharedViewModel.onEvent(SharedEvents.ShowToastMessage(ToastMessage(type = type, message = msg)))
     }
 
-
 }

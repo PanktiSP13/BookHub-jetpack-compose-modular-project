@@ -100,7 +100,7 @@ fun CartItem(
                 model = cartItem.imgUrl ?: R.drawable.book,
                 contentDescription = stringResource(id = R.string.book),
                 modifier = Modifier
-                    .size(width = 70.dp, height = 120.dp)
+                    .size(width = 80.dp, height = 120.dp)
                     .clip(RoundedCornerShape(6.dp))
                     .clickable {
                         onEvent(

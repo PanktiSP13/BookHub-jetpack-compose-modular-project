@@ -42,7 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -54,13 +54,16 @@ import com.pinu.domain.entities.ToastMessageType
 import com.pinu.domain.entities.events.BooksEvents
 import com.pinu.domain.entities.events.CartEvents
 import com.pinu.domain.entities.events.FavouritesEvents
+import com.pinu.domain.entities.events.SharedEvents
 import com.pinu.domain.entities.network_service.request.AddToCartRequest
 import com.pinu.domain.entities.states.BooksState
 import com.pinu.domain.entities.states.CartState
 import com.pinu.domain.entities.states.FavouritesState
+import com.pinu.domain.entities.states.SharedState
 import com.pinu.domain.entities.viewmodels.BooksViewModel
 import com.pinu.domain.entities.viewmodels.CartViewModel
 import com.pinu.domain.entities.viewmodels.FavouriteViewModel
+import com.pinu.domain.entities.viewmodels.SharedViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookHubAppBar
@@ -77,15 +80,18 @@ fun BookDetailRootUI(
     navController: NavController = rememberNavController(),
     booksViewModel: BooksViewModel,
     favouriteViewModel: FavouriteViewModel,
-    cartViewModel: CartViewModel
+    cartViewModel: CartViewModel,
+    sharedViewModel: SharedViewModel,
 ) {
 
     BookDetailScreen(
         booksState = booksViewModel.bookState.collectAsState().value,
         cartState = cartViewModel.cartState.collectAsState().value,
         favouritesState = favouriteViewModel.favouriteState.collectAsState().value,
+        sharedState = sharedViewModel.sharedState.collectAsState().value,
         favouriteViewModel = favouriteViewModel,
         navController = navController,
+        onSharedEvents = sharedViewModel::onEvent,
         onEvent = { events ->
             when (events) {
                 is BooksEvents.NavigateBack -> navController.popBackStack()
@@ -109,12 +115,15 @@ fun BookDetailScreen(
     booksState: BooksState = BooksState(),
     cartState: CartState = CartState(),
     favouritesState: FavouritesState = FavouritesState(),
-    favouriteViewModel: FavouriteViewModel = hiltViewModel<FavouriteViewModel>(),
+    favouriteViewModel: FavouriteViewModel = viewModel(),
+    sharedState: SharedState = SharedState(),
     navController: NavController = rememberNavController(),
     onEvent: (BooksEvents) -> Unit = {},
     onCartEvent: (CartEvents) -> Unit = {},
-    onFavouriteEvent: (FavouritesEvents) -> Unit = {}
+    onFavouriteEvent: (FavouritesEvents) -> Unit = {},
+    onSharedEvents: (SharedEvents) -> Unit = {},
 ) {
+
 
     val scrollState = rememberScrollState()
     val isFavourite = remember { mutableStateOf(false) }
@@ -127,9 +136,10 @@ fun BookDetailScreen(
         isFavourite.value = booksState.selectedBookDetail?.isFavourite ?: false
         isItemInCart.value = booksState.selectedBookDetail?.isInCart ?: false
     }
-    LaunchedEffect(key1 = booksState.toastMessage) {
-        showCustomToast(context = context, toastMessage = booksState.toastMessage)
-        onEvent(BooksEvents.ClearToastMessage)
+
+    LaunchedEffect(key1 = sharedState.toastMessage) {
+        showCustomToast(context = context, toastMessage = sharedState.toastMessage)
+        onSharedEvents(SharedEvents.ClearToastMessage)
     }
 
 
@@ -221,7 +231,7 @@ fun BookDetailScreen(
             color = SurfaceColor
         ) {
 
-                    Column(
+            Column(
                         horizontalAlignment = Alignment.Start,
                         modifier = Modifier
                             .fillMaxSize()

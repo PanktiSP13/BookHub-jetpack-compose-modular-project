@@ -2,29 +2,31 @@ package com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val PrimaryColor = Color(0xFF4CAF50)
-val PrimaryVariant = Color(0xFF388E3C)
-val SecondaryColor = Color(0xFFFFC107)
-val BackgroundColor = Color(0xFFF9F9F9)
-val SurfaceColor = Color(0xFFFFFFFF)
-val ErrorColor = Color(0xFFF44336)
-val OnPrimaryColor = Color(0xFFFFFFFF)
-val OnSecondaryColor = Color(0xFF212121)
-val OnErrorColor = Color(0xFFFFFFFF)
-val TextPrimary = Color(0xFF212121)
-val TextSecondary = Color(0xFF757575)
+// Light Theme
+val PrimaryColor = Color(0xFF3D5AFE) // Indigo Blue
+val PrimaryVariant = Color(0xFF0039CB) // Dark Indigo Blue
+val SecondaryColor = Color(0xFFFF4081) // Pink Accent
+val BackgroundColor = Color(0xFFF0F4FF) // Soft Cool Blue
+val SurfaceColor = Color(0xFFFFFFFF) // White
+val ErrorColor = Color(0xFFD32F2F) // Deep Red
+val OnPrimaryColor = Color(0xFFFFFFFF) // White
+val OnSecondaryColor = Color(0xFF212121) // Dark Gray
+val OnErrorColor = Color(0xFFFFFFFF) // White
+val TextPrimary = Color(0xFF212121) // Dark Gray
+val TextSecondary = Color(0xFF616161) // Medium Gray
 
-val DarkPrimaryColor = Color(0xFF81C784)
-val DarkPrimaryVariant = Color(0xFF4CAF50)
-val DarkSecondaryColor = Color(0xFFFFD54F)
-val DarkBackgroundColor = Color(0xFF121212)
-val DarkSurfaceColor = Color(0xFF1E1E1E)
-val DarkErrorColor = Color(0xFFEF5350)
-val DarkOnPrimaryColor = Color(0xFF000000)
-val DarkOnSecondaryColor = Color(0xFF000000)
-val DarkOnErrorColor = Color(0xFFFFFFFF)
-val DarkTextPrimary = Color(0xFFFFFFFF)
-val DarkTextSecondary = Color(0xFFBDBDBD)
+// Dark Theme
+val DarkPrimaryColor = Color(0xFF536DFE) // Lighter Indigo Blue
+val DarkPrimaryVariant = Color(0xFF3D5AFE) // Indigo Blue
+val DarkSecondaryColor = Color(0xFFFF80AB) // Light Pink Accent
+val DarkBackgroundColor = Color(0xFF121212) // Dark Gray
+val DarkSurfaceColor = Color(0xFF1E1E1E) // Medium Dark Gray
+val DarkErrorColor = Color(0xFFCF6679) // Soft Red
+val DarkOnPrimaryColor = Color(0xFF000000) // Black
+val DarkOnSecondaryColor = Color(0xFF000000) // Black
+val DarkOnErrorColor = Color(0xFFFFFFFF) // White
+val DarkTextPrimary = Color(0xFFFFFFFF) // White
+val DarkTextSecondary = Color(0xFFBDBDBD) // Light Gray
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)

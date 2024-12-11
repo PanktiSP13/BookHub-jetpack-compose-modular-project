@@ -34,17 +34,7 @@ class CartViewModel @Inject constructor(
             is CartEvents.AddToCart -> addToCart(events.cartRequest, events.isFromBookDetail)
             is CartEvents.RemoveBookItemFromCart -> removeItemFromCart(events.bookId)
             is CartEvents.UpdateBookItemQuantity -> updateItemQuantity(events.updateItemQuantityRequest)
-            is CartEvents.ClearToastMessage -> {
-                //todo remove
-                _cartState.update {
-                    it.copy(
-                        toastMessage = ToastMessage(
-                            ToastMessageType.NONE,
-                            ""
-                        )
-                    )
-                }
-            }
+
 
             is CartEvents.ValueUpdateReloadBookDetail -> {
                 _cartState.update { it.copy(reloadBookDetail = false) }

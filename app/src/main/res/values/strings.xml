@@ -63,4 +63,6 @@
     <string name="no_favourites_found">No favourites found</string>
     <string name="cart_is_empty_continue_shopping">Cart is empty! Continue shopping</string>
     <string name="are_you_sure_you_want_to_proceed">Are you sure you want to proceed payment?</string>
+    <string name="total_price">Total price</string>
+    <string name="total_items">Total items</string>
 </resources>

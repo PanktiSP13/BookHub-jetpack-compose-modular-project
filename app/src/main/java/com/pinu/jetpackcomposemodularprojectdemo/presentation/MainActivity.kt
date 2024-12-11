@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,8 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
 
-    private val booksViewModel: BooksViewModel by viewModels()
-    private val favouriteViewModel: FavouriteViewModel by viewModels()
+    private val sharedViewModel: SharedViewModel by viewModels() // Only for shared data
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,8 +46,8 @@ class MainActivity : ComponentActivity() {
                     startDestination = NavigationRoutes.DashboardScreen.route) {
 
                     composable(route = NavigationRoutes.DashboardScreen.route) {
+                        val favouriteViewModel = hiltViewModel<FavouriteViewModel>()
                         val cartViewModel = hiltViewModel<CartViewModel>()
-                        val sharedViewModel = hiltViewModel<SharedViewModel>()
 
                         DashboardRootUI(
                             navController,
@@ -57,6 +58,8 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable(route = NavigationRoutes.BookListScreen.route) {
+                        val booksViewModel = hiltViewModel<BooksViewModel>()
+                        val favouriteViewModel = hiltViewModel<FavouriteViewModel>()
                         BookListRootUI(navController, booksViewModel, favouriteViewModel)
                     }
 
@@ -66,23 +69,33 @@ class MainActivity : ComponentActivity() {
                                 type = NavType.IntType
                                 defaultValue = 0
                             }
-                        )
-                    ) {
-                        val bookId = it.arguments?.getInt(NavArguments.BOOK_ID, 0) ?: 0
+                        )) { backEntry ->
+
+
+                        val booksViewModel = hiltViewModel<BooksViewModel>()
+                        val favouriteViewModel = hiltViewModel<FavouriteViewModel>()
+
+                        val bookId = backEntry.arguments?.getInt(NavArguments.BOOK_ID, 0) ?: 0
                         if (bookId != 0) {
                             booksViewModel.onEvent(BooksEvents.FetchBookDetails(bookId))
                         }
                         val cartViewModel = hiltViewModel<CartViewModel>()
-                        BookDetailRootUI(navController, booksViewModel, favouriteViewModel, cartViewModel)
+                        BookDetailRootUI(
+                            navController,
+                            booksViewModel,
+                            favouriteViewModel,
+                            cartViewModel,
+                            sharedViewModel
+                        )
                     }
 
                     composable(route = NavigationRoutes.CartScreen.route) {
                         val cartViewModel = hiltViewModel<CartViewModel>()
-                        CartRootUI(navController,cartViewModel)
+                        CartRootUI(navController, cartViewModel, sharedViewModel)
                     }
 
                     composable(route = NavigationRoutes.ProfileScreen.route) {
-                        ProfileRootUI(navController)
+                        ProfileRootUI(navController, sharedViewModel)
                     }
 
 
@@ -92,5 +105,13 @@ class MainActivity : ComponentActivity() {
             }
 
         }
+    }
+}
+
+fun NavController.isParentAvailable(route: String): NavBackStackEntry? {
+    return try {
+        getBackStackEntry(route)
+    } catch (e: IllegalArgumentException) {
+        null
     }
 }

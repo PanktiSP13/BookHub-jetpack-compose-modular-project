@@ -1,6 +1,4 @@
 package com.pinu.domain.entities.states
-
-import com.pinu.domain.entities.ToastMessage
 import com.pinu.domain.entities.network_service.response.CartItemsResponse
 
 data class CartState(
@@ -8,5 +6,4 @@ data class CartState(
     val isLoading : Boolean = false,
     val isLoadingForPayment : Boolean = false,
     val itemMovedToCart : Boolean = false,
-    val toastMessage: ToastMessage = ToastMessage(),
     val reloadBookDetail : Boolean = false)

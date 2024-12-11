@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.pinu.domain.entities.ToastMessage
 import com.pinu.domain.entities.ToastMessageType
 import com.pinu.domain.entities.events.BooksEvents
+import com.pinu.domain.entities.events.SharedEvents
 import com.pinu.domain.entities.states.BooksState
 import com.pinu.domain.repositories.BookRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,23 +16,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) : ViewModel() {
+class BooksViewModel @Inject constructor(
+    private val sharedViewModel: SharedViewModel,
+    private val bookRepo: BookRepository) : ViewModel() {
 
     private val _bookState = MutableStateFlow(BooksState())
     val bookState = _bookState.asStateFlow()
 
     fun onEvent(event: BooksEvents) {
         when (event) {
-
-            is BooksEvents.ClearToastMessage -> {
-                _bookState.update {
-                    it.copy(
-                        toastMessage = ToastMessage(
-                            ToastMessageType.NONE, ""
-                        )
-                    )
-                }
-            }
             is BooksEvents.GetBookList -> getBookList()
             is BooksEvents.OnSearchBooksByName -> getBookList(searchText = event.searchText)
             is BooksEvents.NavigateToBookDetailScreen -> getBookDetail(bookId = event.bookId)
@@ -65,27 +58,30 @@ class BooksViewModel @Inject constructor(private val bookRepo: BookRepository) :
         // first set book detail data from book list and then update it with network response
         if (_bookState.value.bookList.isNotEmpty()) {
             val item = _bookState.value.bookList.filter { it.id == bookId }[0]
-            _bookState.value = _bookState.value.copy(selectedBookDetail = item)
+            _bookState.update { it.copy(selectedBookDetail = item) }
         }
+
 
         // Loader not required here
         // Latest data will be seamlessly updated in the UI layer once the API response is received.
         viewModelScope.launch {
             bookRepo.getBookDetail(bookId).collect { data ->
                 data.fold(onSuccess = { bookDetail ->
-                    _bookState.value = _bookState.value.copy(selectedBookDetail = bookDetail)
+                    _bookState.update { it.copy(selectedBookDetail = bookDetail) }
                 }, onFailure = { error -> onFailure(error.message ?: "") })
             }
         }
     }
 
     private fun onFailure(errorMessage: String) {
-        _bookState.update {
-            it.copy(
-                toastMessage = ToastMessage(
-                    type = ToastMessageType.ERROR, errorMessage
-                ), isLoading = false
+        _bookState.update { it.copy(isLoading = false) }
+        sharedViewModel.onEvent(
+            SharedEvents.ShowToastMessage(
+                ToastMessage(
+                    type = ToastMessageType.ERROR,
+                    message = errorMessage
+                )
             )
-        }
+        )
     }
 }

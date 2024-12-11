@@ -60,7 +60,7 @@ fun CommonAlertDialog(
                     contentColor = OnSecondaryColor
                 )
             ) {
-                Text(negativeButtonText, style = TextStyle(color = OnSecondaryColor))
+                Text(negativeButtonText, style = TextStyle(color = OnPrimaryColor))
             }
         },
         confirmButton = {

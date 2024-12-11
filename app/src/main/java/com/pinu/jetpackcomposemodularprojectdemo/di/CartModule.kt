@@ -9,28 +9,28 @@ import com.pinu.domain.repositories.CartRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.scopes.ViewModelScoped
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 object CartModule {
 
 
     @Provides
-    @ViewModelScoped
+    @Singleton
     fun providesCartAPIs(network: Network): CartAPIs {
         return network.cartAPIService
     }
 
     @Provides
-    @ViewModelScoped
+    @Singleton
     fun providesCartRepository(cartAPIs: CartAPIs): CartRepository{
         return CartRepositoryImpl(cartAPIs)
     }
 
     @Provides
-    @ViewModelScoped
+    @Singleton
     fun providesCartViewModel(sharedViewModel: SharedViewModel,cartRepository: CartRepository):CartViewModel{
         return CartViewModel(sharedViewModel,cartRepository)
     }

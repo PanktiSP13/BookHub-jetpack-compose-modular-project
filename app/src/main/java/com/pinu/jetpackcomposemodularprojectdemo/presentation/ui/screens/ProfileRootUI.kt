@@ -67,9 +67,12 @@ import androidx.navigation.compose.rememberNavController
 import com.pinu.domain.entities.AppBarEvents
 import com.pinu.domain.entities.AppBarUIConfig
 import com.pinu.domain.entities.events.ProfileEvents
+import com.pinu.domain.entities.events.SharedEvents
 import com.pinu.domain.entities.network_service.request.ProfileRequest
 import com.pinu.domain.entities.states.ProfileState
+import com.pinu.domain.entities.states.SharedState
 import com.pinu.domain.entities.viewmodels.DashboardViewModel
+import com.pinu.domain.entities.viewmodels.SharedViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookHubAppBar
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.dialog.UploadProfilePicDialog
@@ -90,14 +93,18 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 @Composable
-fun ProfileRootUI(navController: NavHostController = rememberNavController()) {
+fun ProfileRootUI(
+    navController: NavHostController = rememberNavController(),
+    sharedViewModel: SharedViewModel,
+) {
 
     val dashboardViewModel = hiltViewModel<DashboardViewModel>()
-    val profileState = dashboardViewModel.profileState.collectAsState()
 
     ProfileScreen(
-        profileState = profileState.value,
+        profileState = dashboardViewModel.profileState.collectAsState().value,
+        sharedState = sharedViewModel.sharedState.collectAsState().value,
         navController = navController,
+        onSharedEvents = sharedViewModel::onEvent,
         onEvent = { event->
             when(event){
                 is ProfileEvents.OnNavigateBack -> navController.popBackStack()
@@ -114,8 +121,10 @@ fun ProfileRootUI(navController: NavHostController = rememberNavController()) {
 @Composable
 fun ProfileScreen(
     profileState: ProfileState = ProfileState(),
+    sharedState: SharedState = SharedState(),
     navController: NavController = rememberNavController(),
-    onEvent: (ProfileEvents) -> Unit = {}
+    onSharedEvents: (SharedEvents) -> Unit = {},
+    onEvent: (ProfileEvents) -> Unit = {},
 ) {
 
     val scrollState = rememberScrollState()
@@ -196,9 +205,9 @@ fun ProfileScreen(
     }
 
 
-    LaunchedEffect(key1 = profileState.toastMessage) {
-        showCustomToast(context = context, toastMessage = profileState.toastMessage)
-        onEvent(ProfileEvents.ClearToastMessage)
+    LaunchedEffect(key1 = sharedState.toastMessage) {
+        showCustomToast(context = context, toastMessage = sharedState.toastMessage)
+        onSharedEvents(SharedEvents.ClearToastMessage)
     }
 
 
@@ -257,7 +266,17 @@ fun ProfileScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 //profile pic
-                ProfilePic(profileState.userProfileData?.profilePicUrl?:selectedImage.value) { showImagePickerDialog.value = true }
+                ProfilePic(
+                    profileState.isUploadingProfilePic,
+                    profileState.userProfileData?.profilePicUrl ?: selectedImage.value
+                ) {
+
+                    if (checkIfAllPermissionGranted(context, imagePickerPermission)) {
+                        showImagePickerDialog.value = true
+                    } else {
+                        permissionLauncher.launch(imagePickerPermission)
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -290,9 +309,7 @@ fun ProfileScreen(
     }
 
     if (showImagePickerDialog.value) {
-
-        if (checkIfAllPermissionGranted(context, imagePickerPermission)) {
-            UploadProfilePicDialog(
+        UploadProfilePicDialog(
                 onDismiss = {
                     showImagePickerDialog.value = false
                 },
@@ -304,9 +321,6 @@ fun ProfileScreen(
                     galleryLauncher.launch("image/*")
                     showImagePickerDialog.value = false
                 })
-        } else {
-            permissionLauncher.launch(imagePickerPermission)
-        }
     }
 }
 
@@ -421,11 +435,15 @@ fun ProfileForm(
 }
 
 @Composable
-fun ProfilePic(selectedImage: Any?, showImagePickerDialog: () -> Unit) {
+fun ProfilePic(
+    isUploadingProfilePic: Boolean = false,
+    selectedImage: Any?,
+    showImagePickerDialog: () -> Unit,
+) {
     Box {
 
         BookHubImage(
-            image = selectedImage ?: R.drawable.book,
+            image = selectedImage ?: R.drawable.user_placeholder,
             contentDescription = stringResource(id = R.string.profile),
             modifier = Modifier
                 .padding(top = 20.dp)
@@ -443,11 +461,19 @@ fun ProfilePic(selectedImage: Any?, showImagePickerDialog: () -> Unit) {
                 .clip(CircleShape)
                 .background(PrimaryVariant)
         ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = stringResource(R.string.edit),
-                tint = OnPrimaryColor
-            )
+            if (isUploadingProfilePic) {
+                CircularProgressIndicator(
+                    modifier = Modifier.padding(8.dp),
+                    color = Color.White,
+                    strokeWidth = 1.dp
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = stringResource(R.string.edit),
+                    tint = OnPrimaryColor
+                )
+            }
         }
     }
 }

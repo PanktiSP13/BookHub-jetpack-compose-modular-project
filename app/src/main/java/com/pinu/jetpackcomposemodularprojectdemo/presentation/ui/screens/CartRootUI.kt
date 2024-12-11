@@ -3,9 +3,11 @@ package com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,8 +43,11 @@ import androidx.navigation.compose.rememberNavController
 import com.pinu.domain.entities.AppBarEvents
 import com.pinu.domain.entities.AppBarUIConfig
 import com.pinu.domain.entities.events.CartEvents
+import com.pinu.domain.entities.events.SharedEvents
 import com.pinu.domain.entities.states.CartState
+import com.pinu.domain.entities.states.SharedState
 import com.pinu.domain.entities.viewmodels.CartViewModel
+import com.pinu.domain.entities.viewmodels.SharedViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.R
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.components.BookHubAppBar
@@ -57,14 +63,16 @@ import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.util.showCustom
 @Composable
 fun CartRootUI(
     navController: NavController = rememberNavController(),
-    cartViewModel: CartViewModel
+    cartViewModel: CartViewModel, sharedViewModel: SharedViewModel,
 ) {
 
     val cartState = cartViewModel.cartState.collectAsState()
 
     CartScreenUI(
         cartState = cartState.value,
-        navController = navController
+        sharedState = sharedViewModel.sharedState.collectAsState().value,
+        navController = navController,
+        onSharedEvents = sharedViewModel::onEvent,
     ) { event ->
         when (event) {
 
@@ -95,8 +103,10 @@ fun CartRootUI(
 @Composable
 fun CartScreenUI(
     cartState: CartState = CartState(),
+    sharedState: SharedState = SharedState(),
     navController: NavController = rememberNavController(),
-    onEvent: (CartEvents) -> Unit = {}
+    onSharedEvents: (SharedEvents) -> Unit = {},
+    onEvent: (CartEvents) -> Unit = {},
 ) {
 
     val context = LocalContext.current
@@ -107,10 +117,10 @@ fun CartScreenUI(
         onEvent(CartEvents.FetchCartHistory)
     }
 
-    LaunchedEffect(cartState.toastMessage) {
-        cartState.toastMessage.message.takeIf { it.isNotEmpty() }?.let {
-            showCustomToast(context = context, toastMessage = cartState.toastMessage)
-            onEvent(CartEvents.ClearToastMessage)
+    LaunchedEffect(sharedState.toastMessage) {
+        sharedState.toastMessage.message.takeIf { it.isNotEmpty() }?.let {
+            showCustomToast(context = context, toastMessage = sharedState.toastMessage)
+            onSharedEvents(SharedEvents.ClearToastMessage)
         }
     }
 
@@ -161,9 +171,32 @@ fun CartScreenUI(
             if (!cartState.cartItemResponse?.data?.items.isNullOrEmpty()) {
                 LazyColumn {
                     items(items = cartState.cartItemResponse?.data?.items ?: emptyList()) {
-                        CartItem(cartItem = it,onEvent = onEvent)
+                        CartItem(cartItem = it, onEvent = onEvent)
                     }
+                    item {
+                        Column(modifier = Modifier
+                            .padding(12.dp)
+                            .fillMaxWidth()) {
+                            HorizontalDivider(thickness = 1.dp, color = Color.Gray)
+                            Spacer(modifier = Modifier.height(30.dp))
+                            Row {
+                                Text(stringResource(R.string.total_price), style = BookHubTypography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text("₹ ${cartState.cartItemResponse?.data?.totalPrice?:0.0}")
+                            }
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Row {
+                                Text(stringResource(R.string.total_items), style = BookHubTypography.titleMedium.copy(fontWeight = FontWeight.Bold))
+                                Spacer(modifier = Modifier.weight(1f))
+                                Text("${cartState.cartItemResponse?.data?.totalItems?:0}")
+                            }
+                        }
+                    }
+
+
                 }
+
+
             } else {
                 if (cartState.isLoading.not() && cartState.isLoadingForPayment.not() &&
                     cartState.cartItemResponse?.data?.items?.isEmpty() == true

@@ -9,28 +9,28 @@ import com.pinu.domain.repositories.FavouriteRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.scopes.ViewModelScoped
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 object FavouritesModule {
 
 
     @Provides
-    @ViewModelScoped
+    @Singleton
     fun providesWishlistAPIs(network: Network): FavouritesAPIs {
         return network.favouritesAPIService
     }
 
     @Provides
-    @ViewModelScoped
+    @Singleton
     fun providesFavouriteRepository(favouriteAPI: FavouritesAPIs): FavouriteRepository {
         return FavouriteRepositoryImpl(favouriteAPI)
     }
 
     @Provides
-    @ViewModelScoped
+    @Singleton
     fun providesFavouriteViewModel(
         sharedViewModel: SharedViewModel,
         favouriteRepository: FavouriteRepository,

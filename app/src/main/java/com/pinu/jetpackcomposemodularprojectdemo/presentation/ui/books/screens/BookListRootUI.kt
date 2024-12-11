@@ -116,8 +116,8 @@ fun BookListScreen(
                     onValueChange = { value ->
                         searchQuery.value = value
                         // based on requirement
-                        if (value.length > 5) {
-                            onEvent(BooksEvents.OnSearchBooksByName(value))
+                        if (searchQuery.value.length > 5) {
+                            onEvent(BooksEvents.OnSearchBooksByName(searchQuery.value))
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),

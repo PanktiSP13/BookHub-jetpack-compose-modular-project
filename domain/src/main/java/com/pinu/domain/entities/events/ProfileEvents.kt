@@ -9,5 +9,4 @@ sealed interface ProfileEvents {
     data object FetchProfileData : ProfileEvents
     data class AddUpdateProfileData(val profileData: ProfileRequest) : ProfileEvents
     data class UpdateProfilePic(val profilePic: File) : ProfileEvents
-    data object ClearToastMessage:ProfileEvents
 }
