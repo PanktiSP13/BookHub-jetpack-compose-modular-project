@@ -12,8 +12,8 @@ import androidx.navigation.navArgument
 import com.pinu.domain.entities.viewmodels.SharedViewModel
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavArguments
 import com.pinu.jetpackcomposemodularprojectdemo.navigation.NavigationRoutes
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.books.screens.BookDetailRootUI
-import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.books.screens.BookListRootUI
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.screens.BookDetailRootUI
+import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.screens.BookListRootUI
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.screens.CartRootUI
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.screens.DashboardRootUI
 import com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.screens.ProfileRootUI

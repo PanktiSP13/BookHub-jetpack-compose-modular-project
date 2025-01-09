@@ -1,4 +1,4 @@
-package com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.books.screens
+package com.pinu.jetpackcomposemodularprojectdemo.presentation.ui.screens
 
 import android.content.Context
 import androidx.compose.foundation.Image
