@@ -42,7 +42,8 @@ Clone the repository:
 
 <img src="https://github.com/user-attachments/assets/f88cf162-786d-4118-8ccf-566e6b2214d4" width="250" >
 <img src="https://github.com/user-attachments/assets/fd7b35ba-4ad0-4984-90dc-83ddda3cbb16" width="250" >
-<img src="https://github.com/user-attachments/assets/cb5015d2-52ba-486d-aa60-ef80b6668b7e" width="250" >
+<img src="https://github.com/user-attachments/assets/9f406318-2546-412f-8a6c-cf81f26a3312" width="250" >
+
 
 Feel free to explore, use, and contribute to **BookHub** to learn and grow with modern Android development practices! 🚀
 
