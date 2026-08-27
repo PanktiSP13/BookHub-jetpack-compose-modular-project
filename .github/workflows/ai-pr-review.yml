@@ -1,4 +1,3 @@
-
 name: AI PR Review
 
 on:
@@ -32,3 +31,18 @@ jobs:
         run: |
           echo "PR diff created"
           wc -l pr.diff
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install OpenAI SDK
+        run: |
+          pip install openai
+
+      - name: Run AI Review
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python scripts/ai_pr_review.py
