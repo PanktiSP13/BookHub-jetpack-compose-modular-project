@@ -59,8 +59,8 @@ jobs:
         run: |
           pip install openai
 
-      - name: Run AI Review
+      - name: Run AI Review (OpenAI)
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          python scripts/ai_pr_review.py
+          python scripts/ai_pr_review_openai.py
