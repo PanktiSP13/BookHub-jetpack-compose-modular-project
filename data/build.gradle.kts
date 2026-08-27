@@ -7,17 +7,17 @@ plugins {
 
 android {
     namespace = "com.pinu.data"
-    compileSdk = 35
+    compileSdk = 36
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     defaultConfig {
         minSdk = 24
         multiDexEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "21"
     }
 }
 
