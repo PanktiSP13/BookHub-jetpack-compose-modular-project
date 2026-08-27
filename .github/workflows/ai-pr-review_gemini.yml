@@ -14,7 +14,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  ai-review:
+  ai-review-gemini:
     runs-on: ubuntu-latest
 
     steps:
@@ -48,3 +48,93 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python scripts/ai_pr_review_gemini.py
+
+      - name: Post AI Review to PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REVIEW_FILE: ai-review.json
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          with open("ai-review.json", "r", encoding="utf-8") as f:
+              review = json.load(f)
+
+          findings = review.get("findings", [])
+
+          if not findings:
+              body = """## 🤖 AI PR Review
+
+          **No actionable issues found.**
+
+          The AI reviewer did not identify any significant issues in the changed code.
+          """
+          else:
+              body = "## 🤖 AI PR Review\n\n"
+
+              for finding in findings:
+                  severity = finding["severity"]
+                  file = finding["file"]
+                  line = finding["line"]
+                  category = finding["category"]
+                  problem = finding["problem"]
+                  why = finding["why_it_matters"]
+                  fix = finding["suggested_fix"]
+
+                  icon = {
+                      "CRITICAL": "🚨",
+                      "HIGH": "🔴",
+                      "MEDIUM": "🟡",
+                      "LOW": "🔵"
+                  }.get(severity, "⚪")
+
+                  body += f"""### {icon} {severity} — {category}
+
+          **File:** `{file}`"""
+
+                  if line is not None:
+                      body += f"  \n**Line:** `{line}`"
+
+                  body += f"""
+
+          **Problem:**  
+          {problem}
+
+          **Why it matters:**  
+          {why}
+
+          **Suggested fix:**  
+          {fix}
+
+          ---
+          """
+
+          body += "\n_Generated automatically by Gemini AI PR Review._"
+
+          url = (
+              f"https://api.github.com/repos/"
+              f"{os.environ['REPOSITORY']}/issues/"
+              f"{os.environ['PR_NUMBER']}/comments"
+          )
+
+          data = json.dumps({"body": body}).encode("utf-8")
+
+          request = urllib.request.Request(
+              url,
+              data=data,
+              method="POST",
+              headers={
+                  "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2026-03-10",
+                  "Content-Type": "application/json"
+              }
+          )
+
+          with urllib.request.urlopen(request) as response:
+              print("GitHub comment created:", response.status)
+          PY

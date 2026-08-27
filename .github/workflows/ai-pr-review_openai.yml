@@ -14,7 +14,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  ai-review:
+  ai-review-openai:
     runs-on: ubuntu-latest
 
     steps:
