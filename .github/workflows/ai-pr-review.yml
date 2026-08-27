@@ -41,7 +41,7 @@ jobs:
 
       - name: Validate OpenAI API key
         env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           python - <<'PY'
           import os
@@ -54,7 +54,7 @@ jobs:
           print("Contains newline:", "\n" in key or "\r" in key)
           print("Starts with sk-:", key.startswith("sk-"))
           PY
-          
+
       - name: Install OpenAI SDK
         run: |
           pip install openai
