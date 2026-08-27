@@ -1,0 +1,50 @@
+name: AI PR Review
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        run: |
+          git diff \
+            origin/${{ github.event.pull_request.base.ref }}...HEAD \
+            > pr.diff
+
+      - name: Show diff size
+        run: |
+          echo "PR diff created"
+          wc -l pr.diff
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install OpenAI SDK
+        run: |
+          pip install openai
+
+      - name: Run AI Review
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python scripts/ai_pr_review.py
