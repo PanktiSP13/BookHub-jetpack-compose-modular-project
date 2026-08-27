@@ -96,7 +96,7 @@ jobs:
 
           **File:** `{file}`"""
 
-                  if line is not None:
+                  if line and line != "unknown":
                       body += f"  \n**Line:** `{line}`"
 
                   body += f"""

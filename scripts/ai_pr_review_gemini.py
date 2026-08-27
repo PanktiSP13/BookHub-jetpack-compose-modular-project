@@ -45,34 +45,34 @@ PR DIFF:
 """
 
 schema = {
-    "type": "object",
+    "type": "OBJECT",
     "properties": {
         "findings": {
-            "type": "array",
+            "type": "ARRAY",
             "items": {
-                "type": "object",
+                "type": "OBJECT",
                 "properties": {
                     "severity": {
-                        "type": "string",
+                        "type": "STRING",
                         "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
                     },
                     "file": {
-                        "type": "string"
+                        "type": "STRING"
                     },
                     "line": {
-                        "type": ["integer", "null"]
+                        "type": "STRING"
                     },
                     "category": {
-                        "type": "string"
+                        "type": "STRING"
                     },
                     "problem": {
-                        "type": "string"
+                        "type": "STRING"
                     },
                     "why_it_matters": {
-                        "type": "string"
+                        "type": "STRING"
                     },
                     "suggested_fix": {
-                        "type": "string"
+                        "type": "STRING"
                     }
                 },
                 "required": [
@@ -83,13 +83,11 @@ schema = {
                     "problem",
                     "why_it_matters",
                     "suggested_fix"
-                ],
-                "additionalProperties": False
+                ]
             }
         }
     },
-    "required": ["findings"],
-    "additionalProperties": False
+    "required": ["findings"]
 }
 
 response = client.models.generate_content(
