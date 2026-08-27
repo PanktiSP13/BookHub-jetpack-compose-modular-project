@@ -48,8 +48,8 @@ PR DIFF:
 """
 response = client.models.generate_content(
     # model="gemini-2.5-pro", #costly #Complex structural refactoring / deep logic debugging
-    model="gemini-2.5-flash",  # High-speed, lower-cost option
-    # model="gemini-2.5-flash-lite", # Maximum savings on routine syntax reviews
+    model="gemini-3.6-flash",  # High-speed, lower-cost option
+    # model="gemini-3.6-flash-lite", # Maximum savings on routine syntax reviews
     contents=prompt
 )
 
