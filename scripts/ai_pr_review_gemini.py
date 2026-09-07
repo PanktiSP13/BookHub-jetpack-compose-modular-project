@@ -1,7 +1,10 @@
 import json
 import os
+import time
 
 from google import genai
+from google.genai import errors
+
 
 client = genai.Client()
 
@@ -90,14 +93,57 @@ schema = {
     "required": ["findings"]
 }
 
-response = client.models.generate_content(
-    model="gemini-3.6-flash",
-    contents=prompt,
-    config={
-        "response_mime_type": "application/json",
-        "response_schema": schema
-    }
-)
+
+MAX_RETRIES = 3
+
+response = None
+
+for attempt in range(1, MAX_RETRIES + 1):
+
+    try:
+
+        print(
+            f"Calling Gemini "
+            f"(attempt {attempt}/{MAX_RETRIES})..."
+        )
+
+        response = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt,
+            config={
+                "response_mime_type": "application/json",
+                "response_schema": schema,
+            },
+        )
+
+        break
+
+    except errors.ServerError as error:
+
+        if error.code != 503:
+            raise
+
+        if attempt == MAX_RETRIES:
+            print(
+                "Gemini is still unavailable after "
+                f"{MAX_RETRIES} attempts."
+            )
+            raise
+
+        wait_seconds = 2 ** attempt
+
+        print(
+            "Gemini returned 503 (temporarily unavailable). "
+            f"Retrying in {wait_seconds} seconds..."
+        )
+
+        time.sleep(wait_seconds)
+
+
+if response is None:
+    raise RuntimeError(
+        "Gemini did not return a response."
+    )
 
 review = json.loads(response.text)
 
