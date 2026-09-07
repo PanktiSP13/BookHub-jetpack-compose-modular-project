@@ -2,6 +2,11 @@ import json
 import os
 import urllib.request
 
+
+# ---------------------------------------------------------
+# Read AI review
+# ---------------------------------------------------------
+
 with open("ai-review.json", "r", encoding="utf-8") as file:
     review = json.load(file)
 
@@ -10,6 +15,7 @@ findings = review.get("findings", [])
 if not findings:
     print("No findings to post.")
     exit(0)
+
 
 token = os.environ["GH_TOKEN"]
 repository = os.environ["REPOSITORY"]
@@ -22,6 +28,7 @@ commit_id = os.environ["PR_HEAD_SHA"]
 # ---------------------------------------------------------
 
 def github_request(url, method="GET", data=None):
+
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github+json",
@@ -42,6 +49,7 @@ def github_request(url, method="GET", data=None):
     )
 
     with urllib.request.urlopen(request) as response:
+
         response_body = response.read().decode("utf-8")
 
         if response_body:
@@ -51,17 +59,18 @@ def github_request(url, method="GET", data=None):
 
 
 # ---------------------------------------------------------
-# Get existing AI review comments
+# Get existing INLINE PR review comments
 # ---------------------------------------------------------
 
 comments_url = (
     f"https://api.github.com/repos/"
-    f"{repository}/issues/{pr_number}/comments"
+    f"{repository}/pulls/{pr_number}/comments"
 )
 
 existing_comments = github_request(comments_url)
 
 existing_ai_findings = set()
+
 
 for comment in existing_comments:
 
@@ -73,7 +82,6 @@ for comment in existing_comments:
 
     path = comment.get("path")
 
-    # Old consolidated comments won't have a path.
     if not path:
         continue
 
@@ -82,15 +90,19 @@ for comment in existing_comments:
     if line is None:
         continue
 
-    # Extract the problem from the existing comment.
+    # Extract the problem section.
     problem_marker = "**Problem:**"
 
     if problem_marker not in body:
         continue
 
-    problem = body.split(problem_marker, 1)[1]
+    problem = body.split(
+        problem_marker,
+        1
+    )[1]
 
     if "**Why it matters:**" in problem:
+
         problem = problem.split(
             "**Why it matters:",
             1
@@ -102,7 +114,7 @@ for comment in existing_comments:
         (
             path,
             int(line),
-            problem
+            problem,
         )
     )
 
@@ -129,7 +141,7 @@ def get_changed_lines(diff_text):
             "file/path.kt": {20, 21, 25, ...}
         }
 
-    Only lines added/changed in the PR are included.
+    Only added/changed lines are included.
     """
 
     changed_lines = {}
@@ -140,8 +152,14 @@ def get_changed_lines(diff_text):
     for line in diff_text.splitlines():
 
         if line.startswith("+++ b/"):
+
             current_file = line[6:]
-            changed_lines.setdefault(current_file, set())
+
+            changed_lines.setdefault(
+                current_file,
+                set()
+            )
+
             continue
 
         if line.startswith("@@"):
@@ -154,27 +172,43 @@ def get_changed_lines(diff_text):
             )
 
             if match:
-                new_line_number = int(match.group(1))
+                new_line_number = int(
+                    match.group(1)
+                )
 
             continue
 
-        if current_file is None or new_line_number is None:
+        if (
+                current_file is None
+                or new_line_number is None
+        ):
             continue
 
         # Added line
-        if line.startswith("+") and not line.startswith("+++"):
+        if (
+                line.startswith("+")
+                and not line.startswith("+++")
+        ):
+
             changed_lines[current_file].add(
                 new_line_number
             )
+
             new_line_number += 1
 
         # Deleted line
-        elif line.startswith("-") and not line.startswith("---"):
+        elif (
+                line.startswith("-")
+                and not line.startswith("---")
+        ):
+
             continue
 
         # Context line
         else:
+
             new_line_number += 1
+
 
     return changed_lines
 
@@ -194,18 +228,21 @@ for finding in findings:
     line_value = finding["line"]
 
     try:
+
         line_number = int(line_value)
 
     except (ValueError, TypeError):
+
         print(
             f"Skipping finding with invalid line: "
             f"{line_value}"
         )
+
         continue
 
 
     # -----------------------------------------------------
-    # Validate changed file
+    # Validate file
     # -----------------------------------------------------
 
     if file_path not in changed_lines:
@@ -225,8 +262,7 @@ for finding in findings:
     if line_number not in changed_lines[file_path]:
 
         print(
-            f"Skipping "
-            f"{file_path}:{line_number} "
+            f"Skipping {file_path}:{line_number} "
             "- line is not an added/changed line "
             "in the PR"
         )
@@ -248,7 +284,7 @@ for finding in findings:
     finding_key = (
         file_path,
         line_number,
-        problem.strip()
+        problem.strip(),
     )
 
     if finding_key in existing_ai_findings:
@@ -262,7 +298,7 @@ for finding in findings:
 
 
     # -----------------------------------------------------
-    # Create GitHub comment
+    # Create inline comment
     # -----------------------------------------------------
 
     icon = {
@@ -307,9 +343,7 @@ _🤖 Gemini AI Code Review_
 
 if not comments:
 
-    print(
-        "No new AI findings to post."
-    )
+    print("No new AI findings to post.")
 
     exit(0)
 
@@ -335,7 +369,7 @@ payload = {
 github_request(
     review_url,
     method="POST",
-    data=payload
+    data=payload,
 )
 
 
