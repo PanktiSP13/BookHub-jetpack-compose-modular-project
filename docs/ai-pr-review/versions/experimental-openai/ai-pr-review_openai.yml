@@ -14,7 +14,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  ai-review:
+  ai-review-openai:
     runs-on: ubuntu-latest
 
     steps:
@@ -39,12 +39,28 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Validate OpenAI API key
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python - <<'PY'
+          import os
+        
+          key = os.environ.get("OPENAI_API_KEY", "")
+        
+          print("Key present:", bool(key))
+          print("Key length:", len(key))
+          print("Has leading/trailing whitespace:", key != key.strip())
+          print("Contains newline:", "\n" in key or "\r" in key)
+          print("Starts with sk-:", key.startswith("sk-"))
+          PY
+
       - name: Install OpenAI SDK
         run: |
           pip install openai
 
-      - name: Run AI Review
+      - name: Run AI Review (OpenAI)
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          python scripts/ai_pr_review.py
+          python scripts/ai_pr_review_openai.py

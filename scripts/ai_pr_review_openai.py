@@ -1,8 +1,9 @@
 import os
 from openai import OpenAI
 
+api_key = os.environ["OPENAI_API_KEY"].strip()
 client = OpenAI(
-    api_key=os.environ["OPENAI_API_KEY"]
+    api_key= api_key
 )
 
 with open("pr.diff", "r", encoding="utf-8") as file:
@@ -51,7 +52,7 @@ PR DIFF:
 """
 
 response = client.responses.create(
-    model="gpt-5.4-mini",
+    model="gpt-5.6-luna",
     input=prompt
 )
 

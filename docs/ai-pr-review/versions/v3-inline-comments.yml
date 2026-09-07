@@ -1,0 +1,60 @@
+name: AI PR Review
+
+on:
+# uncomment only when you want to execute it when PR is created/updated
+#  pull_request:
+#    types:
+#      - opened
+#      - synchronize
+#      - reopened
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  ai-review-gemini:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        run: |
+          git diff \
+            origin/${{ github.event.pull_request.base.ref }}...HEAD \
+            > pr.diff
+
+      - name: Show diff size
+        run: |
+          echo "PR diff created"
+          wc -l pr.diff
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Gemini SDK
+        run: |
+          pip install -U google-genai
+
+      - name: Run AI Review (Gemini)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python scripts/ai_pr_review_gemini.py
+
+      - name: Post Inline AI Review
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          python scripts/post_inline_review.py
