@@ -1,11 +1,12 @@
 name: AI PR Review
 
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+# uncomment only when you want to execute it when PR is created/updated
+#  pull_request:
+#    types:
+#      - opened
+#      - synchronize
+#      - reopened
 
   workflow_dispatch:
 

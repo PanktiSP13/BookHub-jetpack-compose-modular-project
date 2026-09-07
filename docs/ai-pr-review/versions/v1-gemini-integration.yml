@@ -14,7 +14,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  ai-review-gemini:
+  ai-review:
     runs-on: ubuntu-latest
 
     steps:
@@ -48,12 +48,3 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python scripts/ai_pr_review_gemini.py
-
-      - name: Post Inline AI Review
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPOSITORY: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          python scripts/post_inline_review.py
